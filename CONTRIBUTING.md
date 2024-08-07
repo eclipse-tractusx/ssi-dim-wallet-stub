@@ -73,7 +73,7 @@ https://www.eclipse.org/projects/handbook/#resources-commit
 ## How To Contribute
 
 For more practical information, please refer
-to [Hpw to contribute.md](docs%2Fdeveloper%2FTechnical%20Documentation%2FDev%20Process%2FHpw%20to%20contribute.md)
+to [How to contribute.md](docs%2Fdeveloper%2FTechnical%20Documentation%2FDev%20Process%2FHow%20to%20contribute.md)
 
 ## Contact
 

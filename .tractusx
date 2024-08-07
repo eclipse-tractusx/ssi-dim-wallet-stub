@@ -17,10 +17,10 @@
 # SPDX-License-Identifier: Apache-2.0
 ###############################################################
 
-product: "SSI Dim Wallet Stub"
+product: "SSI DIM Wallet Stub"
 leadingRepository: "https://github.com/eclipse-tractusx/ssi-dim-wallet-stub"
 repoCategory: "product"
 repositories:
-  - name: "ssi-wallet-stub"
-    usage: "The repository is the SSI wallet stub application"
+  - name: "ssi-dim-wallet-stub"
+    usage: "The repository is the SSI DIM wallet stub application"
     url: "https://github.com/eclipse-tractusx/ssi-dim-wallet-stub"

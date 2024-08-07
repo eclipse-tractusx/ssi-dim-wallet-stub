@@ -1,6 +1,6 @@
 # Contribution details
 
-To contribute to the Policy Hub as part of the open source community, please read the details defined below.
+To contribute to the SSI DIM Wallet stub as part of the open source community, please read the details defined below.
 Besides a generic "how to", some commit and pull request (PR) guidelines are defined to ensure readability and make
 newly created PRs easier to review. Additionally, changelogs can get validated as well as written with more ease.
 Moreover, similar patterns are in use across the contributor community.
@@ -117,5 +117,5 @@ Please refer to the [Development Flow](./Dev-flow_git-diagram.md).
 This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 - SPDX-License-Identifier: Apache-2.0
-- SPDX-FileCopyrightText: 2023 Contributors to the Eclipse Foundation
-- Source URL: https://github.com/eclipse-tractusx/policy-hub
+- SPDX-FileCopyrightText: 2024 Contributors to the Eclipse Foundation
+- Source URL: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub
