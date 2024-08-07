@@ -1,0 +1,7 @@
+<component name="CopyrightManager">
+  <settings default="Eclipse">
+    <module2copyright>
+      <element module="All" copyright="Eclipse Foundation" />
+    </module2copyright>
+  </settings>
+</component>

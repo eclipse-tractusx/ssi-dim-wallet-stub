@@ -1,0 +1,30 @@
+version: 2
+registries:
+  github-central-pipelines:
+    type: git
+    url: https://github.com
+    username: x-access-token
+    password: ${{ secrets.CENTRAL_PIPELINES_READ_ONLY_GH_TOKEN }}
+
+updates:
+  # maintain dependencies for GitHub actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github_actions"
+    registries:
+      - github-central-pipelines
+
+  # maintain dependencies for Gradle
+  - package-ecosystem: "gradle" # checks build.gradle(.kts) and settings.gradle(.kts)
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "java"
