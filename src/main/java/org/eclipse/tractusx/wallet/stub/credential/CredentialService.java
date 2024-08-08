@@ -187,9 +187,9 @@ public class CredentialService {
         subject.put(StringPool.TYPE, StringPool.BPN_CREDENTIAL);
         subject.put(StringPool.BPN, holderBpn);
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
-                vcIdUri.toString(), StringPool.MEMBERSHIP_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
+                vcIdUri.toString(), StringPool.BPN_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-        memoryStorage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.MEMBERSHIP_CREDENTIAL);
+        memoryStorage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.BPN_CREDENTIAL);
         return credentialWithoutProof;
     }
 }
