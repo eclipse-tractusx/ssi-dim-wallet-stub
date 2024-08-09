@@ -26,9 +26,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.properties.SwaggerUiConfigProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -41,10 +41,18 @@ import java.util.Objects;
  */
 @Configuration
 @Slf4j
-@RequiredArgsConstructor
 public class ApplicationConfig implements WebMvcConfigurer {
 
     private final SwaggerUiConfigProperties properties;
+
+    public ApplicationConfig() {
+        this.properties = null;
+    }
+
+    @Autowired(required = false)
+    public ApplicationConfig(SwaggerUiConfigProperties properties) {
+        this.properties = properties;
+    }
 
 
     @Override

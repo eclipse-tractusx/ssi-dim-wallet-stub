@@ -1,0 +1,141 @@
+###############################################################
+# Copyright (c) 2024 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License, Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0.
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+###############################################################
+
+# -- The amount of replicas to run
+wallet:
+  replicaCount: 1
+
+  host: localhost
+
+  # -- The name space
+  nameSpace: "wallet"
+
+  # -- The application name
+  appName: "ssi-dim-wallet-stub"
+
+  # -- The configmap name
+  configName: "ssi-dim-wallet-config"
+
+  # -- The service name
+  serviceName: "ssi-dim-wallet-service"
+
+  # -- The secret name
+  secretName: "ssi-dim-wallet-secret"
+
+  ingressName: "ssi-dim-wallet-ingress"
+
+  image:
+    # -- Image repository
+    repository: tractusx/managed-identity-wallet
+    # -- PullPolicy
+    pullPolicy: IfNotPresent
+    # -- Image tag (empty one will use "appVersion" value from chart definition)
+    tag: ""
+
+  resources:
+    requests:
+      # -- CPU resource requests
+      cpu: 250m
+      # -- Memory resource requests
+      memory: 512Mi
+    limits:
+      # -- CPU resource limits
+      cpu: 500m
+      # -- Memory resource limits
+      memory: 1Gi
+
+  # -- Kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+  livenessProbe:
+    # -- Enables/Disables the livenessProbe at all
+    enabled: true
+    # -- When a probe fails, Kubernetes will try failureThreshold times before giving up. Giving up in case of liveness probe means restarting the container.
+    failureThreshold: 3
+    # -- Number of seconds after the container has started before readiness probes are initiated.
+    initialDelaySeconds: 20
+    # -- Number of seconds after which the probe times out.
+    timeoutSeconds: 15
+    # -- How often (in seconds) to perform the probe
+    periodSeconds: 5
+
+  # -- Kubernetes [readiness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+  readinessProbe:
+    # -- Enables/Disables the readinessProbe at all
+    enabled: true
+    # -- When a probe fails, Kubernetes will try failureThreshold times before giving up. In case of readiness probe the Pod will be marked Unready.
+    failureThreshold: 3
+    # -- Number of seconds after the container has started before readiness probe are initiated.
+    initialDelaySeconds: 30
+    # -- How often (in seconds) to perform the probe
+    periodSeconds: 5
+    # -- Minimum consecutive successes for the probe to be considered successful after having failed.
+    successThreshold: 1
+    # -- Number of seconds after which the probe times out.
+    timeoutSeconds: 5
+
+  # -- ingress configuration
+  ingress:
+    enabled: false
+    tls: false
+    urlPrefix: /
+    className: nginx
+    annotations: {}
+  swagger:
+      ui:
+      # -- enable swagger API doc UI
+        status: true
+      apiDoc:
+      # -- enable Open API doc
+        status: true
+  # -- Application log level
+  logLevel: "debug"
+  # -- Name of landing zone ie. dev, int, prod etc
+  environment: "default"
+  # -- Operator BPN
+  baseWalletBpn: "BPNL000000000000"
+  # -- Did document host, this will be part of did String i.e., did:web:<didHost>
+  didHost: "localhost"
+  # -- Wallet stub server URL. This will pe part of the presentation query API in the did document
+  stubUrl: "http://localhost"
+  # -- Default status list VC id
+  statusListVcId: "8a6c7486-1e1f-4555-bdd2-1a178182651e"
+  # -- Token expiry time in seconds
+  tokenExpiryTime: "5"
+  portal:
+    # -- Wait for given seconds before pushing data to portal backend after wallet creation
+    waitTime: "60"
+    # -- Portal backend application host
+    host: "http://localhost"
+
+    # -- Keycloak client_id and client_secret. We will create an access token and using this we access portal backend APIs
+    clientId: "client_id"
+    clientSecret: "client_secret"
+  keycloak:
+    # -- Keycloak realm name
+    realm: "CX-Central"
+    # -- keycloak host
+    authServerUrl: "http://localhost:28080/auth"
+  # --- Service configuration
+  service:
+    type: ClusterIP
+    port: 8080
+
+
+# -- Keycloak configuration
+keycloak:
+ enabled: false

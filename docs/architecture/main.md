@@ -697,7 +697,7 @@ Response Body:
 ![query.png](./images/query.png)
 
 This API is responsible for creating Verifiable Presentations based on the scope and tokens being passed. For the scope
-of the stub service, only `type:MembershipCredential` is supported.
+of the stub service, only `type:MembershipCredential` and `type:BpnCredential` are supported.
 
 Request Body:
 
