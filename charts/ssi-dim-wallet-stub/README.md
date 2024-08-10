@@ -14,7 +14,14 @@
 - Kubernetes 1.19+
 - Helm 3.2.0+
 
-### Install
+### Install with released helm chart
+
+```
+helm repo add tractusx-dev https://eclipse-tractusx.github.io/charts/dev
+helm install ssi-dim-wallet-stub tractusx-dev/ssi-dim-wallet-stub
+```
+
+### Install with local configuration
 ```
 helm dep up charts/ssi-dim-wallet-stub
 kubectl create namespace wallet
