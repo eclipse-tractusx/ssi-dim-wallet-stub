@@ -62,3 +62,12 @@ Detailed documentation can be found [here](docs%2FREADME.md)
 10. No actual revocation of verifiable credentials
 11. All stored credentials will be lost on restart of the application
 12. JWTs are printed with debug log level for debugging purposes
+
+
+### Notice for Docker image
+
+This application provides container images for demonstration purposes.
+
+See Docker notice files for more information:
+
+- [SSI DIM Wallet stub Docker notice](DOCKER_NOTICE.md)
