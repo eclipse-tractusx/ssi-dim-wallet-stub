@@ -1,4 +1,4 @@
-## Helm char to deploy SSI DIM Wallet stub application
+## Helm chart to deploy SSI DIM Wallet stub application
 
 ### Source Code
 
