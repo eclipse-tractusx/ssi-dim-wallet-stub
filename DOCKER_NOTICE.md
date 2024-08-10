@@ -6,13 +6,13 @@ DockerHub: To be added once we have Docker publish workflow
 
 Eclipse Tractus-X product(s) installed within the image:
 
-Item-Relationship-Service
+SSI DIM Wallet stub
 
-- GitHub: https://github.com/eclipse-tractusx/item-relationship-service
+- GitHub: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub
 - Project home: https://projects.eclipse.org/projects/automotive.tractusx
 - Dockerfile: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/blob/main/Dockerfile
 - Project
-  license: [Apache License, Version 2.0](https://github.com/eclipse-tractusx/item-relationship-service/blob/main/LICENSE)
+  license: [Apache License, Version 2.0](https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/blob/main/LICENSE)
 
 **Used base image**
 
