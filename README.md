@@ -1,9 +1,15 @@
 # SSI DIM Wallet stub application
 
-#### Note: *This application can not be used in production. This is designed and developed for local and integration testing only*
+#### Note: *This is meant and developed for local and integration testing only*
 
-The SSI Decentralize Identity Management (DIM)
-Wallet stub application is an alternative solution of wallet application to the Tractus-X.
+The SSI Decentralized Identity Management (DIM) Wallet stub application provides REST APIs for below wallet functionality.
+
+1. Setup Wallet and push Did document to portal backend
+2. Issue Verifiable Credentials
+3. Sign and get Verifiable Credentials by ID
+4. Create Self issued (SI) token with scope and without scope
+5. Query Verifiable Presentation
+6. Create technical user for wallet to access APIs using OAuth flow
 
 This application can be used as a temporary wallet solution for local and integration testing.
 
