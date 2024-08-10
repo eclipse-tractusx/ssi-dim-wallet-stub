@@ -42,6 +42,10 @@ This application is using Java 21 and Spring boot framework to serve REST APIs.
 3. After successful running orf the application, you can access swagger
    on  ``http://localhost:8080/ui/swagger-ui/index.html``
 
+### Deploy application using helm chart
+
+Please refer [deploy using helm](charts%2Fssi-dim-wallet-stub%2FREADME.md)
+
 ### Documentation
 
 Detailed documentation can be found [here](docs%2FREADME.md)
