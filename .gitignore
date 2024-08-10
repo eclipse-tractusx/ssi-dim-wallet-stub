@@ -81,3 +81,4 @@ deps.txt
 .idea/codeStyles/Project.xml
 
 charts/**/values-*.yaml
+**/charts/*.tgz
