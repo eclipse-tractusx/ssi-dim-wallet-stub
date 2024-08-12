@@ -65,7 +65,7 @@ logging:
             stub: ${APP_LOG_LEVEL:DEBUG}
 stub:
   env: ${STUB_ENV:local}
-  baseWalletBPN: ${BASE_WALLET_BPN:BPNL000000000000} #Oparator BPN
+  baseWalletBPN: ${BASE_WALLET_BPN:BPNL000000000000} # Operator BPN
   didHost: ${DID_HOST:localhost}
   stubUrl: ${STUB_URL:https://localhost} #Stub application host
   statusListVcId: ${STATUS_LIST_VC_ID:8a6c7486-1e1f-4555-bdd2-1a178182651e}

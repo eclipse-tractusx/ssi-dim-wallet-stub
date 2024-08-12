@@ -7,4 +7,3 @@ The following people have contributed to this repository:
 * Ronak Thacker, Cofinity-X GmbH, https://github.com/thackerronak
 * Leandro Willians Cavalcante Farias, Cofinity-X GmbH, https://github.com/leandro-cavalcante
 * Nitin Vavdiya, Cofinity-X GmbH, https://github.com/nitin-vavdiya
-

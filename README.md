@@ -1,8 +1,8 @@
 # SSI DIM Wallet stub application
 
-#### Note: *This is meant and developed for local and integration testing only*
+#### Note: *This application is meant and developed for local and integration testing only*
 
-The SSI Decentralized Identity Management (DIM) Wallet stub application provides REST APIs for below wallet functionality.
+The Decentralized Identity Management (DIM) Wallet stub application provides REST APIs for below wallet functionality.
 
 1. Setup Wallet and push Did document to portal backend
 2. Issue Verifiable Credentials
@@ -75,3 +75,12 @@ This application provides container images for demonstration purposes.
 See Docker notice files for more information:
 
 - [SSI DIM Wallet stub Docker notice](DOCKER_NOTICE.md)
+
+
+## License
+
+This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+- SPDX-License-Identifier: Apache-2.0
+- SPDX-FileCopyrightText: 2024 Contributors to the Eclipse Foundation
+- Source URL: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub
