@@ -1,6 +1,6 @@
 dependencies:
-- name: centralidp
-  repository: https://eclipse-tractusx.github.io/charts/dev
-  version: 3.0.1
-digest: sha256:5f52375a22bc5771540640d016d25750c6fe8bf6ee7d4ce47815fa750b69dc5e
-generated: "2024-08-10T11:21:30.440379+05:30"
+- name: keycloak
+  repository: https://charts.bitnami.com/bitnami
+  version: 22.1.0
+digest: sha256:50e042e9c5dfec7b09a1be17d15df3087b7477acd0cd7e7cbe4098ab08cbca48
+generated: "2024-08-09T11:17:31.09026+05:30"
