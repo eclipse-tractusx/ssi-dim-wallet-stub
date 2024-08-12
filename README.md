@@ -15,6 +15,8 @@ This application can be used as a temporary wallet solution for local and integr
 
 This application is using Java 21 and Spring boot framework to serve REST APIs.
 
+The DIM Wallet is part of the Self-Sovereign Identity (SSI) Flow of Eclipse Tractus-X.
+
 ### Run in local
 
 1. Update env variables in [application.yaml](src%2Fmain%2Fresources%2Fapplication.yaml)
