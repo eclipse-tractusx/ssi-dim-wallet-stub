@@ -255,6 +255,39 @@ edc --> UC10
 
 ![system_scope.png](./images/system_scope.png)
 
+<details>
+  <summary>Plant UML</summary>
+
+  ```plantuml
+@startuml
+!define RECTANGLE_ANTIALIASED true
+skinparam defaultFontName Arial
+skinparam rectangle {
+  BackgroundColor<< Backend >> White
+  BackgroundColor<< Issuer >> White
+  BackgroundColor<< Wallet >> White
+  BackgroundColor<< EDC >> White
+  BackgroundColor<< BDRS >> White
+}
+
+rectangle "Portal Backend" << Backend >> as PortalBackend
+rectangle "Issuer Component" << Issuer >> as IssuerComponent
+rectangle "SSI DIM Wallet Stub" << Wallet >> as WalletStub
+rectangle "EDC (as a Service)" << EDC >> as EDCService
+rectangle "BDRS" << BDRS >> as BDRSService
+
+PortalBackend --> WalletStub : Setup DJM\nCreate Tech User
+IssuerComponent --> WalletStub : Create Credentials\nSign Credentials\nStore Credentials
+WalletStub --> EDCService : Query Presentation\nStatusList\nSTS
+EDCService --> WalletStub : Query\nStatusList
+EDCService --> BDRSService : Present VP
+EDCService --> EDCService : Catalog Request to other EDC
+@enduml
+  ```
+
+</details>
+
+
 ## **Business Context**
 
 1. Portal <> Wallet Stub:
