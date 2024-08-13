@@ -83,10 +83,6 @@ dependencies {
 
     // added for test cases to support patch method
     testImplementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
-
-    //to mock network calls
-    testImplementation 'org.wiremock:wiremock-standalone:3.9.1'
-
 }
 
 test {

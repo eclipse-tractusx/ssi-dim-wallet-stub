@@ -201,6 +201,5 @@ maven/mavencentral/org.springframework/spring-test/6.1.11, Apache-2.0, approved,
 maven/mavencentral/org.springframework/spring-web/6.1.11, Apache-2.0, approved, #15188
 maven/mavencentral/org.springframework/spring-webmvc/6.1.11, Apache-2.0, approved, #15182
 maven/mavencentral/org.webjars/swagger-ui/5.11.8, Apache-2.0, approved, #13756
-maven/mavencentral/org.wiremock/wiremock-standalone/3.9.1, (Apache-2.0 AND EPL-2.0) OR (Apache-2.0 AND GPL-2.0-only AND NOASSERTION), restricted, clearlydefined
 maven/mavencentral/org.xmlunit/xmlunit-core/2.9.1, Apache-2.0, approved, #6272
 maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #10232

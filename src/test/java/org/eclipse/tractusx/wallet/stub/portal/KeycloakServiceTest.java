@@ -21,17 +21,16 @@
 
 package org.eclipse.tractusx.wallet.stub.portal;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.net.ServerSocket;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.token.TokenManager;
+import org.keycloak.representations.AccessTokenResponse;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 
 class KeycloakServiceTest {
@@ -39,46 +38,57 @@ class KeycloakServiceTest {
 
     private final KeycloakService keycloakService;
 
-    private final int port = findFreePort();
-
-    WireMockServer wireMockServer;
-
+    private final PortalSettings portalSettings;
 
     KeycloakServiceTest() {
-        PortalSettings portalSettings = new PortalSettings(1, "clientId", "clientSecret", "realm", "http://localhost:" + port);
+        portalSettings = Mockito.mock();
         keycloakService = new KeycloakService(portalSettings);
-    }
-
-    @SneakyThrows
-    private static int findFreePort() {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            return socket.getLocalPort();
-        }
     }
 
     @BeforeEach
     void setUp() {
-        wireMockServer = new WireMockServer(port);
-        wireMockServer.start();
+
         setupStub();
     }
 
     public void setupStub() {
-        wireMockServer.stubFor(WireMock.post("/realms/realm/protocol/openid-connect/token")
-                .willReturn(WireMock.aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withBody("{\"access_token\":\"access_token\",\"token_type\":\"bearer\",\"expires_in\":3600,\"refresh_expires_in\":1800,\"refresh_token\":\"refresh_token\",\"id_token\":\"id_token\",\"not_before_policy\":0,\"session_state\":\"session_state\",\"scope\":\"openid profile email offline_access\",\"acr\":\"0\"}")
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)));
+
     }
 
     @AfterEach
     void afterEach() {
-        wireMockServer.shutdown();
     }
 
+
     @Test
-    void testCreateAccessToken() {
-        String portalAccessToken = keycloakService.createPortalAccessToken();
-        Assertions.assertEquals("bearer access_token", portalAccessToken);
+    void shouldReturnValidAccessTokenWhenAllRequiredSettingsAreProvided() {
+        try (MockedStatic<KeycloakBuilder> mockerBuilder = Mockito.mockStatic(KeycloakBuilder.class)) {
+            KeycloakBuilder keycloakBuilder = Mockito.mock(KeycloakBuilder.class);
+            Keycloak keycloak = Mockito.mock(Keycloak.class);
+            TokenManager tokenManager = Mockito.mock(TokenManager.class);
+            AccessTokenResponse accessTokenResponse = Mockito.mock(AccessTokenResponse.class);
+
+            //mock portal
+            Mockito.when(portalSettings.clientId()).thenReturn("client_id");
+            Mockito.when(portalSettings.clientSecret()).thenReturn("client_secret");
+            Mockito.when(portalSettings.realm()).thenReturn("realm");
+            Mockito.when(portalSettings.authServerUrl()).thenReturn("http://localhost");
+
+            //mock builder
+            mockerBuilder.when(KeycloakBuilder::builder).thenReturn(keycloakBuilder);
+            Mockito.when(keycloakBuilder.realm(Mockito.anyString())).thenReturn(keycloakBuilder);
+            Mockito.when(keycloakBuilder.clientId(Mockito.anyString())).thenReturn(keycloakBuilder);
+            Mockito.when(keycloakBuilder.clientSecret(Mockito.anyString())).thenReturn(keycloakBuilder);
+            Mockito.when(keycloakBuilder.grantType(Mockito.anyString())).thenReturn(keycloakBuilder);
+            Mockito.when(keycloakBuilder.serverUrl(Mockito.anyString())).thenReturn(keycloakBuilder);
+            Mockito.when(keycloakBuilder.build()).thenReturn(keycloak);
+            Mockito.when(keycloak.tokenManager()).thenReturn(tokenManager);
+            Mockito.when(tokenManager.getAccessToken()).thenReturn(accessTokenResponse);
+
+            Mockito.when(accessTokenResponse.getToken()).thenReturn("access_token");
+            Mockito.when(accessTokenResponse.getTokenType()).thenReturn("type");
+            String portalAccessToken = keycloakService.createPortalAccessToken();
+            Assertions.assertEquals("type access_token", portalAccessToken);
+        }
     }
 }
