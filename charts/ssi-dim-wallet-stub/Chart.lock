@@ -1,0 +1,6 @@
+dependencies:
+- name: centralidp
+  repository: https://eclipse-tractusx.github.io/charts/dev
+  version: 3.0.0
+digest: sha256:4a16133a0c3bc6fbcc85e2f307460c5ab7b6dae226de269414ae81298cb4dcac
+generated: "2024-08-12T17:49:14.692969+05:30"

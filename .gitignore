@@ -80,3 +80,5 @@ deps.txt
 .env
 .idea/codeStyles/Project.xml
 
+charts/**/values-*.yaml
+**/charts/*.tgz
