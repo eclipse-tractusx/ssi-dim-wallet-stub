@@ -32,7 +32,7 @@ on:
       - 'build.gradle'
       - 'settings.gradle'
   push:
-    branches: [ main, fix/verify-workflow ]
+    branches: [ main ]
     paths:
       - 'src/**'
       - ".github/**"
@@ -121,7 +121,7 @@ jobs:
           fi
   unit-tests:
     runs-on: ubuntu-latest
-    needs: [ Review-Allowed-Licenses, verify-license-headers ]
+    needs: [ Review-Allowed-Licenses, Dash-Verify-Licenses ]
     steps:
       - uses: actions/checkout@v3.5.2
       - uses: ./.github/actions/setup-java
