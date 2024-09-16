@@ -24,9 +24,10 @@ on:
   workflow_dispatch:
   pull_request:
     types: [ opened, synchronize, reopened ]
-    branches: [ main ]
+    branches: [ main]
     paths:
       - 'src/**'
+      - ".github/**"
       - 'gradle.properties'
       - 'build.gradle'
       - 'settings.gradle'
