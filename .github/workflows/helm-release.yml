@@ -47,6 +47,12 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Update helm dependencies
+        run: |
+          cd charts/ssi-dim-wallet-stub
+          helm repo add tractusx-dev https://eclipse-tractusx.github.io/charts/dev
+          helm dependency update
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.1
         env:
