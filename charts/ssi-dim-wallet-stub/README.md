@@ -16,12 +16,19 @@
 
 ### Install with released helm chart
 
+Note: ! WIP Chart is not published yet, please use local deployment till chart is published to tractusx
+
 ```
 helm repo add tractusx-dev https://eclipse-tractusx.github.io/charts/dev
 helm install ssi-dim-wallet-stub tractusx-dev/ssi-dim-wallet-stub
 ```
 
 ### Install with local configuration
+
+Step:
+1. Create docker image locally with command `docker build -t ssi-dim-wallet-stub .`
+2. Change docker image in values.yaml
+
 ```
 helm dep up charts/ssi-dim-wallet-stub
 kubectl create namespace wallet

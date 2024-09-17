@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.tractusx.wallet.stub.config.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
@@ -63,7 +64,7 @@ public class PortalStubService {
     @SneakyThrows
     @Async
     public void setupDim(SetupDimRequest request) {
-        log.debug("Request to setup dim received for company name -> {}, bpn ->{} waiting for 60 sec", request.getCompanyName(), request.getBpn());
+        log.debug("Request to setup dim received for company name -> {}, bpn ->{} waiting for 60 sec", StringEscapeUtils.escapeJava(request.getCompanyName()), StringEscapeUtils.escapeJava(request.getBpn()));
 
         //wait for defined time before pushing data to the portal
         Thread.sleep(portalSettings.portalWaitTime() * 1000);
@@ -83,7 +84,7 @@ public class PortalStubService {
                 )
                 .build();
 
-        log.debug("Did document create for bpn -> {} , didDocument - >{}", request.getBpn(), objectMapper.writeValueAsString(didDocumentRequest));
+        log.debug("Did document create for bpn -> {} , didDocument - >{}", StringEscapeUtils.escapeJava(request.getBpn()), objectMapper.writeValueAsString(didDocumentRequest));
 
         if (!request.getBpn().equals(walletStubSettings.baseWalletBPN())) {
             //post did document to portal
@@ -101,7 +102,7 @@ public class PortalStubService {
     @SneakyThrows
     @Async
     public void createTechUser(CreateTechUserRequest request, String bpn) {
-        log.debug("Request to create tech received for name -> {}, bpn ->{} waiting for 60 sec", request.getName(), bpn);
+        log.debug("Request to create tech received for name -> {}, bpn ->{} waiting for 60 sec", StringEscapeUtils.escapeJava(request.getName()), StringEscapeUtils.escapeJava(bpn));
 
         //For this application, we do not have any external IDP(ie. keycloak)
         //BPN number will be client_id and client_secret to create OAuth token. No validation for client_secret
@@ -114,7 +115,7 @@ public class PortalStubService {
                 .clientSecret(bpn)
                 .build();
 
-        log.debug("Technical user details for bpn -> {} , user - >{}", bpn, objectMapper.writeValueAsString(authenticationDetails));
+        log.debug("Technical user details for bpn -> {} , user - >{}", StringEscapeUtils.escapeJava(bpn), objectMapper.writeValueAsString(authenticationDetails));
 
         //wait for configured time
         Thread.sleep(portalSettings.portalWaitTime() * 1000);
