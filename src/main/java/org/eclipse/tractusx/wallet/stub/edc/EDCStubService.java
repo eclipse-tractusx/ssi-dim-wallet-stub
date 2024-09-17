@@ -30,7 +30,9 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.tractusx.wallet.stub.credential.CredentialService;
 import org.eclipse.tractusx.wallet.stub.did.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
@@ -169,7 +171,7 @@ public class EDCStubService {
      */
     @SneakyThrows
     public String createStsToken(Map<String, Object> request, String token) {
-        log.debug("Getting request to create STS with request -> {} and token ->{}", objectMapper.writeValueAsString(request), token);
+        log.debug("Getting request to create STS with request -> {} and token ->{}", objectMapper.writeValueAsString(request), StringEscapeUtils.escapeJava(token));
         String selfBpn = CommonUtils.getBpnFromToken(token, tokenService);
         KeyPair selfKeyPair = keyService.getKeyPair(selfBpn);
         DidDocument selfDidDocument = didDocumentService.getDidDocument(selfBpn);
@@ -190,7 +192,7 @@ public class EDCStubService {
         } else {
             throw new IllegalArgumentException("Invalid token request");
         }
-        log.debug("self bpn ->{} and partner bpn ->{}", selfBpn, partnerBpn);
+        log.debug("self bpn ->{} and partner bpn ->{}", StringEscapeUtils.escapeJava(selfBpn), StringEscapeUtils.escapeJava(partnerBpn));
 
         DidDocument partnerDidDocument = didDocumentService.getDidDocument(partnerBpn);
 
@@ -208,7 +210,7 @@ public class EDCStubService {
 
     @SneakyThrows
     public QueryPresentationResponse queryPresentations(QueryPresentationRequest request, String token) {
-        log.debug("getting request for query credential with body-> {} token -> {}", objectMapper.writeValueAsString(request), token);
+        log.debug("getting request for query credential with body-> {} token -> {}", objectMapper.writeValueAsString(request), StringEscapeUtils.escapeJava(token));
         JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(token);
         List<String> audience = jwtClaimsSet.getAudience();
 
@@ -232,7 +234,7 @@ public class EDCStubService {
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(callerBpn);
 
 
-        log.debug("Requested VC -> types : {}, caller bpn ->{}", requestedTypes, callerBpn);
+        log.debug("Requested VC -> types : {}, caller bpn ->{}", StringEscapeUtils.escapeJava(StringUtils.join(requestedTypes, ",")), StringEscapeUtils.escapeJava(callerBpn));
 
         //here we will create request VC if not already issued
         //in read world scenario it will give error if requested VC not issued to holder

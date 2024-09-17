@@ -30,6 +30,7 @@ import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.security.KeyPair;
 import java.security.MessageDigest;
@@ -65,7 +66,7 @@ public class DeterministicECKeyPairGenerator {
         KeyPair keyPair = generateECKeyPair(secureRandom);
 
 
-        log.debug("Keypair is generated for bpn -> {}", bpn);
+        log.debug("Keypair is generated for bpn -> {}", StringEscapeUtils.escapeJava(bpn));
 
         return keyPair;
     }

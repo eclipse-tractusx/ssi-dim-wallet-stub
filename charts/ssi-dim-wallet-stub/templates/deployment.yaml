@@ -42,6 +42,8 @@ spec:
       containers:
         - name: {{ .Values.wallet.appName }}
           image: {{ .Values.wallet.image.repository }}:{{ default .Chart.AppVersion .Values.wallet.image.tag }}
+          securityContext:
+            allowPrivilegeEscalation: false
           imagePullPolicy: {{ .Values.wallet.image.pullPolicy }}
           resources:
             {{- toYaml .Values.wallet.resources | nindent 12 }}
