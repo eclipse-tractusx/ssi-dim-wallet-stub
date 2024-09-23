@@ -16,10 +16,9 @@
 
 ### Install with released helm chart
 
-Note: ! WIP Chart is not published yet, please use local deployment till chart is published to tractusx
-
 ```
 helm repo add tractusx-dev https://eclipse-tractusx.github.io/charts/dev
+helm repo update
 helm install ssi-dim-wallet-stub tractusx-dev/ssi-dim-wallet-stub
 ```
 
