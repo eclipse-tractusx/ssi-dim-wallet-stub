@@ -92,7 +92,7 @@ public class CredentialService {
         Date expiryTime = DateUtils.addMinutes(time, tokenSettings.tokenExpiryTime());
 
         //claims
-        JWTClaimsSet membershipTokenBody = new JWTClaimsSet.Builder()
+        JWTClaimsSet tokenBody = new JWTClaimsSet.Builder()
                 .issueTime(time)
                 .jwtID(UUID.randomUUID().toString())
                 .audience(List.of(issuerDocument.getId(), holderDocument.getId()))
@@ -103,11 +103,11 @@ public class CredentialService {
                 .subject(issuerDocument.getId())
                 .build();
 
-        SignedJWT vcJWT = CommonUtils.signedJWT(membershipTokenBody, issuerKeyPair, issuerDocument.getVerificationMethod().getFirst().getId());
+        SignedJWT vcJWT = CommonUtils.signedJWT(tokenBody, issuerKeyPair, issuerDocument.getVerificationMethod().getFirst().getId());
 
-        String membershipVcAsJwt = vcJWT.serialize();
-        memoryStorage.saveCredentialAsJwt(verifiableCredential.get(StringPool.ID).toString(), membershipVcAsJwt, holderBpn, StringPool.MEMBERSHIP_CREDENTIAL);
-        return membershipVcAsJwt;
+        String vcAsJwt = vcJWT.serialize();
+        memoryStorage.saveCredentialAsJwt(verifiableCredential.get(StringPool.ID).toString(), vcAsJwt, holderBpn, type);
+        return vcAsJwt;
     }
 
     /**
@@ -136,6 +136,8 @@ public class CredentialService {
                 return issueMembershipCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
             } else if (type.equals(StringPool.BPN_CREDENTIAL)) {
                 return issueBpnCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
+            } else if (type.equals(StringPool.DATA_EXCHANGE_CREDENTIAL)) {
+                return issueDataExchangeGovernanceCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
             } else {
                 throw new IllegalArgumentException("vc type -> " + type + " is not supported");
             }
@@ -173,7 +175,7 @@ public class CredentialService {
         Map<String, Object> subject = new HashMap<>();
         subject.put(StringPool.ID, holderDocument.getId());
         subject.put(StringPool.HOLDER_IDENTIFIER, holderBpn);
-        subject.put(StringPool.TYPE, StringPool.MEMBERSHIP_CREDENTIAL);
+        subject.put(StringPool.MEMBER_OF, "Catena-X");
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                 vcIdUri.toString(), StringPool.MEMBERSHIP_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
         memoryStorage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.MEMBERSHIP_CREDENTIAL);
@@ -184,12 +186,26 @@ public class CredentialService {
         Map<String, Object> subject = new HashMap<>();
         subject.put(StringPool.ID, holderDocument.getId());
         subject.put(StringPool.HOLDER_IDENTIFIER, holderBpn);
-        subject.put(StringPool.TYPE, StringPool.BPN_CREDENTIAL);
         subject.put(StringPool.BPN, holderBpn);
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                 vcIdUri.toString(), StringPool.BPN_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
         memoryStorage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.BPN_CREDENTIAL);
+        return credentialWithoutProof;
+    }
+
+    private CustomCredential issueDataExchangeGovernanceCredential(String holderBpn, DidDocument issuerDocument, DidDocument holderDocument, URI vcIdUri, String vcId) {
+        Map<String, Object> subject = new HashMap<>();
+        subject.put(StringPool.ID, holderDocument.getId());
+        subject.put(StringPool.HOLDER_IDENTIFIER, holderBpn);
+        subject.put(StringPool.GROUP, "UseCaseFramework");
+        subject.put(StringPool.USE_CASE, "DataExchangeGovernance");
+        subject.put(StringPool.CONTRACT_TEMPLATE, "https://example.org/temp-1");
+        subject.put(StringPool.CONTRACT_VERSION, "1.0");
+        CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
+                vcIdUri.toString(), StringPool.DATA_EXCHANGE_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
+
+        memoryStorage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.DATA_EXCHANGE_CREDENTIAL);
         return credentialWithoutProof;
     }
 }
