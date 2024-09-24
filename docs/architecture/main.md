@@ -83,7 +83,7 @@ interface or API documentation.
   minimum requirement to address is enabling the dependent microservices to deploy and pass the E2E tests. However, the
   business logic of multiple services outside of this scope might be too complex and error-prone for simulation. We have
   to define a minimum viable stub and continue delivering if there is any necessity or further requirement. Currently
-  only `type:MembershipCredential` and `type:BPNCredential` are supported.
+  only `type:MembershipCredential`, `type:BPNCredential` and `type:DataExchangeGovernanceCredential` are supported.
 
 * **Security:** Security features such as authentication, authorization, and data encryption must also be simulated with
   the stub service.
@@ -730,7 +730,7 @@ Response Body:
 ![query.png](./images/query.png)
 
 This API is responsible for creating Verifiable Presentations based on the scope and tokens being passed. For the scope
-of the stub service, only `type:MembershipCredential` and `type:BpnCredential` are supported.
+of the stub service, only `type:MembershipCredential`, `type:BpnCredential` and `type:DataExchangeGovernanceCredential` are supported.
 
 Request Body:
 
