@@ -65,7 +65,8 @@ public class EDCStubApiDoc {
                                     "scope": "read",
                                     "credentialTypes":
                                     [
-                                        "MembershipCredential"
+                                        "MembershipCredential",
+                                        "DataExchangeGovernanceCredential"
                                     ],
                                     "consumerDid": "did:web:c464-203-129-213-107.ngrok-free.app:BPNL000000000000",
                                     "providerDid": "did:web:c464-203-129-213-107.ngrok-free.app:BPNL000000000000"
@@ -129,7 +130,22 @@ public class EDCStubApiDoc {
                                  ],
                                  "@type": "PresentationQueryMessage"
                              }
-                            """, description = "Create VP access token for membership VC", name = "Create VP access token for membership VC")
+                            """, description = "Create VP access token for membership VC", name = "Create VP access token for membership VC"),
+                    @ExampleObject(value = """
+                            {
+                                 "scope":
+                                 [
+                                     "org.eclipse.tractusx.vc.type:MembershipCredential:read",
+                                     "org.eclipse.tractusx.vc.type:DataExchangeGovernanceCredential:read"
+                                 ],
+                                 "@context":
+                                 [
+                                     "https://identity.foundation/presentation-exchange/submission/v1",
+                                     "https://w3id.org/tractusx-trust/v0.8"
+                                 ],
+                                 "@type": "PresentationQueryMessage"
+                             }
+                            """, description = "Create VP access token for Membership Credential and DataExchange Governance Credential", name = "Create VP access token for Membership Credential and DataExchange Governance Credential")
 
             })
     })

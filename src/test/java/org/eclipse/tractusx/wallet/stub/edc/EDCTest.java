@@ -118,12 +118,12 @@ class EDCTest {
         String consumerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), consumerBpn);
         String providerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), providerBpn);
 
-        String requestedInnerToken = getToken(consumerDid, providerDid, consumerBpn, readScope, List.of(StringPool.BPN_CREDENTIAL));
+        String requestedInnerToken = getToken(consumerDid, providerDid, consumerBpn, readScope, List.of(StringPool.BPN_CREDENTIAL,StringPool.DATA_EXCHANGE_CREDENTIAL));
         String jwt = createStsWithoutScope(consumerDid, providerDid, consumerBpn, requestedInnerToken);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, BEARER + jwt);
 
-        QueryPresentationRequest request = getQueryPresentationRequest(List.of(StringPool.BPN_CREDENTIAL));
+        QueryPresentationRequest request = getQueryPresentationRequest(List.of(StringPool.BPN_CREDENTIAL,StringPool.DATA_EXCHANGE_CREDENTIAL));
 
         HttpEntity<QueryPresentationRequest> entity = new HttpEntity<>(request, headers);
         ResponseEntity<QueryPresentationResponse> response = restTemplate.exchange("/api/presentations/query", HttpMethod.POST, entity, QueryPresentationResponse.class);
@@ -148,7 +148,7 @@ class EDCTest {
 
         List<String> vcs = (List<String>) vp.get(VERIFIABLE_CREDENTIAL);
 
-        Assertions.assertEquals(1, vcs.size());
+        Assertions.assertEquals(2, vcs.size());
 
         String vc = vcs.getFirst();
 
@@ -163,8 +163,28 @@ class EDCTest {
         Map<String, Object> jsonLdVc = vcClaims.getJSONObjectClaim(StringPool.VC);
         Map<String, String> subject = (Map<String, String>) jsonLdVc.get(CREDENTIAL_SUBJECT);
         Assertions.assertEquals(subject.get(StringPool.HOLDER_IDENTIFIER), consumerBpn);
-        Assertions.assertEquals(StringPool.BPN_CREDENTIAL, subject.get(StringPool.TYPE));
         Assertions.assertEquals(subject.get(StringPool.ID), consumerDid);
+        Assertions.assertEquals(jsonLdVc.get(ISSUER).toString(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
+
+
+        vc = vcs.getLast();
+
+        vcClaims = tokenService.verifyTokenAndGetClaims(vc);
+
+        Assertions.assertTrue(vcClaims.getAudience().contains(consumerDid));
+        Assertions.assertEquals(vcClaims.getSubject(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
+        Assertions.assertEquals(vcClaims.getIssuer(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
+
+        Assertions.assertNotNull(vcClaims.getJSONObjectClaim(StringPool.VC));
+
+        jsonLdVc = vcClaims.getJSONObjectClaim(StringPool.VC);
+        subject = (Map<String, String>) jsonLdVc.get(CREDENTIAL_SUBJECT);
+        Assertions.assertEquals(subject.get(StringPool.HOLDER_IDENTIFIER), consumerBpn);
+        Assertions.assertEquals(subject.get(StringPool.ID), consumerDid);
+        Assertions.assertNotNull(subject.get(StringPool.GROUP));
+        Assertions.assertNotNull(subject.get(StringPool.USE_CASE));
+        Assertions.assertNotNull(subject.get(StringPool.CONTRACT_TEMPLATE));
+        Assertions.assertNotNull(subject.get(StringPool.CONTRACT_VERSION));
         Assertions.assertEquals(jsonLdVc.get(ISSUER).toString(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
     }
 
@@ -223,7 +243,6 @@ class EDCTest {
         Map<String, Object> jsonLdVc = vcClaims.getJSONObjectClaim(StringPool.VC);
         Map<String, String> subject = (Map<String, String>) jsonLdVc.get(CREDENTIAL_SUBJECT);
         Assertions.assertEquals(subject.get(StringPool.HOLDER_IDENTIFIER), consumerBpn);
-        Assertions.assertEquals(StringPool.MEMBERSHIP_CREDENTIAL, subject.get(StringPool.TYPE));
         Assertions.assertEquals(subject.get(StringPool.ID), consumerDid);
         Assertions.assertEquals(jsonLdVc.get(ISSUER).toString(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
     }

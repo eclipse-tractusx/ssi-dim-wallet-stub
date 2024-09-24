@@ -30,9 +30,15 @@ public class StringPool {
     public static final String TOKEN_TYPE_BEARER = "Bearer";
     public static final String TOKEN = "token";
     public static final String HOLDER_IDENTIFIER = "holderIdentifier";
+    public static final String MEMBER_OF = "memberOf";
+    public static final String CONTRACT_TEMPLATE = "contractTemplate";
+    public static final String CONTRACT_VERSION = "contractVersion";
+    public static final String GROUP = "group";
+    public static final String USE_CASE = "useCase";
     public static final String BASIC = "Basic";
     public static final String MEMBERSHIP_CREDENTIAL = "MembershipCredential";
     public static final String BPN_CREDENTIAL = "BpnCredential";
+    public static final String DATA_EXCHANGE_CREDENTIAL = "DataExchangeGovernanceCredential";
     public static final String STATUS_LIST_2021_CREDENTIAL = "StatusList2021Credential";
     public static final String ENCODED_LIST = "encodedList";
     public static final String VERIFIABLE_CREDENTIAL_CAMEL_CASE = "verifiableCredential";
