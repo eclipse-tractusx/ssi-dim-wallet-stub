@@ -42,11 +42,11 @@ wallet:
 
   image:
     # -- Image repository
-    repository: tractusx/managed-identity-wallet
+    repository: tractusx/ssi-dim-wallet-stub
     # -- PullPolicy
     pullPolicy: IfNotPresent
     # -- Image tag (empty one will use "appVersion" value from chart definition)
-    tag: ""
+    tag: "latest"
 
   resources:
     requests:
