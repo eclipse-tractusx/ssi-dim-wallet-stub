@@ -22,7 +22,7 @@ name: ssi-dim-wallet-stub
 description: |
   A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "0.0.1"
 home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
 sources:
