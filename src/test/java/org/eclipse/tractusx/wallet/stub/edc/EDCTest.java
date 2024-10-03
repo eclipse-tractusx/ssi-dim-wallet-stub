@@ -308,7 +308,7 @@ class EDCTest {
         Assertions.assertEquals(innerTokenClaim.getClaim(CONSUMER_DID).toString(), consumerDid);
         Assertions.assertEquals(innerTokenClaim.getClaim(PROVIDER_DID).toString(), providerDid);
         Assertions.assertEquals(innerTokenClaim.getClaim(StringPool.SCOPE).toString(), readScope);
-        Assertions.assertEquals(innerTokenClaim.getAudience().getFirst(), consumerDid);
+        Assertions.assertEquals(innerTokenClaim.getAudience().getFirst(), providerDid);
         Assertions.assertEquals(innerTokenClaim.getSubject(), consumerDid);
         Assertions.assertEquals(StringPool.MEMBERSHIP_CREDENTIAL, innerTokenClaim.getStringListClaim(StringPool.CREDENTIAL_TYPES).getFirst());
     }

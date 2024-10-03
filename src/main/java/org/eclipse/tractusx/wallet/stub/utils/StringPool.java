@@ -27,6 +27,7 @@ import lombok.experimental.UtilityClass;
 public class StringPool {
 
     public static final String BPN = "bpn";
+    public static final String AUDIENCE = "aud";
     public static final String TOKEN_TYPE_BEARER = "Bearer";
     public static final String TOKEN = "token";
     public static final String HOLDER_IDENTIFIER = "holderIdentifier";

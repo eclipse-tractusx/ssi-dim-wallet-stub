@@ -130,6 +130,26 @@ public class CommonUtils {
         return jwtClaimsSet.getClaim(StringPool.BPN).toString();
     }
 
+
+    /**
+     * Retrieves the audience from a JWT (JSON Web Token) using the provided token and token service.
+     *
+     * @param token        The JWT token containing the BPN.
+     * @param tokenService The service used to verify and retrieve claims from the JWT.
+     * @return The audience extracted from the JWT.
+     */
+    @SneakyThrows
+    public static String getAudienceFromToken(String token, TokenService tokenService) {
+        SignedJWT signedJWT = SignedJWT.parse(cleanToken(token));
+        JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(signedJWT.serialize());
+        List<String> audienceList = jwtClaimsSet.getAudience();
+        if (audienceList != null && !audienceList.isEmpty()) {
+            return audienceList.get(0);
+        } else {
+            throw new IllegalArgumentException("Audience not found in the token");
+        }
+    }
+
     /**
      * This method is used to clean a token string by removing the "Bearer " prefix if it exists.
      *
