@@ -106,12 +106,12 @@ public class EDCStubService {
         return requestedTypes;
     }
 
-    private static String createSTSWithoutScope(CreateCredentialWithoutScopeRequest withAccessTokenRequest, DidDocument selfDidDocument, Date expiryTime, String selfBpn, KeyPair selfKeyPair) throws ParseException {
+    private static String createSTSWithoutScope(CreateCredentialWithoutScopeRequest withAccessTokenRequest, DidDocument selfDidDocument, Date expiryTime, String selfBpn, KeyPair selfKeyPair, DidDocument partnerDidDocument) throws ParseException {
         String accessToken = CommonUtils.cleanToken(withAccessTokenRequest.getSignToken().getToken());
         JWT jwt = JWTParser.parse(accessToken);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .issuer(selfDidDocument.getId())
-                .audience(List.of(selfDidDocument.getId()))
+                .audience(List.of(partnerDidDocument.getId()))
                 .subject(selfDidDocument.getId())
                 .expirationTime(expiryTime)
                 .claim(StringPool.BPN, selfBpn)
@@ -131,7 +131,7 @@ public class EDCStubService {
 
         JWTClaimsSet tokeJwtClaimsSet = new JWTClaimsSet.Builder()
                 .issuer(selfDidDocument.getId())
-                .audience(List.of(selfDidDocument.getId()))
+                .audience(List.of(partnerDidDocument.getId()))
                 .subject(selfDidDocument.getId())
                 .expirationTime(expiryTime)
                 .issueTime(Date.from(Instant.now()))
@@ -175,7 +175,6 @@ public class EDCStubService {
         String selfBpn = CommonUtils.getBpnFromToken(token, tokenService);
         KeyPair selfKeyPair = keyService.getKeyPair(selfBpn);
         DidDocument selfDidDocument = didDocumentService.getDidDocument(selfBpn);
-
         String partnerBpn;
         boolean withScope = false;
         CreateCredentialWithScopeRequest withScopeRequest = null;
@@ -183,7 +182,7 @@ public class EDCStubService {
         if (request.containsKey(StringPool.SIGN_TOKEN) && request.get(StringPool.SIGN_TOKEN) != null) {
             log.debug("Request with access token");
             withAccessTokenRequest = objectMapper.convertValue(request, CreateCredentialWithoutScopeRequest.class);
-            partnerBpn = CommonUtils.getBpnFromDid(withAccessTokenRequest.getSignToken().getAudience());
+            partnerBpn = CommonUtils.getBpnFromDid(CommonUtils.getAudienceFromToken(withAccessTokenRequest.getSignToken().getToken(), tokenService));
         } else if (request.containsKey(StringPool.GRANT_ACCESS) && request.get(StringPool.GRANT_ACCESS) != null) {
             log.debug("Request with grantAccess ie. with scope");
             withScope = true;
@@ -203,7 +202,7 @@ public class EDCStubService {
         if (withScope) {
             return createSTSWithScope(withScopeRequest, selfDidDocument, expiryTime, selfBpn, selfKeyPair, partnerDidDocument, partnerBpn);
         } else {
-            return createSTSWithoutScope(withAccessTokenRequest, selfDidDocument, expiryTime, selfBpn, selfKeyPair);
+            return createSTSWithoutScope(withAccessTokenRequest, selfDidDocument, expiryTime, selfBpn, selfKeyPair, partnerDidDocument);
 
         }
     }
