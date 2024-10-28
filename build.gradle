@@ -69,7 +69,7 @@ dependencies {
     implementation "org.eclipse.edc:verifiable-credentials-api:${edcLibVersion}"
 
     //keycloak
-    implementation 'org.keycloak:keycloak-admin-client:25.0.2'
+    implementation 'org.keycloak:keycloak-admin-client:26.0.1'
 
 
     compileOnly 'org.projectlombok:lombok'
