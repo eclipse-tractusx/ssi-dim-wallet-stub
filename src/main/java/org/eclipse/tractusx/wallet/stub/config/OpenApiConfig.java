@@ -94,7 +94,18 @@ public class OpenApiConfig {
                                 Example: Bearer access_token
                                 """)
                         .type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER).name(HttpHeaders.AUTHORIZATION));
+
+        String vpTokenAuth = "Authenticate using VP for BDRS directory API";
+        components.addSecuritySchemes(vpTokenAuth, new SecurityScheme().name(vpTokenAuth)
+                .description("""
+                        **Bearer Token**
+                        VP of membership VC fo access BDRS directory API. This VP must be generated using this application using query credential API
+                        Example: Bearer 12345abcdef
+                        """)
+                .type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER).name(HttpHeaders.AUTHORIZATION));
         return openAPI.components(components)
+                .addSecurityItem(new SecurityRequirement()
+                        .addList(vpTokenAuth, Collections.emptyList()))
                 .addSecurityItem(new SecurityRequirement()
                         .addList(accessTokenAuth, Collections.emptyList()));
     }
