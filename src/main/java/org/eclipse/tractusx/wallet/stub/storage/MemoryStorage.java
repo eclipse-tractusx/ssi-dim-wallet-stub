@@ -62,6 +62,16 @@ public class MemoryStorage {
 
 
     /**
+     * Retrieves a map of all DID Documents stored in the memory storage.
+     *
+     * @return A Map containing the Business Partner Numbers (bpn) as keys and their corresponding DID Documents as values.
+     * If no DID Documents are found, returns an empty Map.
+     */
+    public Map<String, DidDocument> getAllDidDocumentMap() {
+        return DID_DOCUMENT_STORE;
+    }
+
+    /**
      * Saves the provided JWT credential as a Verifiable Credential (vcId) in the memory store.
      *
      * @param vcId The Verifiable Credential ID associated with the JWT credential.

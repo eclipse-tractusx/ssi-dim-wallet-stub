@@ -10,6 +10,7 @@ The Decentralized Identity Management (DIM) Wallet stub application provides RES
 4. Create Self issued (SI) token with scope and without scope
 5. Query Verifiable Presentation
 6. Create technical user for wallet to access APIs using OAuth flow
+7. Request BPN Did mapping
 
 This application can be used as a temporary wallet solution for local and integration testing.
 
