@@ -207,7 +207,7 @@ demand (`clientId and secret == BPN`).
 
 ### Use case diagram:
 
-**Note:** Create wallet also creates technical user. Mention it during the API spec. Revocation is mock only it does’t
+**Note:** Create wallet also creates technical user. Mention it during the API spec. Revocation is mock only it doesn’t
 change the status but deliver success message back to issuer component.
 
 ![use_case.png](./images/use_case.png)
