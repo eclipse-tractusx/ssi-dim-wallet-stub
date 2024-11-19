@@ -1,7 +1,7 @@
 # Wallet Stub Application Integration Guide
 
 This document provides instructions for integrating the wallet stub application with other
-applications: `portal-backend`, `ssi-credential-issuer`, `edc`, and `bpn-did-resolution-service`.
+applications: `portal-backend`, `ssi-credential-issuer`, and `edc`.
 
 ## Portal Backend Integration
 
@@ -33,32 +33,23 @@ Set the following environment variables for the `ssi-credential-issuer` to integ
 
 Set the following environment variables for the `edc` to integrate with the wallet stub application:
 
-| Name                                  | Description                 | Expected Value                     |
-|---------------------------------------|-----------------------------|------------------------------------|
-| edc.iam.issuer.id                     | IAM Issuer ID               | did:web:localhost:BPNL000000000000 |
-| edc.iam.trusted-issuer.1-issuer.id    | Trusted Issuer ID           | did:web:localhost:BPNL000000000000 |
-| edc.iam.sts.dim.url                   | DIM URL                     | https://localhost/api/sts          |
-| edc.iam.sts.oauth.token.url           | OAuth Token URL             | https://localhost/oauth/token      |
-| tx.edc.iam.iatp.credentialservice.url | IATP Credential Service URL | https://localhost/api              |
-| edc.iam.sts.oauth.client.id           | OAuth Client ID             | BPNL000000000000                   |
-| edc.iam.sts.oauth.client.secret.alias | OAuth Client Secret Alias   | BPNL000000000000                   |
-
-## BPN DID Resolution Service Integration
-
-Set the following environment variables for the `bpn-did-resolution-service` to integrate with the wallet stub
-application:
-
-| Name            | Description     | Expected Value                         |
-|-----------------|-----------------|----------------------------------------|
-| BASE_WALLET_BPN | Base Wallet BPN | BPNL000000000000                       |
-| BASE_WALLET_DID | Base Wallet DID | did:web:localhost:BPNL000000000000     |
-| trustedIssuers  | Trusted Issuers | ["did:web:localhost:BPNL000000000000"] |
+| Name                                  | Description                                  | Expected Value                              |
+|---------------------------------------|----------------------------------------------|---------------------------------------------|
+| edc.iam.issuer.id                     | IAM Issuer ID                                | did:web:localhost:BPNL000000000000          |
+| edc.iam.trusted-issuer.1-issuer.id    | Trusted Issuer ID                            | did:web:localhost:BPNL000000000000          |
+| edc.iam.sts.dim.url                   | DIM URL                                      | https://localhost/api/sts                   |
+| edc.iam.sts.oauth.token.url           | OAuth Token URL                              | https://localhost/oauth/token               |
+| tx.edc.iam.iatp.credentialservice.url | IATP Credential Service URL                  | https://localhost/api                       |
+| edc.iam.sts.oauth.client.id           | OAuth Client ID                              | BPNL000000000000                            |
+| edc.iam.sts.oauth.client.secret.alias | OAuth Client Secret Alias                    | BPNL000000000000                            |
+| tx.edc.iam.iatp.bdrs.server.url       | BDRS server URL, it will be wallet stub host | http://<wallet stub host>//api/v1/directory |
 
 ## Notes
 
 - Ensure that all values are correctly set to the wallet stub application.
 - Update any missing or placeholder values with the actual configuration details.
 - For any additional configuration or troubleshooting, refer to the respective service documentation.
+- Ensure that wallets are created in SSI dim wallet stub application for both BPNs which are configured in both EDCs
 
 
 ## NOTICE
