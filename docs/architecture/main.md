@@ -169,7 +169,7 @@ requested. At the moment simulation of errors are partially covered.
 ** Consistency
 *** Consistent response for wallet generation
 *** Consistent response for VCs/VPs
-*** Consists response for Status List VC
+*** Consistent response for Status List VC
 *** Consistent response for Oauth and SI tokens
 @endmindmap
   ```
@@ -207,7 +207,7 @@ demand (`clientId and secret == BPN`).
 
 ### Use case diagram:
 
-**Note:** Create wallet also creates technical user. Mention it during the API spec. Revocation is mock only it does’t
+**Note:** Create wallet also creates technical user. Mention it during the API spec. Revocation is mock only it doesn’t
 change the status but deliver success message back to issuer component.
 
 ![use_case.png](./images/use_case.png)
@@ -775,9 +775,9 @@ Response Body:
 
 ![directory_api.png](./images/directory_api.png)
 
-This API will give BPN Did mapping of all wallets available in the application. ``bpn`` request param is optional, user can pass comma separated BPN number. In this case it will return only requested BPN Did mapping and wallet will be created runtime if not created
+This API will give BPN Did mapping of all wallets available in the application. ``bpn`` request param is optional, user can pass comma separated BPN number. In this case it will return only requested BPN Did mapping and wallet will be created runtime if not created.
 
-We need to pass VP of membership VC in form of JWT in authorization header. This VP must be generated using wallet stub application using query presentation API else token validation will not work, and it will give http status 401
+We need to pass VP of membership VC in form of JWT in authorization header. This VP must be generated using wallet stub application using query presentation API else token validation will not work, and it will give http status 401.
 
 Response Body:
 
