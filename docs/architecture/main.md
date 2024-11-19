@@ -169,7 +169,7 @@ requested. At the moment simulation of errors are partially covered.
 ** Consistency
 *** Consistent response for wallet generation
 *** Consistent response for VCs/VPs
-*** Consists response for Status List VC
+*** Consistent response for Status List VC
 *** Consistent response for Oauth and SI tokens
 @endmindmap
   ```
