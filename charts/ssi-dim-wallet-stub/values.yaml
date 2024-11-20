@@ -46,7 +46,7 @@ wallet:
     # -- PullPolicy
     pullPolicy: IfNotPresent
     # -- Image tag (empty one will use "appVersion" value from chart definition)
-    tag: "latest"
+    tag: ""
 
   resources:
     requests:
