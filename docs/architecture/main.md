@@ -14,7 +14,7 @@ It provides a set of mocked Restful API resources that can be used for testing a
 
 ### **Initial Situation from Business View**
 
-Currently the SSI Credential Issuer component depends on a configured wallet in order to start running and execute a
+Currently, the SSI Credential Issuer component depends on a configured wallet in order to start running and execute a
 sequence of steps to issue or revoke a credential. As the usage of a real wallet is not always possible and the
 component has to be tested, it became essential to create a stub wallet allowing the component to execute required API
 calls.
@@ -46,10 +46,12 @@ The following goes have been established for the Wallet Stub:
 
 6. Request Verifiable Presentations
 
+7. Get BPN did mappings
+
 ### Integration Goals
 
 The wallet stub service is independent of any other service. The primary goal is that all components and systems can
-interact with the wallet stub and simulate the required resources. Dev Ops teams, developers and testers can make use of
+interact with the wallet stub and simulate the required resources. DevOps teams, developers and testers can make use of
 it in order to validate environments that depend on such service.
 
 ### **Cross-cutting Concepts**
@@ -91,12 +93,12 @@ interface or API documentation.
 * **Case coverage:** The stub service must pass comprehensive test coverage across all microservices, excluding edge
   cases and “not happy” scenarios.
 
-* **Data Consistency:** Deployment of dependent microservices is persistent and they keep logs and DB entries. The
+* **Data Consistency:** Deployment of dependent microservices is persistent, and they keep logs and DB entries. The
   returns of the stub service must be consistent, disregarding the overall software component architecture (i.e., design
   choices around in-memory vs database), even when the stub service has to restart.
 
 * **Maintenance:** The service must be maintained with further breaking changes to the wallet service. In the near
-  future, those include the IATP issuance flow implementation.
+  future, those include the DCP issuance flow implementation.
 
 ### **Benefit Hypothesis & Problem Statement**
 
@@ -125,6 +127,8 @@ After the deployment of this service, the below requirements shall be fulfilled:
 6. Create a tech user (Portal)
 
 7. Create Verifiable Presentation (EDC)
+
+8. Get BPN did mappings (EDC/BDRS)
 
 The service contains a set of mocked resources that simulate all above requirements. All of them must succeed when
 requested. At the moment simulation of errors are partially covered.
@@ -165,7 +169,7 @@ requested. At the moment simulation of errors are partially covered.
 ** Consistency
 *** Consistent response for wallet generation
 *** Consistent response for VCs/VPs
-*** Consistes response for Status List VC
+*** Consistent response for Status List VC
 *** Consistent response for Oauth and SI tokens
 @endmindmap
   ```
@@ -192,7 +196,7 @@ requested. At the moment simulation of errors are partially covered.
   holder.
 
 * Token based authentication - there will be no roles assigned for the tokens but each token is unique due to
-  differenciation with BPN and issuance date and expiry date. Tokens can be generated on demand.
+  differentiation with BPN and issuance date and expiry date. Tokens can be generated on demand.
 
 * Only happy cases are covered - there will be no stubbing for unhappy cases
 
@@ -203,7 +207,7 @@ demand (`clientId and secret == BPN`).
 
 ### Use case diagram:
 
-**Note:** Create wallet also creates technical user. Meintion it during the API spec. Revocation is mock only it doesn’t
+**Note:** Create wallet also creates technical user. Mention it during the API spec. Revocation is mock only it doesn’t
 change the status but deliver success message back to issuer component.
 
 ![use_case.png](./images/use_case.png)
@@ -315,9 +319,12 @@ EDCService --> EDCService : Catalog Request to other EDC
     2. EDC (Data Provider) requests creation of an SI token without Scope using the access token from STS (Data
        Consumer) to share with another EDC (Data Consumer), i.e., for catalog request.
 
-    3. Any EDC requests creation of a VP using either SI token with or without Scope for the abovementioned usecases.
+    3. Any EDC requests creation of a VP using either SI token with or without Scope for the above-mentioned use cases.
 
     4. EDC / BDRS requests VC Status List from the issuer wallet.
+
+    5. EDC Request for BPN Did mapping using directory API
+
 
 ## **Technical Context**
 
@@ -663,7 +670,7 @@ Response Body:
 
 ![sts.png](./images/sts.png)
 
-Depending on the request body, this API either creates an STS for self-usage (with Scope) or for the the provider EDC to
+Depending on the request body, this API either creates an STS for self-usage (with Scope) or for the provider EDC to
 create SI token for querying presentation (without scope).
 
 **Create Token with Scope**
@@ -762,6 +769,30 @@ Response Body:
     "@type": "PresentationResponseMessage"
 }
 ```
+
+
+### GET DPN Did mapping - EDC
+
+![directory_api.png](./images/directory_api.png)
+
+This API will give BPN Did mapping of all wallets available in the application. ``bpn`` request param is optional, user can pass comma separated BPN number. In this case it will return only requested BPN Did mapping and wallet will be created runtime if not created.
+
+We need to pass VP of membership VC in form of JWT in authorization header. This VP must be generated using wallet stub application using query presentation API else token validation will not work, and it will give http status 401.
+
+Response Body:
+
+200 OK
+
+
+```json
+{
+  "BPNL000000000003": "did:web:localhost:BPNL000000000003",
+  "BPNL000000000002": "did:web:localhost:BPNL000000000002",
+  "BPNL000000000001": "did:web:localhost:BPNL000000000001",
+  "BPNL000000000000": "did:web:localhost:BPNL000000000000"
+}
+```
+
 
 ### GET Status List - General
 

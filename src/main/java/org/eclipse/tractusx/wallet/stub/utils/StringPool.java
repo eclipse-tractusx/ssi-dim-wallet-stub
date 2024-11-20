@@ -27,7 +27,6 @@ import lombok.experimental.UtilityClass;
 public class StringPool {
 
     public static final String BPN = "bpn";
-    public static final String AUDIENCE = "aud";
     public static final String TOKEN_TYPE_BEARER = "Bearer";
     public static final String TOKEN = "token";
     public static final String HOLDER_IDENTIFIER = "holderIdentifier";
@@ -62,4 +61,8 @@ public class StringPool {
     public static final String CREDENTIAL_TYPES = "credentialTypes";
     public static final String BPN_NUMBER_REGEX = "^(BPN)(L|S|A)[0-9A-Z]{12}";
     public static final String BPN_REGEX = "BPN\\w+";
+    public static final String CREDENTIAL_SUBJECT_CAMEL_CASE = "credentialSubject";
+    public static final String BEARER = "Bearer ";
+    public static final String CONSUMER_DID = "consumerDid";
+    public static final String PROVIDER_DID = "providerDid";
 }
