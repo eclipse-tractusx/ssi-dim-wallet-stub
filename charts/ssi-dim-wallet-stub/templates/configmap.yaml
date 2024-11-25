@@ -28,6 +28,7 @@ data:
   ENABLE_API_DOC: {{ .Values.wallet.swagger.apiDoc.status | quote }}
   APP_LOG_LEVEL: {{ .Values.wallet.logLevel | quote }}
   STUB_ENV: {{ .Values.wallet.environment | quote }}
+  SEED_WALLETS_BPN: {{ .Values.wallet.seeding.bpnList | quote }}
   BASE_WALLET_BPN: {{ .Values.wallet.baseWalletBpn | quote }}
   DID_HOST: {{ .Values.wallet.didHost | quote }}
   STUB_URL: {{ .Values.wallet.stubUrl | quote }}

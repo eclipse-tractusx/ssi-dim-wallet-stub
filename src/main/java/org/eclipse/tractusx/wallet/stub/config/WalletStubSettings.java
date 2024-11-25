@@ -31,5 +31,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "stub")
 public record WalletStubSettings(String env, String didHost, String stubUrl,
+                                 String seedWalletsBPN,
                                  String baseWalletBPN, String statusListVcId) {
 }

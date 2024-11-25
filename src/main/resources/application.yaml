@@ -65,6 +65,7 @@ logging:
             stub: ${APP_LOG_LEVEL:DEBUG}
 stub:
   env: ${STUB_ENV:local}
+  seedWalletsBPN: ${SEED_WALLETS_BPN:BPNL00000003AZQP,BPNL00000003AYRE}
   baseWalletBPN: ${BASE_WALLET_BPN:BPNL000000000000} # Operator BPN
   didHost: ${DID_HOST:localhost}
   stubUrl: ${STUB_URL:https://localhost} #Stub application host
