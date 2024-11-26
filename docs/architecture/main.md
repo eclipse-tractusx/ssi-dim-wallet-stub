@@ -890,8 +890,9 @@ during the lifetime of the application.
 
 ### **Runtime Scenarios**
 
-* During initialization of Wallet Stub, a wallet is automatic created by calling the RestAPI api/dim/setup-dim. All the
-  initial setup can be done via configuration file.
+* During the initialization of the Wallet Stub, a base wallet is automatically created by calling the REST API `api/dim/setup-dim`. 
+Subsequently, seeded wallets are created based on the configuration. 
+All the initial setup can be done via configuration file.
 
 * The VCs are signed at runtime for test purposes
 

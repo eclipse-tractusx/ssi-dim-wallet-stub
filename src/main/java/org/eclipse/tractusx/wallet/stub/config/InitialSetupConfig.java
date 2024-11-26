@@ -30,6 +30,7 @@ import org.eclipse.tractusx.wallet.stub.statuslist.StatusListCredentialService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import java.util.ArrayList;
 
 /**
  * The type Initial setup config class. It will create an Operator(base wallet) once the application is ready
@@ -66,6 +67,18 @@ public class InitialSetupConfig {
 
         //create status list VC
         statusListCredentialService.getStatusListCredential(walletStubSettings.baseWalletBPN(), walletStubSettings.statusListVcId());
+
+        //create wallets for the seeded BPNs specified in the configuration
+        int cont = 1;
+        for (String bpn: walletStubSettings.seedWalletsBPN()){
+            SetupDimRequest seedRequest = new SetupDimRequest();
+            seedRequest.setBpn(bpn);
+            seedRequest.setCompanyName("Seed Wallet "+cont);
+            seedRequest.setDidDocumentLocation(walletStubSettings.didHost());
+            portalStubService.setupDim(seedRequest);
+            statusListCredentialService.getStatusListCredential(bpn, walletStubSettings.statusListVcId());
+            cont++;
+        }
 
         log.debug("Base wallet with bpn is {} created and status list VC is also created", walletStubSettings.baseWalletBPN());
     }

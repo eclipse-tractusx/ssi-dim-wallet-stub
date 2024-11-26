@@ -62,6 +62,7 @@ class PortalUnitTest {
                 .build();
 
         Mockito.when(walletStubSettings.didHost()).thenReturn("localhost");
+        Mockito.when(walletStubSettings.seedWalletsBPN()).thenReturn(List.of());
 
         Mockito.when(didDocumentService.getDidDocument(Mockito.anyString())).thenReturn(didDocument);
 

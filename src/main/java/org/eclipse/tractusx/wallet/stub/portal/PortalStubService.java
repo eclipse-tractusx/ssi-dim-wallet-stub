@@ -86,7 +86,7 @@ public class PortalStubService {
 
         log.debug("Did document create for bpn -> {} , didDocument - >{}", StringEscapeUtils.escapeJava(request.getBpn()), objectMapper.writeValueAsString(didDocumentRequest));
 
-        if (!request.getBpn().equals(walletStubSettings.baseWalletBPN())) {
+        if (!request.getBpn().equals(walletStubSettings.baseWalletBPN()) && !walletStubSettings.seedWalletsBPN().contains(request.getBpn())) {
             //post did document to portal
             ResponseEntity<Void> responseEntity = portalClient.sendDidDocument(request.getBpn(), didDocumentRequest, keycloakService.createPortalAccessToken());
             log.debug("Response of post did document status->{}", responseEntity.getStatusCode().value());

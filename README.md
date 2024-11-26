@@ -27,6 +27,7 @@ The DIM Wallet is part of the Self-Sovereign Identity (SSI) Flow of Eclipse Trac
 | APPLICATION_PORT       | Application port                                                                 | 8080                                 |
 | STUB_ENV               | Environment(LZ) in with application is running.                                  | local                                |
 | BASE_WALLET_BPN        | Issuer BPN number                                                                | BPNL000000000000                     |
+| SEED_WALLETS_BPN       | List of BPNs for which wallets will be seeded on application startup             | BPNL00000003AZQP,BPNL00000003AYRE    |
 | STUB_HOST              | Wallet stub application host                                                     |                                      |
 | STATUS_LIST_VC_ID      | VC id of status list credential of base wallet                                   | 8a6c7486-1e1f-4555-bdd2-1a178182651e |
 | TOKEN_EXPIRY_TIME      | JWT(STS, VC and VP) expiry time in minutes                                       | 5                                    |

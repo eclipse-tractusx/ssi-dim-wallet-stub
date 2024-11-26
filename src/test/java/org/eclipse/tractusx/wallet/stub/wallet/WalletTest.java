@@ -83,4 +83,40 @@ class WalletTest {
         //check did document is created
         Assertions.assertTrue(memoryStorage.getDidDocument(bpn).isPresent());
     }
+
+    @Test
+    @DisplayName("Seeded wallets should be created for the specified BPNs in the configuration")
+    void verifySeedWallet(){
+
+        for (String bpn: walletStubSettings.seedWalletsBPN()){
+            //check keypair is generated
+            Assertions.assertTrue(memoryStorage.getKeyPair(bpn).isPresent());
+
+            //check did document is created
+            Assertions.assertTrue(memoryStorage.getDidDocument(bpn).isPresent());
+
+            //check status list VC is created
+            Assertions.assertTrue(memoryStorage.getCredentialsByHolderBpnAndType(bpn, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
+        }
+    }
+
+    @Test
+    @DisplayName("Wallets should not be created for BPNs not included in BaseWallets or SeedWallets")
+    void verifyNoSeedWallet(){
+
+        // Generate a random BPN not included in BaseWallets or SeedWallets
+        String bpnRand = TestUtils.getRandomBpmNumber();
+        while (bpnRand.equals(walletStubSettings.baseWalletBPN()) && walletStubSettings.seedWalletsBPN().contains(bpnRand)){
+            bpnRand = TestUtils.getRandomBpmNumber();
+        }
+
+        //check keypair is not generated
+        Assertions.assertFalse(memoryStorage.getKeyPair(bpnRand).isPresent());
+
+        //check did document is not created
+        Assertions.assertFalse(memoryStorage.getDidDocument(bpnRand).isPresent());
+
+        //check status list VC is not created
+        Assertions.assertFalse(memoryStorage.getCredentialsByHolderBpnAndType(bpnRand, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
+    }
 }
