@@ -110,7 +110,7 @@ wallet:
   baseWalletBpn: "BPNL000000000000"
   # -- List of BPNs for which wallets will be seeded on application startup
   seeding:
-    bpnList: "BPNL00000003AZQP,BPNL00000003AYRE"
+    bpnList: ""
   # -- Did document host, this will be part of did String i.e., did:web:<didHost>
   didHost: "localhost"
   # -- Wallet stub server URL. This will pe part of the presentation query API in the did document
