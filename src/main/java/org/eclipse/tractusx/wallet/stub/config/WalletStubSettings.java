@@ -23,6 +23,8 @@ package org.eclipse.tractusx.wallet.stub.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
+
 
 /**
  * This class represents the configuration settings for the Wallet Stub application.
@@ -31,6 +33,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "stub")
 public record WalletStubSettings(String env, String didHost, String stubUrl,
-                                 String seedWalletsBPN,
+                                 List<String> seedWalletsBPN,
                                  String baseWalletBPN, String statusListVcId) {
 }

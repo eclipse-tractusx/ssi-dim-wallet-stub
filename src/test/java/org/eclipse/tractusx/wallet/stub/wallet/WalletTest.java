@@ -88,9 +88,7 @@ class WalletTest {
     @DisplayName("Seeded wallets should be created for the specified BPNs in the configuration")
     void verifySeedWallet(){
 
-        String[] listSeedBPN = walletStubSettings.seedWalletsBPN().split(",");
-
-        for (String bpn: listSeedBPN){
+        for (String bpn: walletStubSettings.seedWalletsBPN()){
             //check keypair is generated
             Assertions.assertTrue(memoryStorage.getKeyPair(bpn).isPresent());
 

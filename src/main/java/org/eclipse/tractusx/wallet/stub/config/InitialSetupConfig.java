@@ -69,9 +69,8 @@ public class InitialSetupConfig {
         statusListCredentialService.getStatusListCredential(walletStubSettings.baseWalletBPN(), walletStubSettings.statusListVcId());
 
         //create wallets for the seeded BPNs specified in the configuration
-        String[] seedWallets = walletStubSettings.seedWalletsBPN().split(",");
         int cont = 1;
-        for (String bpn: seedWallets){
+        for (String bpn: walletStubSettings.seedWalletsBPN()){
             SetupDimRequest seedRequest = new SetupDimRequest();
             seedRequest.setBpn(bpn);
             seedRequest.setCompanyName("Seed Wallet "+cont);
