@@ -31,7 +31,10 @@ wallet:
 
   # -- The configmap name
   configName: "ssi-dim-wallet-config"
-
+  
+  # -- The secret name
+  secretName: "ssi-dim-wallet-secret"
+  
   # -- The service name
   serviceName: "ssi-dim-wallet-service"
 
