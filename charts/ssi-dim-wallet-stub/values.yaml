@@ -35,9 +35,6 @@ wallet:
   # -- The service name
   serviceName: "ssi-dim-wallet-service"
 
-  # -- The secret name
-  secretName: "ssi-dim-wallet-secret"
-
   ingressName: "ssi-dim-wallet-ingress"
 
   image:
@@ -91,7 +88,10 @@ wallet:
   # -- ingress configuration
   ingress:
     enabled: false
-    tls: false
+    tls:
+      enabled: false
+      # -- Name of the tls secret
+      name: ""
     urlPrefix: /
     className: nginx
     annotations: {}
