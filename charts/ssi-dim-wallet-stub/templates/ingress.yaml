@@ -28,11 +28,11 @@ metadata:
 {{ .Values.wallet.ingress.annotations | toYaml | indent 4 }}
 spec:
   ingressClassName: {{ .Values.wallet.ingress.className }}
-  {{- if .Values.wallet.ingress.tls }}
+  {{- if .Values.wallet.ingress.tls.enabled }}
   tls:
     - hosts:
         - {{ .Values.wallet.host }}
-      secretName: ssi-dim-wallet-stub-certificate-secret
+      secretName: {{- if .Values.wallet.ingress.tls.name }}
   {{- end }}
   rules:
     - host: {{ .Values.wallet.host }}
