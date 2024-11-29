@@ -32,7 +32,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.wallet.host }}
-      secretName: {{- if .Values.wallet.ingress.tls.name }}
+      secretName: {{- .Values.wallet.ingress.tls.name }}
   {{- end }}
   rules:
     - host: {{ .Values.wallet.host }}
