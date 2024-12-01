@@ -59,7 +59,7 @@ dependencies {
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
 
     //utils
-    implementation 'org.apache.commons:commons-lang3:3.15.0'
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation("org.apache.commons:commons-text:1.12.0")
 
 
