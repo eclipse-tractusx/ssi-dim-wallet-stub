@@ -3,6 +3,24 @@ entries:
   ssi-dim-wallet-stub:
   - apiVersion: v2
     appVersion: 0.0.4
+    created: "2024-12-02T07:23:15.741183364Z"
+    dependencies:
+    - condition: keycloak.enabled
+      name: centralidp
+      repository: https://eclipse-tractusx.github.io/charts/dev
+      version: 3.0.0
+    description: 'A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster '
+    digest: 543aee74974f8e1f0f0f285cf3e59623261807b50a442e92569cf00c50eab479
+    home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+    name: ssi-dim-wallet-stub
+    sources:
+    - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/releases/download/ssi-dim-wallet-stub-0.1.7/ssi-dim-wallet-stub-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: 0.0.4
     created: "2024-12-02T06:24:15.74171914Z"
     dependencies:
     - condition: keycloak.enabled
@@ -127,4 +145,4 @@ entries:
     urls:
     - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/releases/download/ssi-dim-wallet-stub-0.1.0/ssi-dim-wallet-stub-0.1.0.tgz
     version: 0.1.0
-generated: "2024-12-02T06:24:15.741742353Z"
+generated: "2024-12-02T07:23:15.741207709Z"
