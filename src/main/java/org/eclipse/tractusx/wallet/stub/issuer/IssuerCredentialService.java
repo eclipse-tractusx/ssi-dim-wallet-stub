@@ -1,6 +1,7 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Cofinity-X
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -47,6 +48,7 @@ import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.utils.StringPool;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
@@ -84,24 +86,30 @@ public class IssuerCredentialService {
     }
 
     /**
-     * Issues a verifiable credential.
+     * Issues a verifiable credential based on the provided request and issuer BPN.
+     * This method creates, signs, and stores a verifiable credential as both JWT and JSON-LD formats.
      *
-     * @param request   the request object containing the application and payload information
-     * @param issuerBPN the business partner number of the credential issuer
-     * @return the identifier of the issued credential
+     * @param request   The IssueCredentialRequest containing the credential payload and other necessary information.
+     * @param issuerBPN The Business Partner Number (BPN) of the issuer.
+     * @return A Map containing the credential ID ("vcId") and optionally the JWT representation of the credential ("jwt").
+     * If the request includes "issue", only the "vcId" is returned.
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public String issueCredential(IssueCredentialRequest request, String issuerBPN) {
+    public Map<String, String> issueCredential(IssueCredentialRequest request, String issuerBPN) {
 
         KeyPair issuerKeypair = keyService.getKeyPair(walletStubSettings.baseWalletBPN());
 
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(issuerBPN);
 
-
         CustomCredential verifiableCredential = new CustomCredential();
-        verifiableCredential.putAll(request.getCredentialPayload().getIssue());
 
+        //we have two options here, user can ask only to provide VC ID or JWT and VC ID
+        if (!CollectionUtils.isEmpty(request.getCredentialPayload().getIssue())) {
+            verifiableCredential.putAll(request.getCredentialPayload().getIssue());
+        } else {
+            verifiableCredential.putAll((Map<String, Object>) request.getCredentialPayload().getIssueWithSignature().get(StringPool.CONTENT));
+        }
         String holderBpn = getHolderBpn(verifiableCredential);
 
         DidDocument holderDidDocument = didDocumentService.getDidDocument(holderBpn);
@@ -122,7 +130,7 @@ public class IssuerCredentialService {
         URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + vcId);
         URI issuer = new URI("did:web:" + walletStubSettings.didHost() + ":" + walletStubSettings.baseWalletBPN());
 
-        verifiableCredential.put("id", vcIdUri.toString());
+        verifiableCredential.put(StringPool.ID, vcIdUri.toString());
         verifiableCredential.put("issuer", issuer.toString());
 
         //sign JWT
@@ -158,7 +166,12 @@ public class IssuerCredentialService {
 
         //save JSON-LD
         memoryStorage.saveCredentials(vcIdUri.toString(), verifiableCredential, holderBpn, type);
-        return vcId;
+
+        if (!CollectionUtils.isEmpty(request.getCredentialPayload().getIssueWithSignature())) {
+            return Map.of(StringPool.ID, vcId, StringPool.JWT, vcAsJwt);
+        } else {
+            return Map.of(StringPool.ID, vcId);
+        }
     }
 
     @SneakyThrows

@@ -1,6 +1,7 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Cofinity-X
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -55,6 +56,12 @@ public class CredentialsApiDoc {
                                        "id": "1f36af58-0fc0-4b24-9b1c-e37d59668089"
                                     }
                                     """),
+                            @ExampleObject(name = "Create a new credential with signature", value = """
+                                    {
+                                       "id": "1f36af58-0fc0-4b24-9b1c-e37d59668089",
+                                       "jwt":"eyJraWQiOiJkaWQ6d2ViOnNvbWUtaXNzdWVyI2tleS0xIiwiYWxnIjoiRVMyNTYifQ.eyJzdWIiOiJkZWdyZWVTdWIiLCJhdWQiOiJkaWQ6d2ViOmJkcnMtY2xpZW50IiwibmJmIjoxNzE4MzQzOTAzLCJpc3MiOiJkaWQ6d2ViOnNvbWUtaXNzdWVyIiwiZXhwIjoxNzE4MzQzOTYzLCJpYXQiOjE3MTgzNDM5MDMsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93M2lkLm9yZy9jYXRlbmF4L2NyZWRlbnRpYWxzL3YxLjAuMCJdLCJpZCI6IjFmMzZhZjU4LTBmYzAtNGIyNC05YjFjLWUzN2Q1OTY2ODA4OSIsInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJNZW1iZXJzaGlwQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOiJkaWQ6d2ViOmNvbS5leGFtcGxlLmlzc3VlciIsImlzc3VhbmNlRGF0ZSI6IjIwMjEtMDYtMTZUMTg6NTY6NTlaIiwiZXhwaXJhdGlvbkRhdGUiOiIyMDk5LTA2LTE2VDE4OjU2OjU5WiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOndlYjpiZHJzLWNsaWVudCIsImhvbGRlcklkZW50aWZpZXIiOiJCUE5MMDAwMDAwMDAxIn19LCJqdGkiOiJlZDlhNjhkMS0yZjFkLTQxZjgtYWUwOS1hNDBhMTA2OTUwMTUifQ.tdLmrcQpGH-SGBpRpRmFX4AXQJx99uUhDOwuGtSejWkkQ2N_yNtEsoP93xDuBod_AY7zVqY4P_Ofdz-H4zE6nw"
+                                    }
+                                    """),
                             @ExampleObject(name = "Store credential for a holder", value = """
                                     {
                                        "id": "1f36af58-0fc0-4b24-9b1c-e37d59668089"
@@ -65,6 +72,46 @@ public class CredentialsApiDoc {
     })
     @RequestBody(content = {
             @Content(examples = {
+                    @ExampleObject(value = """
+                            {
+                                 "application": "catena-x",
+                                 "payload":
+                                 {
+                                     "issueWithSignature":
+                                     {
+                                         "content":
+                                         {
+                                             "@context":
+                                             [
+                                                 "https://www.w3.org/2018/credentials/v1",
+                                                 "https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json",
+                                                 "https://w3id.org/security/suites/jws-2020/v1"
+                                             ],
+                                             "id": "did:web:localhost:BPNL000000000000#a1f8ae36-9919-4ed8-8546-535280acc5bf",
+                                             "type":
+                                             [
+                                                 "VerifiableCredential",
+                                                 "BpnCredential"
+                                             ],
+                                             "issuer": "did:web:localhost:BPNL000000000000",
+                                             "issuanceDate": "2023-07-19T09:14:45Z",
+                                             "expirationDate": "2023-09-30T18:30:00Z",
+                                             "credentialSubject":
+                                             {
+                                                 "bpn": "BPNL000000000001",
+                                                 "id": "did:web:localhost:BPNL000000000001",
+                                                 "type": "BpnCredential"
+                                             }
+                                         },
+                                         "signature": {
+                                                 "proofMechanism": "external",
+                                                 "proofType": "jwt",
+                                                 "keyName": null
+                                         }
+                                     }
+                                 }
+                             }
+                            """, description = "Create a new credential with signature", name = "Create a new credential with signature"),
                     @ExampleObject(value = """
                             {
                               "application": "catena-x",
