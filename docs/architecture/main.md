@@ -1046,8 +1046,6 @@ DIM <-- PortalBackend: 204 no content
 
 ### EDC / BDRS / Wallet Interactions
 
-![2.png](./images/2.png)
-
 ![3.png](./images/3.png)
 
 <details>
@@ -1179,7 +1177,12 @@ issuerService <-- memoryStorage:(void)
 issuerService --> issuerService: create VC as JsonLd
 issuerService --> issuerService: sign VC
 issuerService --> memoryStorage: saveCredential()
-issuerController <-- issuerService: VC-ID
+
+alt Request with VC signature
+    issuerController <-- issuerService: VC-ID and JWT string based on request
+else Request without signature
+    issuerController <-- issuerService: VC-ID or VC-ID
+end
 client <-- issuerController: IssueCredential(http 201)
 
 client --> issuerController: PATCH\[/credentials/{credentialId}\]
