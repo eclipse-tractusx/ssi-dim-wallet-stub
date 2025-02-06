@@ -1,30 +1,28 @@
 /*
- *   *******************************************************************************
- *    Copyright (c) 2024 Cofinity-X
- *    Copyright (c) 2024 Contributors to the Eclipse Foundation
+ * *******************************************************************************
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Cofinity-X
  *
- *    See the NOTICE file(s) distributed with this work for additional
- *    information regarding copyright ownership.
+ *  See the NOTICE file(s) distributed with this work for additional
+ *  information regarding copyright ownership.
  *
- *    This program and the accompanying materials are made available under the
- *    terms of the Apache License, Version 2.0 which is available at
- *    https://www.apache.org/licenses/LICENSE-2.0.
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0.
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- *    License for the specific language governing permissions and limitations
- *    under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *  License for the specific language governing permissions and limitations
+ *  under the License.
  *
- *    SPDX-License-Identifier: Apache-2.0
- *   ******************************************************************************
- *
+ *  SPDX-License-Identifier: Apache-2.0
+ * ******************************************************************************
  */
 
 package org.eclipse.tractusx.wallet.stub.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.tractusx.wallet.stub.exception.VPValidationFailedException;
 import org.springframework.http.HttpStatus;
@@ -77,6 +75,24 @@ public class ExceptionHandling {
         String errorMsg = ExceptionUtils.getMessage(e);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, errorMsg);
         problemDetail.setTitle("Please provide the required header: " + e.getHeaderName());
+        problemDetail.setProperty(TIMESTAMP, System.currentTimeMillis());
+        log.debug(errorMsg);
+        return problemDetail;
+    }
+
+    /**
+     * Handles IllegalArgumentException by creating a ProblemDetail object.
+     * This method is used to handle exceptions thrown when an illegal or inappropriate argument is passed to a method.
+     *
+     * @param e The IllegalArgumentException that occurred. This exception is thrown to indicate that a method has been passed an illegal or inappropriate argument.
+     * @return A ProblemDetail object containing information about the exception. The ProblemDetail object includes
+     * the HTTP status code (400 BAD REQUEST), a description of the error, and a timestamp indicating when the error occurred.
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    ProblemDetail handleIllegalException(IllegalArgumentException e) {
+        String errorMsg = ExceptionUtils.getMessage(e);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errorMsg);
+        problemDetail.setTitle("Bad request: " + e.getMessage());
         problemDetail.setProperty(TIMESTAMP, System.currentTimeMillis());
         log.debug(errorMsg);
         return problemDetail;

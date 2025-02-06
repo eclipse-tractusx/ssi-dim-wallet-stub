@@ -1,6 +1,7 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Cofinity-X
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -21,6 +22,7 @@
 
 package org.eclipse.tractusx.wallet.stub.issuer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.eclipse.tractusx.wallet.stub.WalletStubApplication;
@@ -82,6 +84,43 @@ class IssuerTest {
     @Autowired
     private DidDocumentService didDocumentService;
 
+    @Test
+    void testCreateCredentialWithBadPayload() {
+        String baseWalletBPN = walletStubSettings.baseWalletBPN();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(baseWalletBPN, restTemplate, tokenService, tokenSettings));
+        IssueCredentialRequest issueCredentialRequest = IssueCredentialRequest.builder()
+                .application("Tractus-X")
+                .credentialPayload(new CredentialPayload())
+                .build();
+
+        HttpEntity<IssueCredentialRequest> entity = new HttpEntity<>(issueCredentialRequest, headers);
+        ResponseEntity<IssueCredentialResponse> responseEntity = restTemplate.exchange("/api/v2.0.0/credentials", HttpMethod.POST, entity, IssueCredentialResponse.class);
+        Assertions.assertEquals(responseEntity.getStatusCode().value(), HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    @Test
+    @DisplayName("Test create credential with Signature")
+    void testCreateCredentialWithSignature() {
+        String baseWalletBPN = walletStubSettings.baseWalletBPN();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(baseWalletBPN, restTemplate, tokenService, tokenSettings));
+        String holderBpn = TestUtils.getRandomBpmNumber();
+        String holderDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn);
+        ResponseEntity<IssueCredentialResponse> response = createCredentialWithSignature(headers, holderBpn, holderDid);
+
+        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.CREATED.value());
+        IssueCredentialResponse responseBody = response.getBody();
+        Assertions.assertNotNull(responseBody);
+        Assertions.assertNotNull(responseBody.getId());
+        Assertions.assertNotNull(responseBody.getJwt());
+        DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
+        URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + responseBody.getId());
+        Assertions.assertTrue(memoryStorage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
+        Assertions.assertTrue(memoryStorage.getVerifiableCredentials(vcIdUri.toString()).isPresent());
+    }
+
     @SneakyThrows
     @Test
     @DisplayName("Test Create credential")
@@ -91,7 +130,7 @@ class IssuerTest {
         headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(baseWalletBPN, restTemplate, tokenService, tokenSettings));
         String holderBpn = TestUtils.getRandomBpmNumber();
         String holderDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn);
-        ResponseEntity<IssueCredentialResponse> response = createCredential(headers, holderBpn, holderDid, StringPool.BPN_CREDENTIAL);
+        ResponseEntity<IssueCredentialResponse> response = createCredential(headers, holderBpn, holderDid);
 
         Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.CREATED.value());
         IssueCredentialResponse responseBody = response.getBody();
@@ -144,12 +183,38 @@ class IssuerTest {
         HttpEntity<IssueCredentialRequest> entity = new HttpEntity<>(issueCredentialRequest, headers);
         ResponseEntity<IssueCredentialResponse> response = restTemplate.exchange("/api/v2.0.0/credentials", HttpMethod.POST, entity, IssueCredentialResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.BAD_REQUEST.value());
     }
 
-    @SuppressWarnings("unchecked")
     @SneakyThrows
-    private ResponseEntity<IssueCredentialResponse> createCredential(HttpHeaders headers, String bpn, String did, String type) {
+    private ResponseEntity<IssueCredentialResponse> createCredentialWithSignature(HttpHeaders headers, String bpn, String did) {
+        Map<String, Object> vcMap = getVcObject(bpn, did);
+        CredentialPayload requestPayload = CredentialPayload.builder()
+                .issueWithSignature(Map.of(StringPool.CONTENT, vcMap)).build();
+        IssueCredentialRequest issueCredentialRequest = IssueCredentialRequest.builder()
+                .application("Cofiniy-X")
+                .credentialPayload(requestPayload)
+                .build();
+
+        HttpEntity<IssueCredentialRequest> entity = new HttpEntity<>(issueCredentialRequest, headers);
+        return restTemplate.exchange("/api/v2.0.0/credentials", HttpMethod.POST, entity, IssueCredentialResponse.class);
+    }
+
+    @SneakyThrows
+    private ResponseEntity<IssueCredentialResponse> createCredential(HttpHeaders headers, String bpn, String did) {
+        Map<String, Object> vcMap = getVcObject(bpn, did);
+        CredentialPayload requestPayload = CredentialPayload.builder()
+                .issue(vcMap).build();
+        IssueCredentialRequest issueCredentialRequest = IssueCredentialRequest.builder()
+                .application("Cofiniy-X")
+                .credentialPayload(requestPayload)
+                .build();
+
+        HttpEntity<IssueCredentialRequest> entity = new HttpEntity<>(issueCredentialRequest, headers);
+        return restTemplate.exchange("/api/v2.0.0/credentials", HttpMethod.POST, entity, IssueCredentialResponse.class);
+    }
+
+    private Map<String, Object> getVcObject(String bpn, String did) throws JsonProcessingException {
         String vc = """
                     {
                        "@context": [
@@ -172,17 +237,8 @@ class IssuerTest {
                        }
                     }
                 """;
-        vc = vc.replace("##type", type).replace("##bpn", bpn).replace("##did", did);
-        Map<String, Object> vcMap = objectMapper.readValue(vc, Map.class);
-        CredentialPayload requestPayload = CredentialPayload.builder()
-                .issue(vcMap).build();
-        IssueCredentialRequest issueCredentialRequest = IssueCredentialRequest.builder()
-                .application("Cofiniy-X")
-                .credentialPayload(requestPayload)
-                .build();
-
-        HttpEntity<IssueCredentialRequest> entity = new HttpEntity<>(issueCredentialRequest, headers);
-        return restTemplate.exchange("/api/v2.0.0/credentials", HttpMethod.POST, entity, IssueCredentialResponse.class);
+        vc = vc.replace("##type", StringPool.BPN_CREDENTIAL).replace("##bpn", bpn).replace("##did", did);
+        return objectMapper.readValue(vc, Map.class);
     }
 
 
@@ -195,7 +251,7 @@ class IssuerTest {
         headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(baseWalletBPN, restTemplate, tokenService, tokenSettings));
         String holderBpn = TestUtils.getRandomBpmNumber();
         String holderDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn);
-        ResponseEntity<IssueCredentialResponse> credential = createCredential(headers, holderBpn, holderDid, StringPool.BPN_CREDENTIAL);
+        ResponseEntity<IssueCredentialResponse> credential = createCredential(headers, holderBpn, holderDid);
         SignCredentialRequest.Sign sign = SignCredentialRequest.Sign.builder().proofMechanism("external").proofType("jwt").build();
         SignCredentialRequest signCredentialRequest = SignCredentialRequest.builder()
                 .sign(sign).build();
@@ -241,7 +297,7 @@ class IssuerTest {
         headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(baseWalletBPN, restTemplate, tokenService, tokenSettings));
         String holderBpn = TestUtils.getRandomBpmNumber();
         String holderDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn);
-        ResponseEntity<IssueCredentialResponse> credential = createCredential(headers, holderBpn, holderDid, StringPool.BPN_CREDENTIAL);
+        ResponseEntity<IssueCredentialResponse> credential = createCredential(headers, holderBpn, holderDid);
 
         HttpEntity<Map> entity = new HttpEntity<>(headers);
         ResponseEntity<GetCredentialsResponse> response = restTemplate.exchange("/api/v2.0.0/credentials/" + Objects.requireNonNull(credential.getBody()).getId(), HttpMethod.GET, entity, GetCredentialsResponse.class);
@@ -304,7 +360,7 @@ class IssuerTest {
         headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(baseWalletBPN, restTemplate, tokenService, tokenSettings));
         String holderBpn = TestUtils.getRandomBpmNumber();
         String holderDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn);
-        ResponseEntity<IssueCredentialResponse> credential = createCredential(headers, holderBpn, holderDid, StringPool.BPN_CREDENTIAL);
+        ResponseEntity<IssueCredentialResponse> credential = createCredential(headers, holderBpn, holderDid);
         SignCredentialRequest.Payload payload = SignCredentialRequest.Payload.builder().revoke(true).build();
         SignCredentialRequest signCredentialRequest = SignCredentialRequest.builder()
                 .payload(payload).build();

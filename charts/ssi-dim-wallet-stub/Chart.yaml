@@ -1,5 +1,6 @@
 ###############################################################
-# Copyright (c) 2024 Contributors to the Eclipse Foundation
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+# Copyright (c) 2025 Cofinity-X
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -22,8 +23,8 @@ name: ssi-dim-wallet-stub
 description: |
   A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster
 type: application
-version: 0.1.7
-appVersion: "0.0.4"
+version: 0.1.8
+appVersion: "0.0.5"
 home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
 sources:
   - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub

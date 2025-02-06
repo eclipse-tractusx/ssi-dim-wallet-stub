@@ -306,11 +306,12 @@ EDCService --> EDCService : Catalog Request to other EDC
 
 2. Issuer Component <> Wallet Stub:
 
-    1. CX-Operator creates a new credential template related to a business partner. It returns a credentialID.
+    1. CX-Operator creates a new credential: We have below two options
+       - Create credential with signature, this will return credential ID and credential as JWT string
+       - Create credential without signature, this will return credential ID
+           - CX-Operator requests a signature for the credential ID, and the signed credential is returned.
 
-    2. CX-Operator requests signature for a credentialID. Signed credential is returned.
-
-    3. CX-Operator requests storage of the signed credential in the corresponding wallet.
+   2. CX-Operator requests storage of the signed credential in the corresponding wallet.
 
 3. EDC <> Wallet Stub:
 
@@ -485,14 +486,14 @@ Response Body:
 
 ![issue_cred.png](./images/issue_cred.png)
 
-Can be used for creating a credential (without signing) and if it is a signed credential, it is used to store the
+Can be used for creating a credential without signing or with signing. If it is a signed credential, it is used to store the
 credential in the corresponding wallet. The business logic depends on the request body.
 
 **Create New Credential**
 
-The following request body results in creating a credential and returns a `credentialID` as a response.
+The following request body results in creating a credential and returns a `credentialID` or `credentialID` and VC JWT string as a response.
 
-Request Body:
+Request Body Option 1: Create credential without signature
 
 ```json
 {
@@ -522,13 +523,61 @@ Request Body:
 }
 ```
 
-Response Body:
+Response Body for option 1:
 
 200 Success
 
 ```json
 {
     "id": "string"
+}
+```
+
+Request Body Option 2: Create credential with signature
+
+```json
+{
+  "application": "catena-x",
+  "payload": {
+    "issueWithSignature": {
+      "content": {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json",
+          "https://w3id.org/security/suites/jws-2020/v1"
+        ],
+        "id": "did:web:localhost:BPNL000000000000#a1f8ae36-9919-4ed8-8546-535280acc5bf",
+        "type": [
+          "VerifiableCredential",
+          "BpnCredential"
+        ],
+        "issuer": "did:web:localhost:BPNL000000000000",
+        "issuanceDate": "2023-07-19T09:14:45Z",
+        "expirationDate": "2023-09-30T18:30:00Z",
+        "credentialSubject": {
+          "bpn": "BPNL000000000001",
+          "id": "did:web:localhost:BPNL000000000001",
+          "type": "BpnCredential"
+        }
+      },
+      "signature": {
+        "proofMechanism": "external",
+        "proofType": "jwt",
+        "keyName": null
+      }
+    }
+  }
+}
+```
+
+Response Body for option 2:
+
+200 Success
+
+```json
+{
+    "id": "string",
+    "jwt": "string"
 }
 ```
 
@@ -890,8 +939,8 @@ during the lifetime of the application.
 
 ### **Runtime Scenarios**
 
-* During the initialization of the Wallet Stub, a base wallet is automatically created by calling the REST API `api/dim/setup-dim`. 
-Subsequently, seeded wallets are created based on the configuration. 
+* During the initialization of the Wallet Stub, a base wallet is automatically created by calling the REST API `api/dim/setup-dim`.
+Subsequently, seeded wallets are created based on the configuration.
 All the initial setup can be done via configuration file.
 
 * The VCs are signed at runtime for test purposes
@@ -956,23 +1005,27 @@ PortalBackend -> PortalBackend: Validate DID Document via universalResolver
 
 PortalBackend -> Issuer: Create Bpnl/Membership Credential(/api/issuer/(bpn oe membership)) with holder client details
 PortalBackend <-- Issuer: 200 success
+  alt Create credentials without signature
+        Issuer -[#blue]> DIM: Create a new credential (/api/v2.0.0/credentials)
+        Issuer <-- DIM: credentialId with 200 success
 
-Issuer -[#blue]> DIM: Create a new credential (/api/v2.0.0/credentials)
-Issuer <-- DIM: credentialId with 200 success
+        Issuer -[#blue]> DIM: Sign a credential (/api/v2.0.0/credentials/{credentialId})
+        Issuer <-- DIM: credential as jwt with 200 success
+  else Create Credential with signature
+        Issuer -[#blue]> DIM: Create a new credential (/api/v2.0.0/credentials)
+        Issuer <-- DIM: credentialId and VC JWT as String with 200 success
+  end
+        Issuer -> Issuer: save jwt vc in db
 
-Issuer -[#blue]> DIM: Sign a credential (/api/v2.0.0/credentials/{credentialId})
-Issuer <-- DIM: credential as jwt with 200 success
-Issuer -> Issuer: save jwt vc in db
+        Issuer -[#blue]> DIM: Get credential (/api/v2.0.0/credentials/{externalCredentialId})
+        Issuer <-- DIM: credential as json-ld with 200 success
+        Issuer -> Issuer: save credential as json-ld in db
 
-Issuer -[#blue]> DIM: Get credential (/api/v2.0.0/credentials/{externalCredentialId})
-Issuer <-- DIM: credential as json-ld with 200 success
-Issuer -> Issuer: save credential as json-ld in db
+        Issuer -[#blue]> HW: Create Credential For Holder (/api/v2.0.0/credentials)
+        Issuer <-- HW: credential id with 200 success
 
-Issuer -[#blue]> HW: Create Credential For Holder (/api/v2.0.0/credentials)
-Issuer <-- HW: credential id with 200 success
-
-Issuer -> PortalBackend: Callback (/api/administration/registration/issuer/(bpncredential or membershipcredential))
-Issuer <-- PortalBackend: 200 success
+        Issuer -> PortalBackend: Callback (/api/administration/registration/issuer/(bpncredential or membershipcredential))
+        Issuer <-- PortalBackend: 200 success
 
 PortalBackend -> BDRS: Add bpn and did map (api/management/bpn-directory)
 PortalBackend <-- BDRS: 204 no content
@@ -992,8 +1045,6 @@ DIM <-- PortalBackend: 204 no content
 </details>
 
 ### EDC / BDRS / Wallet Interactions
-
-![2.png](./images/2.png)
 
 ![3.png](./images/3.png)
 
@@ -1126,7 +1177,12 @@ issuerService <-- memoryStorage:(void)
 issuerService --> issuerService: create VC as JsonLd
 issuerService --> issuerService: sign VC
 issuerService --> memoryStorage: saveCredential()
-issuerController <-- issuerService: VC-ID
+
+alt Request with VC signature
+    issuerController <-- issuerService: VC-ID and JWT string based on request
+else Request without signature
+    issuerController <-- issuerService: VC-ID or VC-ID
+end
 client <-- issuerController: IssueCredential(http 201)
 
 client --> issuerController: PATCH\[/credentials/{credentialId}\]

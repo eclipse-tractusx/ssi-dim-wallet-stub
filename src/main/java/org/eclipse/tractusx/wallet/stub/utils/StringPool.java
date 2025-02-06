@@ -1,6 +1,7 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Cofinity-X
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -65,4 +66,6 @@ public class StringPool {
     public static final String BEARER = "Bearer ";
     public static final String CONSUMER_DID = "consumerDid";
     public static final String PROVIDER_DID = "providerDid";
+    public static final String CONTENT = "content";
+    public static final String JWT = "jwt";
 }
