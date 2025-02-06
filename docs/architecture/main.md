@@ -308,7 +308,8 @@ EDCService --> EDCService : Catalog Request to other EDC
 
     1. CX-Operator creates a new credential: We have below two options
        - Create credential with signature, this will return credential ID and credential as JWT string
-       - Create credential without signature, this will return credential ID and CX-Operator requests signature for a credentialID. Signed credential is returned.
+       - Create credential without signature, this will return credential ID
+           - CX-Operator requests a signature for the credential ID, and the signed credential is returned.
 
    2. CX-Operator requests storage of the signed credential in the corresponding wallet.
 
