@@ -26,7 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.apidoc.DidApiDoc;
-import org.eclipse.tractusx.wallet.stub.storage.MemoryStorage;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.StringPool;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +45,7 @@ public class DidController {
 
     private final DidDocumentService didDocumentService;
 
-    private final MemoryStorage memoryStorage;
+    private final Storage storage;
 
     /**
      * Retrieves the Decentralized Identifier (DID) document associated with the provided business partner number (bpn) from the memory store.
@@ -57,7 +57,7 @@ public class DidController {
     @GetMapping(path = "{bpn}/did.json", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DidDocument> getDocument(@PathVariable(name = StringPool.BPN) String bpn) {
         log.debug("Did document requested for bpn ->{}", bpn);
-        Optional<DidDocument> didDocument = memoryStorage.getDidDocument(bpn);
+        Optional<DidDocument> didDocument = storage.getDidDocument(bpn);
         return didDocument.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok(didDocumentService.getDidDocument(bpn)));
     }
 }

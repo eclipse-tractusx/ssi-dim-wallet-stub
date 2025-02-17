@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -23,39 +23,12 @@ package org.eclipse.tractusx.wallet.stub.storage;
 
 import org.eclipse.tractusx.wallet.stub.did.DidDocument;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * The in-memory storage
- */
-@Service
-@Profile("in-memory")
-public class MemoryStorage implements Storage {
-
-
-    //To store KeyPair: BPN as a key and keypair as value
-    private static final Map<String, KeyPair> KEY_STORE = new ConcurrentHashMap<>();
-
-    //To store DIdDocument: BPN as a key and did document as a value
-    private static final Map<String, DidDocument> DID_DOCUMENT_STORE = new ConcurrentHashMap<>();
-
-    //To store VerifiableCredential: VCId as a key and VC as a value
-    private static final Map<String, CustomCredential> CREDENTIAL_STORE = new ConcurrentHashMap<>();
-
-    //To store JWT: VCId as a key and JWT as a value
-    private static final Map<String, String> JWT_CREDENTIAL_STORE = new ConcurrentHashMap<>();
-
-    //To store VC for holder, BPN#type as a key and VC as value
-    private static final Map<String, CustomCredential> HOLDER_CREDENTIAL_STORE = new ConcurrentHashMap<>();
-
-    //To store VC as JWT for holder, BPN###type as a key and JWT as value
-    private static final Map<String, String> HOLDER_CREDENTIAL_AS_JWT_STORE = new ConcurrentHashMap<>();
+public interface Storage {
 
 
     private static String getMapKey(String holderBpn, String type) {
@@ -69,9 +42,7 @@ public class MemoryStorage implements Storage {
      * @return A Map containing the Business Partner Numbers (bpn) as keys and their corresponding DID Documents as values.
      * If no DID Documents are found, returns an empty Map.
      */
-    public Map<String, DidDocument> getAllDidDocumentMap() {
-        return DID_DOCUMENT_STORE;
-    }
+    public Map<String, DidDocument> getAllDidDocumentMap();
 
     /**
      * Saves the provided JWT credential as a Verifiable Credential (vcId) in the memory store.
@@ -79,11 +50,7 @@ public class MemoryStorage implements Storage {
      * @param vcId The Verifiable Credential ID associated with the JWT credential.
      * @param jwt  The JWT credential to be saved.
      */
-    public void saveCredentialAsJwt(String vcId, String jwt, String holderBPn, String type) {
-        String key = getMapKey(holderBPn, type);
-        HOLDER_CREDENTIAL_AS_JWT_STORE.put(key, jwt);
-        JWT_CREDENTIAL_STORE.computeIfAbsent(vcId, k -> jwt);
-    }
+    public void saveCredentialAsJwt(String vcId, String jwt, String holderBPn, String type);
 
     /**
      * Retrieves the JWT credential associated with the provided Verifiable Credential ID (vcId).
@@ -91,9 +58,7 @@ public class MemoryStorage implements Storage {
      * @param vcId The Verifiable Credential ID.
      * @return An Optional containing the JWT credential associated with the provided vcId if found, otherwise an empty Optional.
      */
-    public Optional<String> getCredentialAsJwt(String vcId) {
-        return Optional.ofNullable(JWT_CREDENTIAL_STORE.get(vcId));
-    }
+    public Optional<String> getCredentialAsJwt(String vcId);
 
 
     /**
@@ -102,19 +67,11 @@ public class MemoryStorage implements Storage {
      * @param vcId       Credential id.
      * @param credential The Verifiable Credential to be saved.
      */
-    public void saveCredentials(String vcId, CustomCredential credential, String holderBpn, String type) {
-        String key = getMapKey(holderBpn, type);
-        HOLDER_CREDENTIAL_STORE.put(key, credential);
-        CREDENTIAL_STORE.computeIfAbsent(vcId, k -> credential);
-    }
+    public void saveCredentials(String vcId, CustomCredential credential, String holderBpn, String type);
 
-    public Optional<CustomCredential> getCredentialsByHolderBpnAndType(String holderBpn, String type) {
-        return Optional.ofNullable(HOLDER_CREDENTIAL_STORE.get(getMapKey(holderBpn, type)));
-    }
+    public Optional<CustomCredential> getCredentialsByHolderBpnAndType(String holderBpn, String type);
 
-    public Optional<String> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type) {
-        return Optional.ofNullable(HOLDER_CREDENTIAL_AS_JWT_STORE.get(getMapKey(holderBpn, type)));
-    }
+    public Optional<String> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type);
 
 
     /**
@@ -123,9 +80,7 @@ public class MemoryStorage implements Storage {
      * @param vcId The Verifiable Credential ID.
      * @return An Optional containing the Verifiable Credential associated with the provided vcId if found, otherwise an empty Optional.
      */
-    public Optional<CustomCredential> getVerifiableCredentials(String vcId) {
-        return Optional.ofNullable(CREDENTIAL_STORE.get(vcId));
-    }
+    public Optional<CustomCredential> getVerifiableCredentials(String vcId);
 
 
     /**
@@ -134,9 +89,7 @@ public class MemoryStorage implements Storage {
      * @param bpn     The Business Partner Number for which the KeyPair is being saved.
      * @param keyPair The KeyPair to be saved.
      */
-    public void saveKeyPair(String bpn, KeyPair keyPair) {
-        KEY_STORE.put(bpn, keyPair);
-    }
+    public void saveKeyPair(String bpn, KeyPair keyPair);
 
 
     /**
@@ -145,9 +98,7 @@ public class MemoryStorage implements Storage {
      * @param bpn         The Business Partner Number (bpn) for which the DID Document is saved.
      * @param didDocument The DID Document to be saved.
      */
-    public void saveDidDocument(String bpn, DidDocument didDocument) {
-        DID_DOCUMENT_STORE.put(bpn, didDocument);
-    }
+    public void saveDidDocument(String bpn, DidDocument didDocument);
 
 
     /**
@@ -156,9 +107,7 @@ public class MemoryStorage implements Storage {
      * @param bpn the Business Partner Number
      * @return an Optional containing the KeyPair associated with the provided bpn if found, otherwise an empty Optional
      */
-    public Optional<KeyPair> getKeyPair(String bpn) {
-        return Optional.ofNullable(KEY_STORE.get(bpn));
-    }
+    public Optional<KeyPair> getKeyPair(String bpn);
 
 
     /**
@@ -167,9 +116,5 @@ public class MemoryStorage implements Storage {
      * @param bpn The business partner number (bpn) for which to retrieve the DID Document.
      * @return An Optional containing the DID Document associated with the provided bpn. If no DID Document is found, return an empty Optional.
      */
-    public Optional<DidDocument> getDidDocument(String bpn) {
-        return Optional.ofNullable(DID_DOCUMENT_STORE.get(bpn));
-    }
+    public Optional<DidDocument> getDidDocument(String bpn);
 }
-
-

@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.VPValidationFailedException;
-import org.eclipse.tractusx.wallet.stub.storage.MemoryStorage;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.token.TokenService;
 import org.eclipse.tractusx.wallet.stub.utils.StringPool;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ import java.util.Map;
 @Slf4j
 public class BDRSService {
 
-    private final MemoryStorage memoryStorage;
+    private final Storage storage;
     private final DidDocumentService didDocumentService;
     private final TokenService tokenService;
 
@@ -57,7 +57,7 @@ public class BDRSService {
 
         Map<String, String> response = new HashMap<>();
 
-        memoryStorage.getAllDidDocumentMap().forEach((bpn, didDocument) -> response.put(bpn, didDocument.getId()));
+        storage.getAllDidDocumentMap().forEach((bpn, didDocument) -> response.put(bpn, didDocument.getId()));
 
         //if bpnString is not empty, return only specific BPNs
         if (StringUtils.isNoneBlank(bpnString)) {

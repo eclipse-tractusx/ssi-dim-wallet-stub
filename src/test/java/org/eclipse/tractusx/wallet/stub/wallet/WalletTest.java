@@ -25,7 +25,7 @@ import org.eclipse.tractusx.wallet.stub.WalletStubApplication;
 import org.eclipse.tractusx.wallet.stub.config.TestContextInitializer;
 import org.eclipse.tractusx.wallet.stub.config.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.DidDocument;
-import org.eclipse.tractusx.wallet.stub.storage.MemoryStorage;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.StringPool;
 import org.eclipse.tractusx.wallet.stub.utils.TestUtils;
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +46,7 @@ class WalletTest {
     private WalletStubSettings walletStubSettings;
 
     @Autowired
-    private MemoryStorage memoryStorage;
+    private Storage storage;
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -57,13 +57,13 @@ class WalletTest {
         String baseWalletBPN = walletStubSettings.baseWalletBPN();
 
         //check keypair is generated
-        Assertions.assertTrue(memoryStorage.getKeyPair(baseWalletBPN).isPresent());
+        Assertions.assertTrue(storage.getKeyPair(baseWalletBPN).isPresent());
 
         //check did document is created
-        Assertions.assertTrue(memoryStorage.getDidDocument(baseWalletBPN).isPresent());
+        Assertions.assertTrue(storage.getDidDocument(baseWalletBPN).isPresent());
 
         //check status list VC is created
-        Assertions.assertTrue(memoryStorage.getCredentialsByHolderBpnAndType(baseWalletBPN, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
+        Assertions.assertTrue(storage.getCredentialsByHolderBpnAndType(baseWalletBPN, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
     }
 
 
@@ -78,10 +78,10 @@ class WalletTest {
         Assertions.assertNotNull(responseEntity.getBody());
 
         //check keypair is generated
-        Assertions.assertTrue(memoryStorage.getKeyPair(bpn).isPresent());
+        Assertions.assertTrue(storage.getKeyPair(bpn).isPresent());
 
         //check did document is created
-        Assertions.assertTrue(memoryStorage.getDidDocument(bpn).isPresent());
+        Assertions.assertTrue(storage.getDidDocument(bpn).isPresent());
     }
 
     @Test
@@ -90,13 +90,13 @@ class WalletTest {
 
         for (String bpn: walletStubSettings.seedWalletsBPN()){
             //check keypair is generated
-            Assertions.assertTrue(memoryStorage.getKeyPair(bpn).isPresent());
+            Assertions.assertTrue(storage.getKeyPair(bpn).isPresent());
 
             //check did document is created
-            Assertions.assertTrue(memoryStorage.getDidDocument(bpn).isPresent());
+            Assertions.assertTrue(storage.getDidDocument(bpn).isPresent());
 
             //check status list VC is created
-            Assertions.assertTrue(memoryStorage.getCredentialsByHolderBpnAndType(bpn, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
+            Assertions.assertTrue(storage.getCredentialsByHolderBpnAndType(bpn, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
         }
     }
 
@@ -111,12 +111,12 @@ class WalletTest {
         }
 
         //check keypair is not generated
-        Assertions.assertFalse(memoryStorage.getKeyPair(bpnRand).isPresent());
+        Assertions.assertFalse(storage.getKeyPair(bpnRand).isPresent());
 
         //check did document is not created
-        Assertions.assertFalse(memoryStorage.getDidDocument(bpnRand).isPresent());
+        Assertions.assertFalse(storage.getDidDocument(bpnRand).isPresent());
 
         //check status list VC is not created
-        Assertions.assertFalse(memoryStorage.getCredentialsByHolderBpnAndType(bpnRand, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
+        Assertions.assertFalse(storage.getCredentialsByHolderBpnAndType(bpnRand, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
     }
 }

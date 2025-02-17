@@ -37,7 +37,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.dto.StoreRequestDerive;
-import org.eclipse.tractusx.wallet.stub.storage.MemoryStorage;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.token.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
@@ -79,7 +79,7 @@ class IssuerTest {
     private WalletStubSettings walletStubSettings;
 
     @Autowired
-    private MemoryStorage memoryStorage;
+    private Storage storage;
 
     @Autowired
     private DidDocumentService didDocumentService;
@@ -117,8 +117,8 @@ class IssuerTest {
         Assertions.assertNotNull(responseBody.getJwt());
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
         URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + responseBody.getId());
-        Assertions.assertTrue(memoryStorage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
-        Assertions.assertTrue(memoryStorage.getVerifiableCredentials(vcIdUri.toString()).isPresent());
+        Assertions.assertTrue(storage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
+        Assertions.assertTrue(storage.getVerifiableCredentials(vcIdUri.toString()).isPresent());
     }
 
     @SneakyThrows
@@ -138,8 +138,8 @@ class IssuerTest {
         Assertions.assertNotNull(responseBody.getId());
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
         URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + responseBody.getId());
-        Assertions.assertTrue(memoryStorage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
-        Assertions.assertTrue(memoryStorage.getVerifiableCredentials(vcIdUri.toString()).isPresent());
+        Assertions.assertTrue(storage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
+        Assertions.assertTrue(storage.getVerifiableCredentials(vcIdUri.toString()).isPresent());
     }
 
 

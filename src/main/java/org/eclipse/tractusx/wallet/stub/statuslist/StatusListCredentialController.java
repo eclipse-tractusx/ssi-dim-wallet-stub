@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.apidoc.StatusListApiDoc;
 import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
-import org.eclipse.tractusx.wallet.stub.storage.MemoryStorage;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.utils.StringPool;
 import org.springframework.http.HttpStatus;
@@ -49,7 +49,7 @@ import java.util.Optional;
 @Tag(name = "Status list credential")
 public class StatusListCredentialController {
 
-    private final MemoryStorage memoryStorage;
+    private final Storage storage;
     private final DidDocumentService didDocumentService;
 
 
@@ -67,7 +67,7 @@ public class StatusListCredentialController {
 
         //currently we are returning one VC
         URI vcIdUri = URI.create(didDocumentService.getDidDocument(bpn).getId() + StringPool.HASH_SEPARATOR + vcId);
-        Optional<CustomCredential> verifiableCredentials = memoryStorage.getVerifiableCredentials(vcIdUri.toString());
+        Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
         if (verifiableCredentials.isPresent()) {
             return ResponseEntity.ok(verifiableCredentials.get());
         } else {

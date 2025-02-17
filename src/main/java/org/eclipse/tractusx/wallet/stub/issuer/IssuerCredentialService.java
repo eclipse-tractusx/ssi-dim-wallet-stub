@@ -41,7 +41,7 @@ import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.issuer.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.key.KeyService;
-import org.eclipse.tractusx.wallet.stub.storage.MemoryStorage;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
@@ -69,7 +69,7 @@ public class IssuerCredentialService {
 
     private final KeyService keyService;
     private final DidDocumentService didDocumentService;
-    private final MemoryStorage memoryStorage;
+    private final Storage storage;
     private final TokenSettings tokenSettings;
 
     @SuppressWarnings("unchecked")
@@ -162,10 +162,10 @@ public class IssuerCredentialService {
         String vcAsJwt = vcJWT.serialize();
 
         //save JWT
-        memoryStorage.saveCredentialAsJwt(vcIdUri.toString(), vcAsJwt, holderBpn, type);
+        storage.saveCredentialAsJwt(vcIdUri.toString(), vcAsJwt, holderBpn, type);
 
         //save JSON-LD
-        memoryStorage.saveCredentials(vcIdUri.toString(), verifiableCredential, holderBpn, type);
+        storage.saveCredentials(vcIdUri.toString(), verifiableCredential, holderBpn, type);
 
         if (!CollectionUtils.isEmpty(request.getCredentialPayload().getIssueWithSignature())) {
             return Map.of(StringPool.ID, vcId, StringPool.JWT, vcAsJwt);
@@ -178,18 +178,18 @@ public class IssuerCredentialService {
     public Optional<String> signCredential(String credentialId) {
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
         URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + credentialId);
-        return memoryStorage.getCredentialAsJwt(vcIdUri.toString());
+        return storage.getCredentialAsJwt(vcIdUri.toString());
     }
 
     @SneakyThrows
     public GetCredentialsResponse getCredential(String externalCredentialId) {
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
         URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + externalCredentialId);
-        Optional<String> jwtVc = memoryStorage.getCredentialAsJwt(vcIdUri.toString());
+        Optional<String> jwtVc = storage.getCredentialAsJwt(vcIdUri.toString());
         if (jwtVc.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No credential found for credentialId -> " + externalCredentialId);
         }
-        Optional<CustomCredential> optionalCustomVerifiableCredential = memoryStorage.getVerifiableCredentials(vcIdUri.toString());
+        Optional<CustomCredential> optionalCustomVerifiableCredential = storage.getVerifiableCredentials(vcIdUri.toString());
 
         if (optionalCustomVerifiableCredential.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No credential found for credentialId -> " + externalCredentialId);
