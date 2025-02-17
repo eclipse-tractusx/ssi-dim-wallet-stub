@@ -53,6 +53,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     //swagger
     implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
@@ -71,6 +72,9 @@ dependencies {
     //keycloak
     implementation 'org.keycloak:keycloak-admin-client:25.0.2'
 
+    //Database
+    implementation 'com.h2database:h2:2.2.224'
+    implementation 'org.postgresql:postgresql'
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
