@@ -30,12 +30,6 @@ import java.util.Optional;
 
 public interface Storage {
 
-
-    private static String getMapKey(String holderBpn, String type) {
-        return holderBpn + "###" + type;
-    }
-
-
     /**
      * Retrieves a map of all DID Documents stored in the memory storage.
      *

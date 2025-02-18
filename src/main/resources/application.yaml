@@ -29,7 +29,18 @@ spring:
   application:
     name: SSI DIM Wallet stub
   profiles:
-    active: ${STORAGE_TYPE:in-memory} #Two options: in-memory(MemoryStorage) and database(DatabaseMemory)
+    active: ${STORAGE_TYPE:database} #Two options: in-memory(MemoryStorage) and database(DatabaseMemory)
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:testdb}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}
+  jpa:
+    properties:
+      hibernates:
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
 
 springdoc:
   swagger-ui:
