@@ -62,111 +62,61 @@ public class MemoryStorage implements Storage {
         return holderBpn + "###" + type;
     }
 
-
-    /**
-     * Retrieves a map of all DID Documents stored in the memory storage.
-     *
-     * @return A Map containing the Business Partner Numbers (bpn) as keys and their corresponding DID Documents as values.
-     * If no DID Documents are found, returns an empty Map.
-     */
+    @Override
     public Map<String, DidDocument> getAllDidDocumentMap() {
         return DID_DOCUMENT_STORE;
     }
 
-    /**
-     * Saves the provided JWT credential as a Verifiable Credential (vcId) in the memory store.
-     *
-     * @param vcId The Verifiable Credential ID associated with the JWT credential.
-     * @param jwt  The JWT credential to be saved.
-     */
+    @Override
     public void saveCredentialAsJwt(String vcId, String jwt, String holderBPn, String type) {
         String key = getMapKey(holderBPn, type);
         HOLDER_CREDENTIAL_AS_JWT_STORE.put(key, jwt);
         JWT_CREDENTIAL_STORE.computeIfAbsent(vcId, k -> jwt);
     }
 
-    /**
-     * Retrieves the JWT credential associated with the provided Verifiable Credential ID (vcId).
-     *
-     * @param vcId The Verifiable Credential ID.
-     * @return An Optional containing the JWT credential associated with the provided vcId if found, otherwise an empty Optional.
-     */
+    @Override
     public Optional<String> getCredentialAsJwt(String vcId) {
         return Optional.ofNullable(JWT_CREDENTIAL_STORE.get(vcId));
     }
 
-
-    /**
-     * Saves the provided Verifiable Credential in the memory store associated with the Business Partner Number (bpn).
-     *
-     * @param vcId       Credential id.
-     * @param credential The Verifiable Credential to be saved.
-     */
+    @Override
     public void saveCredentials(String vcId, CustomCredential credential, String holderBpn, String type) {
         String key = getMapKey(holderBpn, type);
         HOLDER_CREDENTIAL_STORE.put(key, credential);
         CREDENTIAL_STORE.computeIfAbsent(vcId, k -> credential);
     }
 
+    @Override
     public Optional<CustomCredential> getCredentialsByHolderBpnAndType(String holderBpn, String type) {
         return Optional.ofNullable(HOLDER_CREDENTIAL_STORE.get(getMapKey(holderBpn, type)));
     }
 
+    @Override
     public Optional<String> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type) {
         return Optional.ofNullable(HOLDER_CREDENTIAL_AS_JWT_STORE.get(getMapKey(holderBpn, type)));
     }
 
-
-    /**
-     * Retrieves the Verifiable Credential associated with the provided Verifiable Credential ID (vcId).
-     *
-     * @param vcId The Verifiable Credential ID.
-     * @return An Optional containing the Verifiable Credential associated with the provided vcId if found, otherwise an empty Optional.
-     */
+    @Override
     public Optional<CustomCredential> getVerifiableCredentials(String vcId) {
         return Optional.ofNullable(CREDENTIAL_STORE.get(vcId));
     }
 
-
-    /**
-     * Saves the provided KeyPair in the memory storage associated with the Business Partner Number (bpn).
-     *
-     * @param bpn     The Business Partner Number for which the KeyPair is being saved.
-     * @param keyPair The KeyPair to be saved.
-     */
+    @Override
     public void saveKeyPair(String bpn, KeyPair keyPair) {
         KEY_STORE.put(bpn, keyPair);
     }
 
-
-    /**
-     * Saves the provided DID Document in the memory storage associated with the Business Partner Number (bpn).
-     *
-     * @param bpn         The Business Partner Number (bpn) for which the DID Document is saved.
-     * @param didDocument The DID Document to be saved.
-     */
+    @Override
     public void saveDidDocument(String bpn, DidDocument didDocument) {
         DID_DOCUMENT_STORE.put(bpn, didDocument);
     }
 
-
-    /**
-     * Retrieves a KeyPair associated with the provided Business Partner Number (bpn).
-     *
-     * @param bpn the Business Partner Number
-     * @return an Optional containing the KeyPair associated with the provided bpn if found, otherwise an empty Optional
-     */
+    @Override
     public Optional<KeyPair> getKeyPair(String bpn) {
         return Optional.ofNullable(KEY_STORE.get(bpn));
     }
 
-
-    /**
-     * Retrieves the DID Document associated with the provided Business Partner Number (bpn) from the memory store.
-     *
-     * @param bpn The business partner number (bpn) for which to retrieve the DID Document.
-     * @return An Optional containing the DID Document associated with the provided bpn. If no DID Document is found, return an empty Optional.
-     */
+    @Override
     public Optional<DidDocument> getDidDocument(String bpn) {
         return Optional.ofNullable(DID_DOCUMENT_STORE.get(bpn));
     }

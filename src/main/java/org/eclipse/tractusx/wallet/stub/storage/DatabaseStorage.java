@@ -21,7 +21,6 @@
 
 package org.eclipse.tractusx.wallet.stub.storage;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.dao.entity.CustomCredentialEntity;
@@ -32,6 +31,7 @@ import org.eclipse.tractusx.wallet.stub.dao.entity.JWTCredentialEntity;
 import org.eclipse.tractusx.wallet.stub.dao.entity.KeyPairEntity;
 import org.eclipse.tractusx.wallet.stub.dao.repository.*;
 import org.eclipse.tractusx.wallet.stub.did.DidDocument;
+import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -143,7 +143,7 @@ public class DatabaseStorage implements Storage{
             KeyPairEntity keyPairEntity = new KeyPairEntity(bpn, publicKeyBase64, privateKeyBase64);
             keyPairRepository.save(keyPairEntity);
         } catch (Exception e) {
-            log.error("Error saving KeyPair for BPN {}: {}", bpn, e.getMessage());
+            log.error("Error saving KeyPair for BPN {}: {}", CommonUtils.sanitize(bpn), e.getMessage());
         }
     }
 
@@ -170,11 +170,11 @@ public class DatabaseStorage implements Storage{
 
                 return Optional.of(new KeyPair(publicKey, privateKey));
             } else {
-                log.warn("KeyPair not found for BPN: {}", bpn);
+                log.warn("KeyPair not found for BPN: {}", CommonUtils.sanitize(bpn));
                 return Optional.empty();
             }
         } catch (Exception e) {
-            log.error("Error retrieving KeyPair for BPN {}: {}", bpn, e.getMessage());
+            log.error("Error retrieving KeyPair for BPN {}: {}", CommonUtils.sanitize(bpn), e.getMessage());
             return Optional.empty();
         }
 
