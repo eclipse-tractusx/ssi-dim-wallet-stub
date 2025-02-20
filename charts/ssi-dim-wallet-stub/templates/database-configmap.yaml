@@ -1,6 +1,5 @@
 ###############################################################
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
-# Copyright (c) 2025 Cofinity-X
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -18,22 +17,14 @@
 # SPDX-License-Identifier: Apache-2.0
 ###############################################################
 
-apiVersion: v2
-name: ssi-dim-wallet-stub
-description: |
-  A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster
-type: application
-version: 0.1.9
-appVersion: "0.0.6"
-home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
-sources:
-  - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
-dependencies:
-  - name: centralidp
-    version: 3.0.0
-    repository: https://eclipse-tractusx.github.io/charts/dev
-    condition: keycloak.enabled
-  - name: postgresql
-    repository: https://charts.bitnami.com/bitnami
-    version: 16.4.8
-    condition: postgresql.enabled
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.postgresql.configmap.name }}
+data:
+  POSTGRES_SVC: {{quote .Values.postgresql.fullnameOverride }}
+  POSTGRES_PORT: {{quote .Values.postgresql.databasePort }}
+  POSTGRES_DB: {{quote .Values.postgresql.auth.database }}
+  POSTGRES_USER: {{quote .Values.postgresql.auth.username }}
+  POSTGRES_PASSWORD: {{quote .Values.postgresql.auth.password }}

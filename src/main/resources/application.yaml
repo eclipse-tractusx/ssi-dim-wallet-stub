@@ -1,6 +1,6 @@
 #
 # /********************************************************************************
-#  Copyright (c) 2024 Contributors to the Eclipse Foundation
+#  Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -31,7 +31,7 @@ spring:
   profiles:
     active: ${STORAGE_TYPE:database} #Two options: in-memory(MemoryStorage) and database(DatabaseMemory)
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:testdb}
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:testdb;MODE=PostgreSQL}
     username: ${SPRING_DATASOURCE_USERNAME:sa}
     password: ${SPRING_DATASOURCE_PASSWORD:}
     driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}

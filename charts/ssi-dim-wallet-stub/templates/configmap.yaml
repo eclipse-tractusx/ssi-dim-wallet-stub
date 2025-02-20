@@ -1,5 +1,5 @@
 ###############################################################
-# Copyright (c) 2024 Contributors to the Eclipse Foundation
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -38,3 +38,10 @@ data:
   PORTAL_HOST: {{ .Values.wallet.portal.host | quote }}
   PORTAL_REALM: {{ .Values.wallet.keycloak.realm | quote }}
   PORTAL_AUTH_SERVER_URL: {{ .Values.wallet.keycloak.authServerUrl | quote }}
+  STORAGE_TYPE: {{ .Values.wallet.storageType | quote }}
+  {{- if .Values.wallet.postgresql.enabled }}
+  SPRING_DATASOURCE_URL: {{ .Values.wallet.postgresql.url | quote }}
+  SPRING_DATASOURCE_USERNAME: {{ .Values.wallet.postgresql.username | quote }}
+  SPRING_DATASOURCE_PASSWORD: {{ .Values.wallet.postgresql.password | quote }}
+  SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+  {{- end }}

@@ -22,9 +22,9 @@
 package org.eclipse.tractusx.wallet.stub.dao.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +32,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
+import org.eclipse.tractusx.wallet.stub.utils.CustomCredentialConverter;
+import org.hibernate.annotations.JdbcTypeCode;
+
+import java.sql.Types;
 
 @Entity
 @Table(name="holder_credential")
@@ -43,10 +47,11 @@ import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
 public class HolderCredentialEntity {
 
     @Id
-    @Column(name = "\"key\"")
+    @Column(name = "\"key\"", nullable = false)
     private String key;
 
-    @Lob
-    @Column(name = "credential")
+    @JdbcTypeCode(Types.LONGNVARCHAR)
+    @Convert(converter = CustomCredentialConverter.class)
+    @Column(name = "credential", nullable = false)
     private CustomCredential credential;
 }

@@ -25,7 +25,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +33,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.eclipse.tractusx.wallet.stub.did.DidDocument;
 import org.eclipse.tractusx.wallet.stub.utils.DidDocumentConverter;
+import org.hibernate.annotations.JdbcTypeCode;
+
+import java.sql.Types;
 
 @Entity
 @Table(name="did_document")
@@ -45,9 +47,10 @@ import org.eclipse.tractusx.wallet.stub.utils.DidDocumentConverter;
 public class DidDocumentEntity {
 
     @Id
+    @Column(nullable = false)
     private String bpn;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGNVARCHAR)
     @Convert(converter = DidDocumentConverter.class)
     @Column(name = "did_document", nullable = false)
     private DidDocument didDocument;

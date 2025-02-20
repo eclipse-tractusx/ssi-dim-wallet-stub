@@ -37,9 +37,9 @@ import lombok.*;
 public class HolderCredentialAsJWTEntity {
 
     @Id
-    @Column(name = "\"key\"")
+    @Column(name = "\"key\"", nullable = false)
     private String key;
 
-    @Column(name = "jwt", columnDefinition = "TEXT")
+    @Column(name = "jwt", columnDefinition = "TEXT", nullable = false)
     private String jwt;
 }

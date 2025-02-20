@@ -1,5 +1,5 @@
 ###############################################################
-# Copyright (c) 2024 Contributors to the Eclipse Foundation
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -136,6 +136,15 @@ wallet:
     realm: "CX-Central"
     # -- keycloak host
     authServerUrl: "http://localhost:28080/auth"
+  # --- Storage Type: in-memory (In memory storage) or database (Using database)
+  storageType: database
+  # --- PostgreSQL storage
+  postgresql:
+    # --- Enable PostgraSQL driver, otherwise H2 will be use instead
+    enabled: true
+    url: jdbc:postgresql://wallet-postgres:5432/postgres
+    username: postgres
+    password: postgrespassword
   # --- Service configuration
   service:
     type: ClusterIP
@@ -145,3 +154,49 @@ wallet:
 # -- Keycloak configuration
 keycloak:
  enabled: false
+
+# -- PostgreSQL configuration
+postgresql:
+  fullnameOverride: wallet-postgres
+  # -- Enable to deploy Postgresql
+  enabled: true
+  image:
+    tag: "15-debian-11"
+  configmap:
+    name: wallet-postgres-configmap
+  auth:
+    password: postgrespassword
+    username: postgres
+  primary:
+    persistence:
+      enabled: false
+      size: 10Gi
+      storageClass: standard
+    initdb:
+      scripts:
+        init.sql: |-
+          CREATE TABLE IF NOT EXISTS custom_credential(
+            vc_id VARCHAR(255) PRIMARY KEY,
+            credential VARCHAR NOT NULL
+          );
+          CREATE TABLE IF NOT EXISTS did_document(
+            bpn VARCHAR(255) PRIMARY KEY,
+            did_document VARCHAR NOT NULL
+          );
+          CREATE TABLE IF NOT EXISTS holder_credential(
+            key VARCHAR(255) PRIMARY KEY,
+            credential VARCHAR NOT NULL
+          );
+          CREATE TABLE IF NOT EXISTS holder_credential_as_jwt(
+            jwt VARCHAR NOT NULL,
+            key VARCHAR(255) PRIMARY KEY
+          );
+          CREATE TABLE IF NOT EXISTS jwt_credential(
+            jwt VARCHAR NOT NULL,
+            vc_id VARCHAR(255) PRIMARY KEY
+          );
+          CREATE TABLE IF NOT EXISTS key_pair(
+            bpn VARCHAR(255) PRIMARY KEY,
+            private_key VARCHAR NOT NULL,
+            public_key VARCHAR NOT NULL
+          );

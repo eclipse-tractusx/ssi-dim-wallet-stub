@@ -24,13 +24,15 @@ package org.eclipse.tractusx.wallet.stub.dao.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+
+import java.sql.Types;
 
 @Entity
 @Table(name="key_pair")
@@ -42,13 +44,14 @@ import lombok.Setter;
 public class KeyPairEntity {
 
     @Id
+    @Column(nullable = false)
     private String bpn;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGNVARCHAR)
     @Column(name = "public_key", nullable = false)
     private String publicKey;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGNVARCHAR)
     @Column(name = "private_key", nullable = false)
     private String privateKey;
 }

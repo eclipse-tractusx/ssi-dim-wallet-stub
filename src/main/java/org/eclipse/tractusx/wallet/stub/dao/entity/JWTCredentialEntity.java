@@ -37,8 +37,9 @@ import lombok.*;
 public class JWTCredentialEntity {
 
     @Id
+    @Column(nullable = false)
     private String vcId;
 
-    @Column(name = "jwt", columnDefinition = "TEXT")
+    @Column(name = "jwt", columnDefinition = "TEXT", nullable = false)
     private String jwt;
 }
