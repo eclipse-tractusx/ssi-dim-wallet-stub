@@ -32,7 +32,7 @@ import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.tractusx.wallet.stub.config.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.key.KeyService;
-import org.eclipse.tractusx.wallet.stub.storage.MemoryStorage;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.StringPool;
 import org.springframework.stereotype.Service;
@@ -52,11 +52,11 @@ public class DidDocumentService {
 
     private final WalletStubSettings walletStubSettings;
 
-    private final MemoryStorage memoryStorage;
+    private final Storage storage;
 
     @SneakyThrows
     public DidDocument getDidDocument(String issuerBpn) {
-        Optional<DidDocument> optionalDidDocument = memoryStorage.getDidDocument(issuerBpn);
+        Optional<DidDocument> optionalDidDocument = storage.getDidDocument(issuerBpn);
         if (optionalDidDocument.isPresent()) {
             return optionalDidDocument.get();
         }
@@ -93,7 +93,7 @@ public class DidDocumentService {
                 .verificationMethod(List.of(verificationMethod))
                 .context(List.of("https://www.w3.org/ns/did/v1"))
                 .build();
-        memoryStorage.saveDidDocument(issuerBpn, didDocument);
+        storage.saveDidDocument(issuerBpn, didDocument);
         return didDocument;
     }
 }

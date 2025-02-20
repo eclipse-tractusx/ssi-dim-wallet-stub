@@ -31,7 +31,7 @@ import org.eclipse.tractusx.wallet.stub.config.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.key.KeyService;
-import org.eclipse.tractusx.wallet.stub.storage.MemoryStorage;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
@@ -53,7 +53,7 @@ import java.util.UUID;
 public class CredentialService {
 
 
-    private final MemoryStorage memoryStorage;
+    private final Storage storage;
 
     private final KeyService keyService;
 
@@ -77,7 +77,7 @@ public class CredentialService {
     @SneakyThrows
     public String getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type) {
 
-        Optional<String> optionalVC = memoryStorage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type);
+        Optional<String> optionalVC = storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type);
         if (optionalVC.isPresent()) {
             return optionalVC.get();
         }
@@ -106,7 +106,7 @@ public class CredentialService {
         SignedJWT vcJWT = CommonUtils.signedJWT(tokenBody, issuerKeyPair, issuerDocument.getVerificationMethod().getFirst().getId());
 
         String vcAsJwt = vcJWT.serialize();
-        memoryStorage.saveCredentialAsJwt(verifiableCredential.get(StringPool.ID).toString(), vcAsJwt, holderBpn, type);
+        storage.saveCredentialAsJwt(verifiableCredential.get(StringPool.ID).toString(), vcAsJwt, holderBpn, type);
         return vcAsJwt;
     }
 
@@ -121,7 +121,7 @@ public class CredentialService {
      */
     @SneakyThrows
     public CustomCredential getVerifiableCredentialByHolderBpnAndType(String holderBpn, String type) {
-        Optional<CustomCredential> verifiableCredentialOptional = memoryStorage.getCredentialsByHolderBpnAndType(holderBpn, type);
+        Optional<CustomCredential> verifiableCredentialOptional = storage.getCredentialsByHolderBpnAndType(holderBpn, type);
         if (verifiableCredentialOptional.isPresent()) {
             return verifiableCredentialOptional.get();
         } else {
@@ -167,7 +167,7 @@ public class CredentialService {
                 vcIdUri.toString(), StringPool.STATUS_LIST_2021_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
 
-        memoryStorage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, StringPool.STATUS_LIST_2021_CREDENTIAL);
+        storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, StringPool.STATUS_LIST_2021_CREDENTIAL);
         return credentialWithoutProof;
     }
 
@@ -178,7 +178,7 @@ public class CredentialService {
         subject.put(StringPool.MEMBER_OF, "Catena-X");
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                 vcIdUri.toString(), StringPool.MEMBERSHIP_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
-        memoryStorage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.MEMBERSHIP_CREDENTIAL);
+        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.MEMBERSHIP_CREDENTIAL);
         return credentialWithoutProof;
     }
 
@@ -190,7 +190,7 @@ public class CredentialService {
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                 vcIdUri.toString(), StringPool.BPN_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-        memoryStorage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.BPN_CREDENTIAL);
+        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.BPN_CREDENTIAL);
         return credentialWithoutProof;
     }
 
@@ -205,7 +205,7 @@ public class CredentialService {
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                 vcIdUri.toString(), StringPool.DATA_EXCHANGE_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-        memoryStorage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.DATA_EXCHANGE_CREDENTIAL);
+        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.DATA_EXCHANGE_CREDENTIAL);
         return credentialWithoutProof;
     }
 }
