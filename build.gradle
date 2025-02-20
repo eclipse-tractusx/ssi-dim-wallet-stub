@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -135,6 +135,24 @@ jacocoTestCoverageVerification {
                 minimum = 0.80
             }
         }
+    }
+}
+
+task testInMemory(type: Test){
+    systemProperty 'spring.profiles.active', 'in-memory'
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    testLogging{
+        events("passed", "skipped", "failed")
+    }
+}
+
+task testDatabase(type: Test){
+    systemProperty 'spring.profiles.active', 'database'
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    testLogging{
+        events("passed", "skipped", "failed")
     }
 }
 
