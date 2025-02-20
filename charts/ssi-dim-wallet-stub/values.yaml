@@ -142,8 +142,11 @@ wallet:
   postgresql:
     # --- Enable PostgraSQL driver, otherwise H2 will be use instead
     enabled: true
+    # --- The URL to connect to the database
     url: jdbc:postgresql://wallet-postgres:5432/postgres
+    # --- The username to access the database
     username: postgres
+    # --- The password to access the database
     password: postgrespassword
   # --- Service configuration
   service:

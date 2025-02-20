@@ -191,7 +191,7 @@ requested. At the moment simulation of errors are partially covered.
 
 * It should be horizontally scalable
 
-* Data will be stored in-memory storage. However, each time when a VP request is made, a VC is created as well. The
+* Data will be stored in-memory or in database storage. However, each time when a VP request is made, a VC is created as well. The
   persistence of signing keys is achieved via creating the keys with seeds derived from the BPN or the issuer and
   holder.
 
@@ -934,14 +934,16 @@ Response Body:
 
 ## Memory Storage
 
-All the data generated during the interaction with Wallet Stub is only used in runtime. The data is kept in memory
-during the lifetime of the application.
+All data generated during interactions with the Wallet Stub is used only at runtime.
+By default, the data is kept in memory for the lifetime of the application.
+Alternatively, persistence can be enabled to store the data in a database, ensuring it survives application restarts.
 
 ### **Runtime Scenarios**
 
 * During the initialization of the Wallet Stub, a base wallet is automatically created by calling the REST API `api/dim/setup-dim`.
 Subsequently, seeded wallets are created based on the configuration.
 All the initial setup can be done via configuration file.
+*In case persistence is chosen, if the wallet already contains data, no wallets will be created during initialization.*
 
 * The VCs are signed at runtime for test purposes
 
@@ -960,7 +962,7 @@ portalWaitTime: ${PORTAL_WAIT_TIME:1000}
 statusListVcId: ${STATUS_LIST_VC_ID:8a6c7486-1e1f-4555-bdd2-1a178182651e}
 ```
 
-* To refresh the memory storage the Wallet Stub service must be restarted.
+* To refresh the memory storage the Wallet Stub service must be restarted. In case persistence is activated, the PVC must be removed to clear the stored data.
 
 ### **Development Process**
 
@@ -1334,8 +1336,6 @@ client <-- statusListController: VerifiableCredential(http 200)
 ## **Risks and Technical Debts**
 
 ### Risks:
-
-* Data loss in case the wallet stub service is restarted
 
 * The usage of the wallet stub resources does not guarantee that clients are 100% compatible to a real world wallet
   implementation
