@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -27,10 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.portal.PortalStubService;
 import org.eclipse.tractusx.wallet.stub.portal.dto.SetupDimRequest;
 import org.eclipse.tractusx.wallet.stub.statuslist.StatusListCredentialService;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import java.util.ArrayList;
 
 /**
  * The type Initial setup config class. It will create an Operator(base wallet) once the application is ready
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 @Slf4j
 public class InitialSetupConfig {
 
+    private final Storage storage;
 
     private final PortalStubService portalStubService;
 
@@ -57,29 +58,33 @@ public class InitialSetupConfig {
     @SneakyThrows
     @EventListener(ApplicationReadyEvent.class)
     public void setupBaseWallet() {
-        SetupDimRequest request = new SetupDimRequest();
-        request.setBpn(walletStubSettings.baseWalletBPN());
-        request.setCompanyName("Eclipse Tractus-x Operating Company");
-        request.setDidDocumentLocation(walletStubSettings.didHost());
+        if(storage.getDidDocument(walletStubSettings.baseWalletBPN()).isEmpty()){
+            SetupDimRequest request = new SetupDimRequest();
+            request.setBpn(walletStubSettings.baseWalletBPN());
+            request.setCompanyName("Eclipse Tractus-x Operating Company");
+            request.setDidDocumentLocation(walletStubSettings.didHost());
 
-        //create did a document and lry pair
-        portalStubService.setupDim(request);
+            //create did a document and lry pair
+            portalStubService.setupDim(request);
 
-        //create status list VC
-        statusListCredentialService.getStatusListCredential(walletStubSettings.baseWalletBPN(), walletStubSettings.statusListVcId());
+            //create status list VC
+            statusListCredentialService.getStatusListCredential(walletStubSettings.baseWalletBPN(), walletStubSettings.statusListVcId());
 
-        //create wallets for the seeded BPNs specified in the configuration
-        int cont = 1;
-        for (String bpn: walletStubSettings.seedWalletsBPN()){
-            SetupDimRequest seedRequest = new SetupDimRequest();
-            seedRequest.setBpn(bpn);
-            seedRequest.setCompanyName("Seed Wallet "+cont);
-            seedRequest.setDidDocumentLocation(walletStubSettings.didHost());
-            portalStubService.setupDim(seedRequest);
-            statusListCredentialService.getStatusListCredential(bpn, walletStubSettings.statusListVcId());
-            cont++;
+            //create wallets for the seeded BPNs specified in the configuration
+            int cont = 1;
+            for (String bpn: walletStubSettings.seedWalletsBPN()){
+                SetupDimRequest seedRequest = new SetupDimRequest();
+                seedRequest.setBpn(bpn);
+                seedRequest.setCompanyName("Seed Wallet "+cont);
+                seedRequest.setDidDocumentLocation(walletStubSettings.didHost());
+                portalStubService.setupDim(seedRequest);
+                statusListCredentialService.getStatusListCredential(bpn, walletStubSettings.statusListVcId());
+                cont++;
+            }
+
+            log.debug("Base wallet with bpn is {} created and status list VC is also created", walletStubSettings.baseWalletBPN());
+        }else {
+            log.debug("Wallet is using persistent data.");
         }
-
-        log.debug("Base wallet with bpn is {} created and status list VC is also created", walletStubSettings.baseWalletBPN());
     }
 }

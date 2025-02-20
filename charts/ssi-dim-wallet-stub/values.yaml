@@ -173,6 +173,7 @@ postgresql:
       size: 10Gi
       storageClass: standard
     initdb:
+      enabled: true
       scripts:
         init.sql: |-
           CREATE TABLE IF NOT EXISTS custom_credential(
