@@ -143,7 +143,7 @@ public class DatabaseStorage implements Storage{
             KeyPairEntity keyPairEntity = new KeyPairEntity(bpn, publicKeyBase64, privateKeyBase64);
             keyPairRepository.save(keyPairEntity);
         } catch (Exception e) {
-            log.debug("Error saving KeyPair for BPN {}: {}", CommonUtils.sanitize(bpn), e.getMessage());
+            log.debug("Error saving KeyPair: {}", e.getMessage());
         }
     }
 
@@ -170,11 +170,11 @@ public class DatabaseStorage implements Storage{
 
                 return Optional.of(new KeyPair(publicKey, privateKey));
             } else {
-                log.debug("KeyPair not found for BPN: {}", CommonUtils.sanitize(bpn));
+                log.debug("KeyPair not found");
                 return Optional.empty();
             }
         } catch (Exception e) {
-            log.debug("Error retrieving KeyPair for BPN {}: {}", CommonUtils.sanitize(bpn), e.getMessage());
+            log.debug("Error retrieving KeyPair: {}", e.getMessage());
             return Optional.empty();
         }
 
