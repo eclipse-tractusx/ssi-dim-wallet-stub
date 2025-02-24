@@ -75,6 +75,7 @@ dependencies {
     //Database
     implementation 'com.h2database:h2:2.2.224'
     implementation 'org.postgresql:postgresql'
+    implementation 'org.liquibase:liquibase-core'
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

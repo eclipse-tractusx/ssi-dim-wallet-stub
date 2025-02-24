@@ -30,6 +30,8 @@ spring:
     name: SSI DIM Wallet stub
   profiles:
     active: ${STORAGE_TYPE:database} #Two options: in-memory(MemoryStorage) and database(DatabaseMemory)
+  liquibase:
+    change-log: classpath:/db/changelog/changelog-master.xml
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:testdb;MODE=PostgreSQL}
     username: ${SPRING_DATASOURCE_USERNAME:sa}
