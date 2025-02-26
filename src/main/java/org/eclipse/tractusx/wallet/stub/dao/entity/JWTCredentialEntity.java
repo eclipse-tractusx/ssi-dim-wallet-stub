@@ -26,6 +26,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.springframework.context.annotation.Profile;
 
 @Entity
 @Table(name="jwt_credential")
@@ -34,6 +35,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Profile("database")
 public class JWTCredentialEntity {
 
     @Id

@@ -20,19 +20,19 @@
 ```
 helm repo add tractusx-dev https://eclipse-tractusx.github.io/charts/dev
 helm repo update
-helm install ssi-dim-wallet-stub tractusx-dev/ssi-dim-wallet-stub
+helm install ssi-dim-wallet-stub tractusx-dev/ssi-dim-wallet-stub-memory
 ```
 
 ### Install with local configuration
 
 Step:
-1. Create docker image locally with command `docker build -f runtimes/ssi-dim-wallet-stub/src/main/docker/Dockerfile -t ssi-dim-wallet-stub .`
+1. Create docker image locally with command `docker build -f runtimes/ssi-dim-wallet-stub-memory/src/main/docker/Dockerfile -t ssi-dim-wallet-stub-memory .`
 2. Change docker image in values.yaml
 
 ```
-helm dep up charts/ssi-dim-wallet-stub
+helm dep up charts/ssi-dim-wallet-stub-memory
 kubectl create namespace wallet
-helm install wallet-stub -n wallet charts/ssi-dim-wallet-stub
+helm install wallet-stub -n wallet charts/ssi-dim-wallet-stub-memory
 ```
 
 ## Configuration Values
@@ -86,22 +86,6 @@ helm install wallet-stub -n wallet charts/ssi-dim-wallet-stub
 | `wallet.portal.clientSecret`                  | Keycloak client secret for accessing portal backend APIs                               | `"client_secret"`                                 |
 | `wallet.keycloak.realm`                       | Keycloak realm name                                                                    | `"CX-Central"`                                    |
 | `wallet.keycloak.authServerUrl`               | Keycloak host URL                                                                      | `"http://localhost:28080/auth"`                   |
-| `wallet.storageType`                          | The available storage options are: in-memory or database                               | `database`                                        |
-| `wallet.postgresql.enabled`                   | Enable PostgraSQL driver, otherwise H2 will be use instead                             | `true`                                            |
-| `wallet.postgresql.url`                       | The URL to connect to the database                                                     | `jdbc:postgresql://wallet-postgres:5432/postgres` |
-| `wallet.postgresql.username`                  | The username to access the database                                                    | `postgres`                                        |
-| `wallet.postgresql.password`                  | The password to access the database                                                    | `postgrespassword`                                |
 | `wallet.service.type`                         | Kubernetes service type                                                                | `ClusterIP`                                       |
 | `wallet.service.port`                         | Kubernetes service port                                                                | `8080`                                            |
 | `keycloak.enabled`                            | Enable Keycloak configuration                                                          | `false`                                           |
-| `postgresql.fullnameOverride`                 | Overrides the default PostgreSQL release name with a custom name                       | `wallet-postgres`                                 |
-| `postgresql.enabled`                          | Enables the deployment of the PostgreSQL instance                                      | `true`                                            |
-| `postgresql.image.tag`                        | Specifies the PostgreSQL Docker image version to use                                   | `15-debian-11`                                    |
-| `postgresql.configmap.name`                   | Name of the ConfigMap containing PostgreSQL configuration                              | `wallet-postgres-configmap`                       |
-| `postgresql.auth.password`                    | Password for the PostgreSQL database user                                              | `postgrespassword`                                |
-| `postgresql.auth.username`                    | Username for the PostgreSQL database                                                   | `postgres`                                        |
-| `postgresql.primary.persistence.enabled`      | Enables persistent storage for PostgreSQL data                                         | `false`                                           |
-| `postgresql.primary.persistence.size`         | Size of the persistent volume claim (PVC) for PostgreSQL storage                       | `10Gi`                                            |
-| `postgresql.primary.persistence.storageClass` | Specifies the storage class to use for PostgreSQL persistence                          | `standard`                                        |
-| `postgresql.primary.initdb.enabled`           | Enables the execution of initialization scripts on PostgreSQL startup                  | `true`                                            |
-| `postgresql.primary.initdb.scripts.init.sql`  | SQL script to initialize the database                                                  | `{...}`                                           |

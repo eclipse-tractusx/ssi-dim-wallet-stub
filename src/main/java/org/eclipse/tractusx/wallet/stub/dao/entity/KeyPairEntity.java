@@ -31,6 +31,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.springframework.context.annotation.Profile;
 
 import java.sql.Types;
 
@@ -41,6 +42,7 @@ import java.sql.Types;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Profile("database")
 public class KeyPairEntity {
 
     @Id

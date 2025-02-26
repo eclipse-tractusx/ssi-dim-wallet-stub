@@ -23,11 +23,13 @@ package org.eclipse.tractusx.wallet.stub.dao.repository;
 
 import feign.Param;
 import org.eclipse.tractusx.wallet.stub.dao.entity.KeyPairEntity;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Profile("database")
 public interface KeyPairRepository extends JpaRepository<KeyPairEntity, Long> {
 
     @Query("SELECT k FROM KeyPairEntity k WHERE k.bpn = :bpn")

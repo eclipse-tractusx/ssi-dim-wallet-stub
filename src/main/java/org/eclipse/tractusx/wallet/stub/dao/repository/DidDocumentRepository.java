@@ -23,11 +23,13 @@ package org.eclipse.tractusx.wallet.stub.dao.repository;
 
 import feign.Param;
 import org.eclipse.tractusx.wallet.stub.dao.entity.DidDocumentEntity;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Profile("database")
 public interface DidDocumentRepository extends JpaRepository<DidDocumentEntity,Long> {
 
     @Query("SELECT d FROM DidDocumentEntity d WHERE d.bpn = :bpn")
