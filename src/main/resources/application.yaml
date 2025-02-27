@@ -94,7 +94,7 @@ spring:
     url: null
     driver-class-name: null
     username: null
-    password: null
+    password:
     hikari:
       maximun-pool-size: 0
 
