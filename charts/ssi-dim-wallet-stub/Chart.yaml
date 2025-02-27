@@ -35,5 +35,5 @@ dependencies:
     condition: keycloak.enabled
   - name: postgresql
     repository: https://charts.bitnami.com/bitnami
-    version: 16.4.8
+    version: 12.x.x
     condition: postgresql.enabled
