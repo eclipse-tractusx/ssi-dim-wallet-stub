@@ -91,10 +91,10 @@ spring:
   liquibase:
     enabled: false
   datasource:
-    url: null
-    driver-class-name: null
-    username: null
-    password:
+    url: ${NULL:}
+    driver-class-name: ${NULL:}
+    username: ${NULL:}
+    password: ${NULL:}
     hikari:
       maximun-pool-size: 0
 
