@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Contributors to the Eclipse Foundation
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
 
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -47,9 +47,15 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update helm dependencies
+      - name: Update helm SSI-DIM-WALLET-STUB-DATABASE dependencies
         run: |
           cd charts/ssi-dim-wallet-stub
+          helm repo add tractusx-dev https://eclipse-tractusx.github.io/charts/dev
+          helm dependency update
+
+      - name: Update helm SSI-DIM-WALLET-STUB-MEMORY dependencies
+        run: |
+          cd charts/ssi-dim-wallet-stub-memory
           helm repo add tractusx-dev https://eclipse-tractusx.github.io/charts/dev
           helm dependency update
 

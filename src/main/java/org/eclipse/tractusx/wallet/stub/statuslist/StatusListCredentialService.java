@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.credential.CredentialService;
 import org.eclipse.tractusx.wallet.stub.did.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
-import org.eclipse.tractusx.wallet.stub.storage.MemoryStorage;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.utils.StringPool;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StatusListCredentialService {
 
-    private final MemoryStorage memoryStorage;
+    private final Storage storage;
 
     private final DidDocumentService didDocumentService;
 
@@ -59,7 +59,7 @@ public class StatusListCredentialService {
     public CustomCredential getStatusListCredential(String bpn, String vcId) {
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(bpn);
         URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + vcId);
-        Optional<CustomCredential> verifiableCredentials = memoryStorage.getVerifiableCredentials(vcIdUri.toString());
+        Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
         return verifiableCredentials.orElseGet(() -> credentialService.issueStatusListCredential(bpn, vcId));
 
     }

@@ -24,7 +24,7 @@ package org.eclipse.tractusx.wallet.stub.key;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.config.WalletStubSettings;
-import org.eclipse.tractusx.wallet.stub.storage.MemoryStorage;
+import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.DeterministicECKeyPairGenerator;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +39,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class KeyService {
 
-    private final MemoryStorage memoryStorage;
+    private final Storage storage;
 
     private final WalletStubSettings walletStubSettings;
 
@@ -50,10 +50,10 @@ public class KeyService {
      * @return the KeyPair associated with the provided bpn, or generates a new KeyPair and saves it if no KeyPair is found
      */
     public KeyPair getKeyPair(String bpn) {
-        Optional<KeyPair> optionalKeyPair = memoryStorage.getKeyPair(bpn);
+        Optional<KeyPair> optionalKeyPair = storage.getKeyPair(bpn);
         return optionalKeyPair.orElseGet(() -> {
             KeyPair keyPair = DeterministicECKeyPairGenerator.createKeyPair(bpn, walletStubSettings.env());
-            memoryStorage.saveKeyPair(bpn, keyPair);
+            storage.saveKeyPair(bpn, keyPair);
             return keyPair;
         });
     }
