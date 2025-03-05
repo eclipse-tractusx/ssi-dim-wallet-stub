@@ -1,0 +1,32 @@
+name: CFX Wallet stub CodeQL
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - '.github/workflows/cfx-codeql.yaml'
+  schedule:
+    - cron: "0 0 * * *"
+
+concurrency:
+  # cancel older running jobs on the same branch
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  java-scan:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+
+    name: Java CodeQL Scan
+    uses: Cofinity-X/central-pipelines/.github/workflows/reusable-codeql.yaml@main
+    with:
+      languages: "['java']"
+      codeql-cfg-path: ".github/codeql/codeql-config.yaml"
+      build-command: "./gradlew clean build"
+      java-version: "21"
+

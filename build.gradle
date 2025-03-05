@@ -36,6 +36,15 @@ java {
     sourceCompatibility = JavaVersion.VERSION_21
 }
 
+sonar {
+    properties {
+        property "sonar.projectName", "cofinity-x-ssi-dim-wallet-stub"
+        property "sonar.projectKey", "Cofinity-X_ssi-dim-wallet-stub"
+        property "sonar.organization", "cofinity-x"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor

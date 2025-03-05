@@ -1,0 +1,35 @@
+name: CFX Lint and publish helm chart to ACR
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "charts/"
+      - ".github/workflows/cfx-helm-package.yaml"
+  push:
+    branches: [ main ]
+    paths:
+      - "charts/"
+      - ".github/workflows/cfx-helm-package.yaml"
+
+jobs:
+  package-and-publish-chart:
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+
+    name: Lint, package, and publish helm chart
+    uses: Cofinity-X/central-pipelines/.github/workflows/reusable-publish-chart-to-acr.yaml@main
+    with:
+      team_name: core-services
+      repository_name: ssi-dim-wallet-stub
+      service_name: ssi-dim-wallet-stub
+      environment: "lower-env-acr"
+      push: ${{ github.event_name != 'pull_request' }} # Don't publish the chart in case of PR
+      force-push: false
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
