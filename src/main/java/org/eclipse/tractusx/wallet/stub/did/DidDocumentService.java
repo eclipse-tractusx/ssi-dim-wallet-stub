@@ -91,7 +91,7 @@ public class DidDocumentService {
                 .service(List.of(service))
                 .authentication(List.of(verificationMethod.getId()))
                 .verificationMethod(List.of(verificationMethod))
-                .context(List.of("https://www.w3.org/ns/did/v1"))
+                .context(List.of("https://www.w3.org/ns/did/v1","https://w3id.org/security/suites/jws-2020/v1"))
                 .build();
         memoryStorage.saveDidDocument(issuerBpn, didDocument);
         return didDocument;
