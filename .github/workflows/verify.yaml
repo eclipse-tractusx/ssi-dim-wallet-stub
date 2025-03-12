@@ -122,11 +122,8 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     needs: [ Review-Allowed-Licenses, Dash-Verify-Licenses ]
-    strategy:
-      matrix:
-        profile: [testInMemory, testDatabase]
     steps:
       - uses: actions/checkout@v3.5.2
       - uses: ./.github/actions/setup-java
       - name: Run Unit tests
-        run: ./gradlew ${{ matrix.profile }}
+        run: ./gradlew test --continue

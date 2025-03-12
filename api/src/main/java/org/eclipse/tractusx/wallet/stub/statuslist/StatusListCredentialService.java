@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -19,17 +19,19 @@
  * ******************************************************************************
  */
 
-rootProject.name = 'wallet-stub'
-include 'api'
-include 'impl'
-include 'openapi'
-include 'rest-service'
-include 'persistence:in-memory'
-findProject(':persistence:in-memory')?.name = 'in-memory'
-include 'persistence:postgresql'
-findProject(':persistence:postgresql')?.name = 'postgresql'
-include 'runtimes:ssi-dim-wallet-stub'
-findProject(':runtimes:ssi-dim-wallet-stub')?.name = 'ssi-dim-wallet-stub'
-include 'runtimes:ssi-dim-wallet-stub-memory'
-findProject(':runtimes:ssi-dim-wallet-stub-memory')?.name = 'ssi-dim-wallet-stub-memory'
-include 'utils'
+package org.eclipse.tractusx.wallet.stub.statuslist;
+
+
+import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
+
+public interface StatusListCredentialService {
+
+    /**
+     * Retrieves the status list verifiable credential associated with the given Business Partner Number (bpn) and VC ID.
+     *
+     * @param bpn  The Business Partner Number.
+     * @param vcId The VC ID.
+     * @return The status list verifiable credential.
+     */
+    public CustomCredential getStatusListCredential(String bpn, String vcId);
+}

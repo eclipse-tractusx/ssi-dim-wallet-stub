@@ -19,17 +19,27 @@
  * ******************************************************************************
  */
 
-rootProject.name = 'wallet-stub'
-include 'api'
-include 'impl'
-include 'openapi'
-include 'rest-service'
-include 'persistence:in-memory'
-findProject(':persistence:in-memory')?.name = 'in-memory'
-include 'persistence:postgresql'
-findProject(':persistence:postgresql')?.name = 'postgresql'
-include 'runtimes:ssi-dim-wallet-stub'
-findProject(':runtimes:ssi-dim-wallet-stub')?.name = 'ssi-dim-wallet-stub'
-include 'runtimes:ssi-dim-wallet-stub-memory'
-findProject(':runtimes:ssi-dim-wallet-stub-memory')?.name = 'ssi-dim-wallet-stub-memory'
-include 'utils'
+package org.eclipse.tractusx.wallet.stub.dao.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
+
+@Entity
+@Table(name="jwt_credential")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class JWTCredentialEntity {
+
+    @Id
+    @Column(nullable = false)
+    private String vcId;
+
+    @Column(name = "jwt", columnDefinition = "TEXT", nullable = false)
+    private String jwt;
+}

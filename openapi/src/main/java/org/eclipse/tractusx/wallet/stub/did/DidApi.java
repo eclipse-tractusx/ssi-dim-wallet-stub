@@ -19,17 +19,25 @@
  * ******************************************************************************
  */
 
-rootProject.name = 'wallet-stub'
-include 'api'
-include 'impl'
-include 'openapi'
-include 'rest-service'
-include 'persistence:in-memory'
-findProject(':persistence:in-memory')?.name = 'in-memory'
-include 'persistence:postgresql'
-findProject(':persistence:postgresql')?.name = 'postgresql'
-include 'runtimes:ssi-dim-wallet-stub'
-findProject(':runtimes:ssi-dim-wallet-stub')?.name = 'ssi-dim-wallet-stub'
-include 'runtimes:ssi-dim-wallet-stub-memory'
-findProject(':runtimes:ssi-dim-wallet-stub-memory')?.name = 'ssi-dim-wallet-stub-memory'
-include 'utils'
+package org.eclipse.tractusx.wallet.stub.did;
+
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.eclipse.tractusx.wallet.stub.apidoc.DidApiDoc;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Tag(name = "Resolve DID Document")
+public interface DidApi {
+
+    /**
+     * Retrieves the Decentralized Identifier (DID) document associated with the provided business partner number (bpn) from the memory store.
+     *
+     * @param bpn The business partner number (bpn) for which to retrieve the DID document
+     * @return The ResponseEntity containing the DID document associated with the provided bpn
+     */
+    @DidApiDoc.DidDocument
+    @GetMapping(path = "{bpn}/did.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DidDocument> getDocument(String bpn);
+}

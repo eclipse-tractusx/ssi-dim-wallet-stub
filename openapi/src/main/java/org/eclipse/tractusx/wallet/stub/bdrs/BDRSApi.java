@@ -19,17 +19,19 @@
  * ******************************************************************************
  */
 
-rootProject.name = 'wallet-stub'
-include 'api'
-include 'impl'
-include 'openapi'
-include 'rest-service'
-include 'persistence:in-memory'
-findProject(':persistence:in-memory')?.name = 'in-memory'
-include 'persistence:postgresql'
-findProject(':persistence:postgresql')?.name = 'postgresql'
-include 'runtimes:ssi-dim-wallet-stub'
-findProject(':runtimes:ssi-dim-wallet-stub')?.name = 'ssi-dim-wallet-stub'
-include 'runtimes:ssi-dim-wallet-stub-memory'
-findProject(':runtimes:ssi-dim-wallet-stub-memory')?.name = 'ssi-dim-wallet-stub-memory'
-include 'utils'
+package org.eclipse.tractusx.wallet.stub.bdrs;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import org.eclipse.tractusx.wallet.stub.apidoc.BDRSApiDoc;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import java.io.IOException;
+
+@Tag(name = " BPN Did Resolution Service (BDRS) directory API")
+public interface BDRSApi {
+    @BDRSApiDoc.BDRSDirectory
+    @GetMapping(path = "/api/v1/directory/bpn-directory", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void getBpnDirectory(String bpnString, String jwtToken, HttpServletResponse response) throws IOException;
+}

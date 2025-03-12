@@ -19,17 +19,39 @@
  * ******************************************************************************
  */
 
-rootProject.name = 'wallet-stub'
-include 'api'
-include 'impl'
-include 'openapi'
-include 'rest-service'
-include 'persistence:in-memory'
-findProject(':persistence:in-memory')?.name = 'in-memory'
-include 'persistence:postgresql'
-findProject(':persistence:postgresql')?.name = 'postgresql'
-include 'runtimes:ssi-dim-wallet-stub'
-findProject(':runtimes:ssi-dim-wallet-stub')?.name = 'ssi-dim-wallet-stub'
-include 'runtimes:ssi-dim-wallet-stub-memory'
-findProject(':runtimes:ssi-dim-wallet-stub-memory')?.name = 'ssi-dim-wallet-stub-memory'
-include 'utils'
+package org.eclipse.tractusx.wallet.stub.dao.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+
+import java.sql.Types;
+
+@Entity
+@Table(name="key_pair")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class KeyPairEntity {
+
+    @Id
+    @Column(nullable = false)
+    private String bpn;
+
+    @JdbcTypeCode(Types.LONGNVARCHAR)
+    @Column(name = "public_key", nullable = false)
+    private String publicKey;
+
+    @JdbcTypeCode(Types.LONGNVARCHAR)
+    @Column(name = "private_key", nullable = false)
+    private String privateKey;
+}

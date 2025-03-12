@@ -19,6 +19,16 @@
  * ******************************************************************************
  */
 
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version "${springBootVersion}"
@@ -32,135 +42,141 @@ plugins {
 group = "${group}"
 version = "${version}"
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-}
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-dependencies {
-
-    //Spring
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-    //swagger
-    implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
-
-    //utils
-    implementation 'org.apache.commons:commons-lang3:3.15.0'
-    implementation("org.apache.commons:commons-text:1.12.0")
-
-
-    //Edc
-    implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
-    implementation "org.eclipse.edc:identity-trust-sts-api:${edcLibVersion}"
-    implementation "org.eclipse.edc:verifiable-credentials-api:${edcLibVersion}"
-
-    //keycloak
-    implementation 'org.keycloak:keycloak-admin-client:25.0.2'
-
-    //Database
-    implementation 'com.h2database:h2:2.2.224'
-    implementation 'org.postgresql:postgresql'
-    implementation 'org.liquibase:liquibase-core'
-
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.projectlombok:lombok'
-
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testCompileOnly 'org.projectlombok:lombok'
-    testAnnotationProcessor 'org.projectlombok:lombok'
-    testImplementation group: 'com.github.curious-odd-man', name: 'rgxgen', version: '2.0'
-
-    // added for test cases to support patch method
-    testImplementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
-}
-
-test {
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport
-    testLogging {
-        events("passed", "skipped", "failed")
-    }
-}
-
-jacoco {
-    toolVersion = "${jacocoVersion}"
-}
-
-jacocoTestReport {
-
-    reports {
-        xml.required = true
-        csv.required = false
-        html.required = true
+subprojects {
+    apply {
+        plugin 'java'
+        plugin 'org.springframework.boot'
+        plugin 'io.spring.dependency-management'
+        //plugin "de.undercouch.download"
+        plugin 'project-report'
+        plugin "jacoco"
+        //plugin "org.sonarqube"
     }
 
-    afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    "org/eclipse/tractusx/wallet/stub/apidoc/*"
-
-            ])
-        }))
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
     }
-}
 
-jacocoTestCoverageVerification {
-    afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    "org/eclipse/tractusx/wallet/stub/apidoc/*"
-            ])
-        }))
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
     }
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.80
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+
+        //Spring
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3'
+
+        //swagger
+        implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
+        implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
+
+        //utils
+        implementation 'org.apache.commons:commons-lang3:3.15.0'
+        implementation("org.apache.commons:commons-text:1.12.0")
+
+
+        //Edc
+        implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
+        implementation "org.eclipse.edc:identity-trust-sts-api:${edcLibVersion}"
+        implementation "org.eclipse.edc:verifiable-credentials-api:${edcLibVersion}"
+
+        //keycloak
+        implementation 'org.keycloak:keycloak-admin-client:25.0.2'
+
+        compileOnly 'org.projectlombok:lombok'
+        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+        annotationProcessor 'org.projectlombok:lombok'
+
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        testCompileOnly 'org.projectlombok:lombok'
+        testAnnotationProcessor 'org.projectlombok:lombok'
+        testImplementation group: 'com.github.curious-odd-man', name: 'rgxgen', version: '2.0'
+
+        // added for test cases to support patch method
+        testImplementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
+    }
+
+    test {
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
+
+    jacoco {
+        toolVersion = "${jacocoVersion}"
+    }
+
+    jacocoTestReport {
+
+        reports {
+            xml.required = true
+            csv.required = false
+            html.required = true
+        }
+
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "org/eclipse/tractusx/wallet/stub/apidoc/*"
+
+                ])
+            }))
+        }
+    }
+
+    jacocoTestCoverageVerification {
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "org/eclipse/tractusx/wallet/stub/apidoc/*"
+                ])
+            }))
+        }
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.80
+                }
             }
         }
     }
-}
 
-task testInMemory(type: Test){
-    systemProperty 'spring.profiles.active', 'in-memory'
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport
-    testLogging{
-        events("passed", "skipped", "failed")
+    task testInMemory(type: Test){
+        systemProperty 'spring.profiles.active', 'in-memory'
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+        testLogging{
+            events("passed", "skipped", "failed")
+        }
     }
-}
 
-task testDatabase(type: Test){
-    systemProperty 'spring.profiles.active', 'database'
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport
-    testLogging{
-        events("passed", "skipped", "failed")
+    task testDatabase(type: Test){
+        systemProperty 'spring.profiles.active', 'database'
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+        testLogging{
+            events("passed", "skipped", "failed")
+        }
     }
-}
 
-check.dependsOn jacocoTestCoverageVerification
-build {
-    archivesBaseName = "wallet"
-    version = "latest"
+    check.dependsOn jacocoTestCoverageVerification
+    build {
+        archivesBaseName = "wallet"
+        version = "latest"
+    }
 }
 
 tasks.register('dashDownload', Download) {

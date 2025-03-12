@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -19,17 +19,20 @@
  * ******************************************************************************
  */
 
-rootProject.name = 'wallet-stub'
-include 'api'
-include 'impl'
-include 'openapi'
-include 'rest-service'
-include 'persistence:in-memory'
-findProject(':persistence:in-memory')?.name = 'in-memory'
-include 'persistence:postgresql'
-findProject(':persistence:postgresql')?.name = 'postgresql'
-include 'runtimes:ssi-dim-wallet-stub'
-findProject(':runtimes:ssi-dim-wallet-stub')?.name = 'ssi-dim-wallet-stub'
-include 'runtimes:ssi-dim-wallet-stub-memory'
-findProject(':runtimes:ssi-dim-wallet-stub-memory')?.name = 'ssi-dim-wallet-stub-memory'
-include 'utils'
+package org.eclipse.tractusx.wallet.stub.key;
+
+import java.security.KeyPair;
+
+/**
+ * This class provides methods to generate key pairs
+ */
+public interface KeyService {
+
+    /**
+     * Retrieves a KeyPair associated with the provided business partner number (bpn).
+     *
+     * @param bpn the business partner number
+     * @return the KeyPair associated with the provided bpn, or generates a new KeyPair and saves it if no KeyPair is found
+     */
+    public KeyPair getKeyPair(String bpn);
+}

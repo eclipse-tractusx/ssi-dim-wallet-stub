@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -19,17 +19,21 @@
  * ******************************************************************************
  */
 
-rootProject.name = 'wallet-stub'
-include 'api'
-include 'impl'
-include 'openapi'
-include 'rest-service'
-include 'persistence:in-memory'
-findProject(':persistence:in-memory')?.name = 'in-memory'
-include 'persistence:postgresql'
-findProject(':persistence:postgresql')?.name = 'postgresql'
-include 'runtimes:ssi-dim-wallet-stub'
-findProject(':runtimes:ssi-dim-wallet-stub')?.name = 'ssi-dim-wallet-stub'
-include 'runtimes:ssi-dim-wallet-stub-memory'
-findProject(':runtimes:ssi-dim-wallet-stub-memory')?.name = 'ssi-dim-wallet-stub-memory'
-include 'utils'
+package org.eclipse.tractusx.wallet.stub.token;
+
+import com.nimbusds.jwt.JWTClaimsSet;
+import org.eclipse.tractusx.wallet.stub.token.dto.TokenRequest;
+import org.eclipse.tractusx.wallet.stub.token.dto.TokenResponse;
+
+public interface TokenService {
+
+    public JWTClaimsSet verifyTokenAndGetClaims(String token);
+
+    /**
+     * Creates an access token response for the given client ID.
+     *
+     * @param request The token request containing the client ID.
+     * @return A {@link TokenResponse} object containing the access token, token type, and expiration time.
+     */
+    public TokenResponse createAccessTokenResponse(TokenRequest request);
+}

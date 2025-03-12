@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -19,17 +19,21 @@
  * ******************************************************************************
  */
 
-rootProject.name = 'wallet-stub'
-include 'api'
-include 'impl'
-include 'openapi'
-include 'rest-service'
-include 'persistence:in-memory'
-findProject(':persistence:in-memory')?.name = 'in-memory'
-include 'persistence:postgresql'
-findProject(':persistence:postgresql')?.name = 'postgresql'
-include 'runtimes:ssi-dim-wallet-stub'
-findProject(':runtimes:ssi-dim-wallet-stub')?.name = 'ssi-dim-wallet-stub'
-include 'runtimes:ssi-dim-wallet-stub-memory'
-findProject(':runtimes:ssi-dim-wallet-stub-memory')?.name = 'ssi-dim-wallet-stub-memory'
-include 'utils'
+package org.eclipse.tractusx.wallet.stub.portal;
+
+/**
+ * This class provides method to interact with keycloak(IDP)
+ */
+public interface KeycloakService {
+
+
+    public final String CLIENT_CREDENTIALS = "client_credentials";
+
+    /**
+     * This method creates a portal access token using Keycloak's client credentials grant type.
+     * The access token is used to authenticate requests to the portal's backend services.
+     *
+     * @return A string representing the portal access token in the format: "Bearer <access_token>".
+     */
+    public String createPortalAccessToken();
+}
