@@ -37,6 +37,8 @@ dependencies {
     implementation project(':openapi')
     implementation project(':rest-service')
     implementation project(':persistence:postgresql')
+
+    testImplementation project(':testUtils')
 }
 
 test {

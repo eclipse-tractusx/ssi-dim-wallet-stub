@@ -19,7 +19,7 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.utils;
+package org.eclipse.tractusx.wallet.stub.testutils;
 
 import com.github.curiousoddman.rgxgen.RgxGen;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -35,6 +35,8 @@ import org.eclipse.tractusx.wallet.stub.key.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.token.dto.TokenResponse;
+import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.StringPool;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.boot.test.web.client.TestRestTemplate;
