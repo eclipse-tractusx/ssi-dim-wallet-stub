@@ -31,6 +31,10 @@ repositories {
 }
 dependencies {
     implementation project(':api')
+    implementation project(':utils')
+
+    implementation 'com.github.curious-odd-man:rgxgen:2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {

@@ -28,7 +28,7 @@ import org.eclipse.tractusx.wallet.stub.config.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.edc.dto.QueryPresentationRequest;
 import org.eclipse.tractusx.wallet.stub.key.KeyService;
-import org.eclipse.tractusx.wallet.stub.testutils.TestUtils;
+import org.eclipse.tractusx.wallet.stub.utils.TestUtils;
 import org.eclipse.tractusx.wallet.stub.token.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;

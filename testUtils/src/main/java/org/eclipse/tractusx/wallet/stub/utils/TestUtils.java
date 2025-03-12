@@ -19,9 +19,8 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.testutils;
+package org.eclipse.tractusx.wallet.stub.utils;
 
-import com.github.curiousoddman.rgxgen.RgxGen;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -35,8 +34,6 @@ import org.eclipse.tractusx.wallet.stub.key.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.token.dto.TokenResponse;
-import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -48,6 +45,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import com.github.curiousoddman.rgxgen.RgxGen;
 
 import java.net.URI;
 import java.net.URISyntaxException;

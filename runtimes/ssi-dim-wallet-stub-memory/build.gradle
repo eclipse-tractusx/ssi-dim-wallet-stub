@@ -37,6 +37,8 @@ dependencies {
     implementation project(':openapi')
     implementation project(':rest-service')
     implementation project(':persistence:in-memory')
+
+    testImplementation project(':testUtils')
 }
 
 test {

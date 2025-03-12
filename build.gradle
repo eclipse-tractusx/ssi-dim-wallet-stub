@@ -30,14 +30,15 @@ buildscript {
 }
 
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version "${springBootVersion}"
-    id 'io.spring.dependency-management' version "${springDependencyVersion}"
+    //id 'java'
+    //id 'org.springframework.boot' version "${springBootVersion}"
+    //id 'io.spring.dependency-management' version "${springDependencyVersion}"
     id "de.undercouch.download" version "5.6.0"
-    id 'project-report'
-    id "jacoco"
+    //id 'project-report'
+    //id "jacoco"
     id "org.sonarqube" version "5.1.0.4882"
 }
+
 
 group = "${group}"
 version = "${version}"
@@ -154,30 +155,16 @@ subprojects {
         }
     }
 
-    task testInMemory(type: Test){
-        systemProperty 'spring.profiles.active', 'in-memory'
-        useJUnitPlatform()
-        finalizedBy jacocoTestReport
-        testLogging{
-            events("passed", "skipped", "failed")
-        }
-    }
-
-    task testDatabase(type: Test){
-        systemProperty 'spring.profiles.active', 'database'
-        useJUnitPlatform()
-        finalizedBy jacocoTestReport
-        testLogging{
-            events("passed", "skipped", "failed")
-        }
-    }
 
     check.dependsOn jacocoTestCoverageVerification
     build {
         archivesBaseName = "wallet"
         version = "latest"
     }
+
+    task allDeps(type: DependencyReportTask) {}
 }
+
 
 tasks.register('dashDownload', Download) {
     description = 'Download the Dash License Tool standalone jar'

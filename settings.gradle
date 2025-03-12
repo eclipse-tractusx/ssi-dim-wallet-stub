@@ -34,4 +34,3 @@ include 'runtimes:ssi-dim-wallet-stub-memory'
 findProject(':runtimes:ssi-dim-wallet-stub-memory')?.name = 'ssi-dim-wallet-stub-memory'
 include 'utils'
 include 'testUtils'
-

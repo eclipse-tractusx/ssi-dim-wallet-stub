@@ -34,6 +34,8 @@ dependencies {
     implementation project(':api')
     implementation project(':utils')
     testImplementation project(':utils')
+
+    testImplementation project(':testUtils')
 }
 
 test {
