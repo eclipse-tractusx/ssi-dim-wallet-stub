@@ -22,22 +22,16 @@
 plugins {
     id 'java'
     id 'application'
+    id 'org.springframework.boot'
+}
+
+build {
+    archivesBaseName = "wallet-memory"
+    version = "latest"
 }
 
 application {
     mainClass = 'org.eclipse.tractusx.wallet.stub.WalletStubApplication'
-}
-
-tasks.withType(Tar).configureEach {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
-tasks.withType(Jar).configureEach {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
-tasks.withType(Zip).configureEach {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 group = 'org.eclipse.tractusx.wallet.stub'

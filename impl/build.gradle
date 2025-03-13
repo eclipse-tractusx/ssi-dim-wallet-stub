@@ -26,6 +26,11 @@ plugins {
 group = 'org.eclipse.tractusx.wallet.stub'
 version = 'latest'
 
+build {
+    archivesBaseName = "wallet-impl"
+    version = "latest"
+}
+
 repositories {
     mavenCentral()
 }
