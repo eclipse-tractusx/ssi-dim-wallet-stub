@@ -33,8 +33,17 @@ dependencies {
     implementation project(':api')
     implementation project(':utils')
 
+    // SPRING
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
     implementation 'com.github.curious-odd-man:rgxgen:2.0'
     implementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // UTILS
+    implementation 'org.apache.commons:commons-lang3:3.15.0'
+
+    // EDC
+    implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
 }
 
 test {

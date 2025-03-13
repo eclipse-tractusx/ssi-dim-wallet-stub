@@ -41,6 +41,27 @@ dependencies {
     testImplementation project(':utils')
 
     testImplementation project(':testUtils')
+
+    // SPRING DOC - SWAGGER
+    implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
+
+    // UTILS
+    implementation 'org.apache.commons:commons-lang3:3.15.0'
+    implementation("org.apache.commons:commons-text:1.12.0")
+
+    // EDC
+    implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
+
+    // KEYCLOAK
+    implementation 'org.keycloak:keycloak-admin-client:25.0.2'
+
+    // TEST
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation group: 'com.github.curious-odd-man', name: 'rgxgen', version: '2.0'
 }
 
 test {

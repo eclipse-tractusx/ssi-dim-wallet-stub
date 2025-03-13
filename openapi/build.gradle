@@ -37,6 +37,13 @@ repositories {
 
 dependencies {
     implementation project(':api')
+
+    // SPRING
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // SPRING DOC - SWAGGER
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
 }
 
 test {
