@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - '^[0-9]+\.[0-9]+\.[0-9]+-cfx-[0-9]+-rc\.[0-9]+$'
+      - '^[0-9]+.[0-9]+.[0-9]+-cfx-[0-9]+-rc.[0-9]+$'
 
 jobs:
   # For Gradle build, CodeQL, and Sonar scan
@@ -64,7 +64,7 @@ jobs:
           do
             image_tag=$(echo $image | cut -d ":" -f2)
             if [[ $image_tag =~ $release_tag_regex ]]; then
-              release_tag=$image
+              release_tag=$image_tag
               echo "Tag '$image_tag' matches the regex '$release_tag_regex'"
             fi
           done
