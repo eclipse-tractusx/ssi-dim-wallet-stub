@@ -1,0 +1,100 @@
+# A workflow for Gradle build, Sonar scan, Code QL, Container image build, and image push
+name: "CFX INT Wallet stub build, scan, and push"
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '^[0-9]+\.[0-9]+\.[0-9]+-cfx-[0-9]+-rc\.[0-9]+$'
+
+jobs:
+  # For Gradle build, CodeQL, and Sonar scan
+  build-test-scan-app:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    name: Build, test, and scan App
+    uses: Cofinity-X/central-pipelines/.github/workflows/reusable-java-gradle-build.yaml@main
+    with:
+      java-version: 21
+      project-directory: "./"
+      sonar-scan-enabled: true
+    secrets:
+      sonar-token: ${{ secrets.SONAR_TOKEN }}
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  dockerizing-application:
+    # For Container image build, Trivy scan, and image push
+    needs: build-test-scan-app
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      id-token: write
+    name: Docker build, Trivy scan, Docker push
+    uses: Cofinity-X/central-pipelines/.github/workflows/reusable-publish-image-to-acr.yaml@main
+    with:
+      team_name: core-services
+      repository_name: ssi-dim-wallet-stub
+      service_name: wallet-stub
+      dockerfile_path: "Dockerfile"
+      environment: "lower-env-acr"
+      push: ${{ github.event_name != 'pull_request' }}
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+  # To dispatch a workflow in core-services-charts repo for auto image tag update.
+  auto-deploy-dispatch:
+    needs: dockerizing-application
+    name: Dispatch charts repo workflow
+    environment: integration
+    runs-on: ubuntu-latest
+    steps:
+      # Get image tags from the previous job filter the tag that needs to be updated (Currently, it's main-{sha})
+      - name: Get image tags
+        id: get_tag
+        run: |
+          release_tag_regex="^[0-9]+\.[0-9]+\.[0-9]+-cfx-[0-9]+(-rc\.[0-9]+)?$"
+          echo "Starting to process image tags..."
+          release_tag=false
+          for image in $(echo "${{ needs.dockerizing-application.outputs.image_tags }}")
+          do
+            image_tag=$(echo $image | cut -d ":" -f2)
+            if [[ $image_tag =~ $release_tag_regex ]]; then
+              release_tag=$image
+              echo "Tag '$image_tag' matches the regex '$release_tag_regex'"
+            fi
+          done
+          echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
+
+      # Generate a temporary token using Github app
+      - name: Get token
+        id: get_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CORE_SERVICES_WORKFLOW_TRIGGER_GH_APP_ID }}
+          private-key: ${{ secrets.CORE_SERVICES_WORKFLOW_TRIGGER_GH_APP_PRIVATE_KEY }}
+          repositories: core-services-charts
+          owner: cofinity-x
+
+      # Trigger remote workflow of core-services-chart to update the image tag in the helm values
+      - name: Trigger workflow
+        id: trigger_remote_workflow
+        env:
+          TOKEN: ${{ steps.get_token.outputs.token }}
+          HELM_VALUES_PATH: "wallet-stub/int/values.yaml"
+          IMAGE_TAG: ${{ steps.get_tag.outputs.release_tag }}
+          IMAGE_TAG_PROPERTY: ".ssi-dim-wallet-stub.wallet.image.tag"
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/cofinity-x/core-services-charts/dispatches \
+            -d '{"event_type":"update_dev_image_tag","client_payload": { "image_tag": "'"$IMAGE_TAG"'", "helm_values_path": "'"$HELM_VALUES_PATH"'", "image_tag_property": "'"$IMAGE_TAG_PROPERTY"'", "dispatcher_info": "'"Runner id - $GITHUB_RUN_ID"'" }}' \
+            --fail
