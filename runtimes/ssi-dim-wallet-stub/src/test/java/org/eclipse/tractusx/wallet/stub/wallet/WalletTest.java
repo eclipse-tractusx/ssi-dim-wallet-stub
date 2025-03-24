@@ -23,11 +23,11 @@ package org.eclipse.tractusx.wallet.stub.wallet;
 
 import org.eclipse.tractusx.wallet.stub.WalletStubApplication;
 import org.eclipse.tractusx.wallet.stub.config.TestContextInitializer;
-import org.eclipse.tractusx.wallet.stub.config.WalletStubSettings;
-import org.eclipse.tractusx.wallet.stub.did.DidDocument;
-import org.eclipse.tractusx.wallet.stub.storage.Storage;
-import org.eclipse.tractusx.wallet.stub.utils.Constants;
-import org.eclipse.tractusx.wallet.stub.utils.TestUtils;
+import org.eclipse.tractusx.wallet.stub.config.api.WalletStubSettings;
+import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
+import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
+import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
+import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
