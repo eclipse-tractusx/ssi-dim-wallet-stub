@@ -35,7 +35,7 @@ import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -83,8 +83,8 @@ public class CredentialServiceImpl implements CredentialService {
                 .jwtID(UUID.randomUUID().toString())
                 .audience(List.of(issuerDocument.getId(), holderDocument.getId()))
                 .expirationTime(expiryTime)
-                .claim(StringPool.BPN, holderBpn)
-                .claim(StringPool.VC, verifiableCredential)
+                .claim(Constants.BPN, holderBpn)
+                .claim(Constants.VC, verifiableCredential)
                 .issuer(issuerDocument.getId())
                 .subject(issuerDocument.getId())
                 .build();
@@ -92,7 +92,7 @@ public class CredentialServiceImpl implements CredentialService {
         SignedJWT vcJWT = CommonUtils.signedJWT(tokenBody, issuerKeyPair, issuerDocument.getVerificationMethod().getFirst().getId());
 
         String vcAsJwt = vcJWT.serialize();
-        storage.saveCredentialAsJwt(verifiableCredential.get(StringPool.ID).toString(), vcAsJwt, holderBpn, type);
+        storage.saveCredentialAsJwt(verifiableCredential.get(Constants.ID).toString(), vcAsJwt, holderBpn, type);
         return vcAsJwt;
     }
 
@@ -107,13 +107,13 @@ public class CredentialServiceImpl implements CredentialService {
             DidDocument holderDocument = didDocumentService.getDidDocument(holderBpn);
             //build VC without a proof
             String vcId = CommonUtils.getUuid(holderBpn, type);
-            URI vcIdUri = URI.create(issuerDocument.getId() + StringPool.HASH_SEPARATOR + vcId);
+            URI vcIdUri = URI.create(issuerDocument.getId() + Constants.HASH_SEPARATOR + vcId);
 
-            if (type.equals(StringPool.MEMBERSHIP_CREDENTIAL)) {
+            if (type.equals(Constants.MEMBERSHIP_CREDENTIAL)) {
                 return issueMembershipCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
-            } else if (type.equals(StringPool.BPN_CREDENTIAL)) {
+            } else if (type.equals(Constants.BPN_CREDENTIAL)) {
                 return issueBpnCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
-            } else if (type.equals(StringPool.DATA_EXCHANGE_CREDENTIAL)) {
+            } else if (type.equals(Constants.DATA_EXCHANGE_CREDENTIAL)) {
                 return issueDataExchangeGovernanceCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
             } else {
                 throw new IllegalArgumentException("vc type -> " + type + " is not supported");
@@ -125,56 +125,56 @@ public class CredentialServiceImpl implements CredentialService {
     public CustomCredential issueStatusListCredential(String holderBpn, String vcId) {
         DidDocument issuerDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
 
-        URI vcIdUri = URI.create(issuerDocument.getId() + StringPool.HASH_SEPARATOR + vcId);
+        URI vcIdUri = URI.create(issuerDocument.getId() + Constants.HASH_SEPARATOR + vcId);
 
         Map<String, Object> subject = new HashMap<>();
-        subject.put(StringPool.TYPE, StringPool.STATUS_LIST_2021_CREDENTIAL);
-        subject.put(StringPool.ENCODED_LIST, CommonUtils.getEncodedList());
-        subject.put(StringPool.STATUS_PURPOSE, StringPool.REVOCATION);
+        subject.put(Constants.TYPE, Constants.STATUS_LIST_2021_CREDENTIAL);
+        subject.put(Constants.ENCODED_LIST, CommonUtils.getEncodedList());
+        subject.put(Constants.STATUS_PURPOSE, Constants.REVOCATION);
 
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
-                vcIdUri.toString(), StringPool.STATUS_LIST_2021_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
+                vcIdUri.toString(), Constants.STATUS_LIST_2021_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
 
-        storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, StringPool.STATUS_LIST_2021_CREDENTIAL);
+        storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, Constants.STATUS_LIST_2021_CREDENTIAL);
         return credentialWithoutProof;
     }
 
     private CustomCredential issueMembershipCredential(String holderBpn, DidDocument issuerDocument, DidDocument holderDocument, URI vcIdUri, String vcId) {
         Map<String, Object> subject = new HashMap<>();
-        subject.put(StringPool.ID, holderDocument.getId());
-        subject.put(StringPool.HOLDER_IDENTIFIER, holderBpn);
-        subject.put(StringPool.MEMBER_OF, "Catena-X");
+        subject.put(Constants.ID, holderDocument.getId());
+        subject.put(Constants.HOLDER_IDENTIFIER, holderBpn);
+        subject.put(Constants.MEMBER_OF, "Catena-X");
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
-                vcIdUri.toString(), StringPool.MEMBERSHIP_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
-        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.MEMBERSHIP_CREDENTIAL);
+                vcIdUri.toString(), Constants.MEMBERSHIP_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
+        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.MEMBERSHIP_CREDENTIAL);
         return credentialWithoutProof;
     }
 
     private CustomCredential issueBpnCredential(String holderBpn, DidDocument issuerDocument, DidDocument holderDocument, URI vcIdUri, String vcId) {
         Map<String, Object> subject = new HashMap<>();
-        subject.put(StringPool.ID, holderDocument.getId());
-        subject.put(StringPool.HOLDER_IDENTIFIER, holderBpn);
-        subject.put(StringPool.BPN, holderBpn);
+        subject.put(Constants.ID, holderDocument.getId());
+        subject.put(Constants.HOLDER_IDENTIFIER, holderBpn);
+        subject.put(Constants.BPN, holderBpn);
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
-                vcIdUri.toString(), StringPool.BPN_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
+                vcIdUri.toString(), Constants.BPN_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.BPN_CREDENTIAL);
+        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.BPN_CREDENTIAL);
         return credentialWithoutProof;
     }
 
     private CustomCredential issueDataExchangeGovernanceCredential(String holderBpn, DidDocument issuerDocument, DidDocument holderDocument, URI vcIdUri, String vcId) {
         Map<String, Object> subject = new HashMap<>();
-        subject.put(StringPool.ID, holderDocument.getId());
-        subject.put(StringPool.HOLDER_IDENTIFIER, holderBpn);
-        subject.put(StringPool.GROUP, "UseCaseFramework");
-        subject.put(StringPool.USE_CASE, "DataExchangeGovernance");
-        subject.put(StringPool.CONTRACT_TEMPLATE, "https://example.org/temp-1");
-        subject.put(StringPool.CONTRACT_VERSION, "1.0");
+        subject.put(Constants.ID, holderDocument.getId());
+        subject.put(Constants.HOLDER_IDENTIFIER, holderBpn);
+        subject.put(Constants.GROUP, "UseCaseFramework");
+        subject.put(Constants.USE_CASE, "DataExchangeGovernance");
+        subject.put(Constants.CONTRACT_TEMPLATE, "https://example.org/temp-1");
+        subject.put(Constants.CONTRACT_VERSION, "1.0");
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
-                vcIdUri.toString(), StringPool.DATA_EXCHANGE_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
+                vcIdUri.toString(), Constants.DATA_EXCHANGE_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.DATA_EXCHANGE_CREDENTIAL);
+        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.DATA_EXCHANGE_CREDENTIAL);
         return credentialWithoutProof;
     }
 }

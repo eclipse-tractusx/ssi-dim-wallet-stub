@@ -55,7 +55,7 @@ public class CommonUtils {
 
     private static final DateTimeFormatter DATE_TIME_FORMATER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
 
-    private static final Pattern pattern = Pattern.compile(StringPool.BPN_REGEX);
+    private static final Pattern pattern = Pattern.compile(Constants.BPN_REGEX);
 
 
     /**
@@ -127,7 +127,7 @@ public class CommonUtils {
     public static String getBpnFromToken(String token, TokenService tokenService) {
         SignedJWT signedJWT = SignedJWT.parse(cleanToken(token));
         JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(signedJWT.serialize());
-        return jwtClaimsSet.getClaim(StringPool.BPN).toString();
+        return jwtClaimsSet.getClaim(Constants.BPN).toString();
     }
 
 
@@ -233,9 +233,9 @@ public class CommonUtils {
     public CustomCredential createCredential(String issuerDid, String vcId, String type, Date expiryDate, Map<String, Object> subject) {
         CustomCredential credential = new CustomCredential();
         Date date = new Date();
-        credential.put(StringPool.CONTEXT, List.of("https://www.w3.org/2018/credentials/v1", "https://w3id.org/catenax/credentials/v1.0.0"));
-        credential.put(StringPool.ID, vcId);
-        credential.put(StringPool.TYPE, List.of("VerifiableCredential", type));
+        credential.put(Constants.CONTEXT, List.of("https://www.w3.org/2018/credentials/v1", "https://w3id.org/catenax/credentials/v1.0.0"));
+        credential.put(Constants.ID, vcId);
+        credential.put(Constants.TYPE, List.of("VerifiableCredential", type));
         credential.put("credentialSubject", subject);
         credential.put("issuer", issuerDid);
         credential.put("issuanceDate", DATE_TIME_FORMATER.format(date.toInstant()));

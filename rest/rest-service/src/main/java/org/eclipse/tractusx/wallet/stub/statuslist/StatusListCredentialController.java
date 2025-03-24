@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,7 +47,7 @@ public class StatusListCredentialController implements StatusListCredentialApi{
     public ResponseEntity<CustomCredential> getStatusListVc(@PathVariable(name = "bpn") String bpn, @PathVariable(name = "vcId") String vcId) {
 
         //currently we are returning one VC
-        URI vcIdUri = URI.create(didDocumentService.getDidDocument(bpn).getId() + StringPool.HASH_SEPARATOR + vcId);
+        URI vcIdUri = URI.create(didDocumentService.getDidDocument(bpn).getId() + Constants.HASH_SEPARATOR + vcId);
         Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
         if (verifiableCredentials.isPresent()) {
             return ResponseEntity.ok(verifiableCredentials.get());

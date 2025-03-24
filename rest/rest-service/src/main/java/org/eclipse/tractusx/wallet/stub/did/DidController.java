@@ -25,7 +25,7 @@ package org.eclipse.tractusx.wallet.stub.did;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.storage.Storage;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +42,7 @@ public class DidController implements DidApi {
 
     private final Storage storage;
 
-    public ResponseEntity<DidDocument> getDocument(@PathVariable(name = StringPool.BPN) String bpn) {
+    public ResponseEntity<DidDocument> getDocument(@PathVariable(name = Constants.BPN) String bpn) {
         log.debug("Did document requested for bpn ->{}", bpn);
         Optional<DidDocument> didDocument = storage.getDidDocument(bpn);
         return didDocument.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok(didDocumentService.getDidDocument(bpn)));

@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -55,7 +55,7 @@ public class BDRSController implements BDRSApi {
      * @param response  The HTTP response object to handle the response.
      * @throws IOException If there is an error writing to the response output stream.
      */
-    public void getBpnDirectory(@RequestParam(name = StringPool.BPN, required = false) String bpnString,
+    public void getBpnDirectory(@RequestParam(name = Constants.BPN, required = false) String bpnString,
                                 @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String jwtToken,
                                 HttpServletResponse response) throws IOException {
         Map<String, String> bpnDirectory = bdrsService.getBpnDirectory(jwtToken, bpnString);

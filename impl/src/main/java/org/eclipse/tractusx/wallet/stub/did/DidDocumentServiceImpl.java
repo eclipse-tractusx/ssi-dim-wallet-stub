@@ -34,7 +34,7 @@ import org.eclipse.tractusx.wallet.stub.config.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.key.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -67,22 +67,22 @@ public class DidDocumentServiceImpl implements DidDocumentService {
         KeyPair keyPair = keyService.getKeyPair(issuerBpn);
 
         Map<String, Object> jsonObject = CryptoConverter.createJwk(keyPair).toJSONObject();
-        jsonObject.put(StringPool.ID, keyId);
+        jsonObject.put(Constants.ID, keyId);
 
         JWK jwk = CryptoConverter.create(jsonObject);
 
         //create verification method
         VerificationMethod verificationMethod = VerificationMethod.Builder.newInstance()
-                .id(URI.create(did + StringPool.HASH_SEPARATOR + keyId).toString())
+                .id(URI.create(did + Constants.HASH_SEPARATOR + keyId).toString())
                 .controller(did)
-                .type(StringPool.JSON_WEB_KEY_2020)
+                .type(Constants.JSON_WEB_KEY_2020)
                 .publicKeyJwk(jwk.toPublicJWK().toJSONObject())
                 .build();
 
 
         //create service
         org.eclipse.edc.iam.did.spi.document.Service service = new org.eclipse.edc.iam.did.spi.document.Service(walletStubSettings.stubUrl() + "#credential-service",
-                StringPool.CREDENTIAL_SERVICE, walletStubSettings.stubUrl() + "/api");
+                Constants.CREDENTIAL_SERVICE, walletStubSettings.stubUrl() + "/api");
 
 
         //create document

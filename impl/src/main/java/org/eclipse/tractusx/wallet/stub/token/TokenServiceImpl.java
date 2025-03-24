@@ -36,7 +36,7 @@ import org.eclipse.tractusx.wallet.stub.key.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.dto.TokenResponse;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
@@ -94,7 +94,7 @@ public class TokenServiceImpl implements TokenService {
                 .jwtID(UUID.randomUUID().toString())
                 .audience(didDocument.getId())
                 .expirationTime(expiryTime)
-                .claim(StringPool.BPN, request.getClientId())
+                .claim(Constants.BPN, request.getClientId())
                 .issuer(didDocument.getId())
                 .notBeforeTime(time)
                 .subject(didDocument.getId())
@@ -104,6 +104,6 @@ public class TokenServiceImpl implements TokenService {
 
         String token = signedJWT.serialize();
         log.debug("Token created for client id -> {}  token -> {}", StringEscapeUtils.escapeJava(request.getClientId()), token);
-        return new TokenResponse(token, StringPool.TOKEN_TYPE_BEARER, tokenSettings.tokenExpiryTime() * 60L, 0, 0, "email profile");
+        return new TokenResponse(token, Constants.TOKEN_TYPE_BEARER, tokenSettings.tokenExpiryTime() * 60L, 0, 0, "email profile");
     }
 }

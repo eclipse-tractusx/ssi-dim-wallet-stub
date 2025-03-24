@@ -25,7 +25,7 @@ package org.eclipse.tractusx.wallet.stub.utils;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class StringPool {
+public class Constants {
 
     public static final String BPN = "bpn";
     public static final String TOKEN_TYPE_BEARER = "Bearer";

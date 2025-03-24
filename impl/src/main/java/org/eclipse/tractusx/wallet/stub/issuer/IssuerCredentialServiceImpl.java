@@ -45,7 +45,7 @@ import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -72,10 +72,10 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
     private static String getHolderBpn(CustomCredential verifiableCredential) {
         //get Holder BPN
         Map<String, Object> subject = (Map<String, Object>) verifiableCredential.get("credentialSubject");
-        if (subject.containsKey(StringPool.BPN)) {
-            return subject.get(StringPool.BPN).toString();
-        } else if (subject.containsKey(StringPool.HOLDER_IDENTIFIER)) {
-            return subject.get(StringPool.HOLDER_IDENTIFIER).toString();
+        if (subject.containsKey(Constants.BPN)) {
+            return subject.get(Constants.BPN).toString();
+        } else if (subject.containsKey(Constants.HOLDER_IDENTIFIER)) {
+            return subject.get(Constants.HOLDER_IDENTIFIER).toString();
         } else {
             throw new IllegalArgumentException("Can not identify holder BPN from VC");
         }
@@ -95,14 +95,14 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
         if (!CollectionUtils.isEmpty(request.getCredentialPayload().getIssue())) {
             verifiableCredential.putAll(request.getCredentialPayload().getIssue());
         } else {
-            verifiableCredential.putAll((Map<String, Object>) request.getCredentialPayload().getIssueWithSignature().get(StringPool.CONTENT));
+            verifiableCredential.putAll((Map<String, Object>) request.getCredentialPayload().getIssueWithSignature().get(Constants.CONTENT));
         }
         String holderBpn = getHolderBpn(verifiableCredential);
 
         DidDocument holderDidDocument = didDocumentService.getDidDocument(holderBpn);
 
         String type;
-        List<String> types = (List<String>) verifiableCredential.get(StringPool.TYPE);
+        List<String> types = (List<String>) verifiableCredential.get(Constants.TYPE);
         //https://www.w3.org/TR/vc-data-model/#types As per the VC schema, types can be multiple, but index 1 should have the correct type.
         if (types.size() == 2) {
             type = types.get(1);
@@ -114,10 +114,10 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
 
         //sign
         String vcId = CommonUtils.getUuid(holderBpn, type);
-        URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + vcId);
+        URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + vcId);
         URI issuer = new URI("did:web:" + walletStubSettings.didHost() + ":" + walletStubSettings.baseWalletBPN());
 
-        verifiableCredential.put(StringPool.ID, vcIdUri.toString());
+        verifiableCredential.put(Constants.ID, vcIdUri.toString());
         verifiableCredential.put("issuer", issuer.toString());
 
         //sign JWT
@@ -136,8 +136,8 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
                 .jwtID(UUID.randomUUID().toString())
                 .audience(List.of(issuerDidDocument.getId(), holderDidDocument.getId()))
                 .expirationTime(expiryTime)
-                .claim(StringPool.BPN, holderBpn)
-                .claim(StringPool.VC, verifiableCredential)
+                .claim(Constants.BPN, holderBpn)
+                .claim(Constants.VC, verifiableCredential)
                 .issuer(issuerDidDocument.getId())
                 .subject(issuerDidDocument.getId())
                 .build();
@@ -155,23 +155,23 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
         storage.saveCredentials(vcIdUri.toString(), verifiableCredential, holderBpn, type);
 
         if (!CollectionUtils.isEmpty(request.getCredentialPayload().getIssueWithSignature())) {
-            return Map.of(StringPool.ID, vcId, StringPool.JWT, vcAsJwt);
+            return Map.of(Constants.ID, vcId, Constants.JWT, vcAsJwt);
         } else {
-            return Map.of(StringPool.ID, vcId);
+            return Map.of(Constants.ID, vcId);
         }
     }
 
     @SneakyThrows
     public Optional<String> signCredential(String credentialId) {
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
-        URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + credentialId);
+        URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + credentialId);
         return storage.getCredentialAsJwt(vcIdUri.toString());
     }
 
     @SneakyThrows
     public GetCredentialsResponse getCredential(String externalCredentialId) {
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
-        URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + externalCredentialId);
+        URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + externalCredentialId);
         Optional<String> jwtVc = storage.getCredentialAsJwt(vcIdUri.toString());
         if (jwtVc.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No credential found for credentialId -> " + externalCredentialId);

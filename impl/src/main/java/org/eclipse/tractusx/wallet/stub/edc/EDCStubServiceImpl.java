@@ -45,7 +45,7 @@ import org.eclipse.tractusx.wallet.stub.token.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.CustomVerifiablePresentation;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -114,9 +114,9 @@ public class EDCStubServiceImpl implements EDCStubService {
                 .audience(List.of(partnerDidDocument.getId()))
                 .subject(selfDidDocument.getId())
                 .expirationTime(expiryTime)
-                .claim(StringPool.BPN, selfBpn)
-                .claim(StringPool.NONCE, jwt.getJWTClaimsSet().getStringClaim(StringPool.NONCE))
-                .claim(StringPool.ACCESS_TOKEN, accessToken).build();
+                .claim(Constants.BPN, selfBpn)
+                .claim(Constants.NONCE, jwt.getJWTClaimsSet().getStringClaim(Constants.NONCE))
+                .claim(Constants.ACCESS_TOKEN, accessToken).build();
 
         SignedJWT signedJWT = CommonUtils.signedJWT(claimsSet, selfKeyPair, selfDidDocument.getVerificationMethod().getFirst().getId());
         String serialize = signedJWT.serialize();
@@ -135,11 +135,11 @@ public class EDCStubServiceImpl implements EDCStubService {
                 .subject(selfDidDocument.getId())
                 .expirationTime(expiryTime)
                 .issueTime(Date.from(Instant.now()))
-                .claim(StringPool.CREDENTIAL_TYPES, withScopeRequest.getGrantAccess().getCredentialTypes())
-                .claim(StringPool.SCOPE, withScopeRequest.getGrantAccess().getScope())
+                .claim(Constants.CREDENTIAL_TYPES, withScopeRequest.getGrantAccess().getCredentialTypes())
+                .claim(Constants.SCOPE, withScopeRequest.getGrantAccess().getScope())
                 .claim("consumerDid", consumerDid)
                 .claim("providerDid", providerDid)
-                .claim(StringPool.BPN, selfBpn)
+                .claim(Constants.BPN, selfBpn)
                 .build();
 
         SignedJWT innerJwt = CommonUtils.signedJWT(tokeJwtClaimsSet, selfKeyPair, selfDidDocument.getVerificationMethod().getFirst().getId());
@@ -151,10 +151,10 @@ public class EDCStubServiceImpl implements EDCStubService {
                 .expirationTime(expiryTime)
                 .issueTime(Date.from(Instant.now()))
                 .jwtID(UUID.randomUUID().toString())
-                .claim(StringPool.BPN, partnerBpn)
-                .claim(StringPool.NONCE, UUID.randomUUID().toString())
-                .claim(StringPool.TOKEN, innerJwt.serialize()) //this claim is checked by EDC
-                .claim(StringPool.SCOPE, withScopeRequest.getGrantAccess().getScope()).build();
+                .claim(Constants.BPN, partnerBpn)
+                .claim(Constants.NONCE, UUID.randomUUID().toString())
+                .claim(Constants.TOKEN, innerJwt.serialize()) //this claim is checked by EDC
+                .claim(Constants.SCOPE, withScopeRequest.getGrantAccess().getScope()).build();
 
         SignedJWT signedJWT = CommonUtils.signedJWT(claimsSet, selfKeyPair, selfDidDocument.getVerificationMethod().getFirst().getId());
         String serialize = signedJWT.serialize();
@@ -179,11 +179,11 @@ public class EDCStubServiceImpl implements EDCStubService {
         boolean withScope = false;
         CreateCredentialWithScopeRequest withScopeRequest = null;
         CreateCredentialWithoutScopeRequest withAccessTokenRequest = null;
-        if (request.containsKey(StringPool.SIGN_TOKEN) && request.get(StringPool.SIGN_TOKEN) != null) {
+        if (request.containsKey(Constants.SIGN_TOKEN) && request.get(Constants.SIGN_TOKEN) != null) {
             log.debug("Request with access token");
             withAccessTokenRequest = objectMapper.convertValue(request, CreateCredentialWithoutScopeRequest.class);
             partnerBpn = CommonUtils.getBpnFromDid(CommonUtils.getAudienceFromToken(withAccessTokenRequest.getSignToken().getToken(), tokenService));
-        } else if (request.containsKey(StringPool.GRANT_ACCESS) && request.get(StringPool.GRANT_ACCESS) != null) {
+        } else if (request.containsKey(Constants.GRANT_ACCESS) && request.get(Constants.GRANT_ACCESS) != null) {
             log.debug("Request with grantAccess ie. with scope");
             withScope = true;
             withScopeRequest = objectMapper.convertValue(request, CreateCredentialWithScopeRequest.class);
@@ -215,15 +215,15 @@ public class EDCStubServiceImpl implements EDCStubService {
 
         //to check token type and identify caller
         String innerAccessToken;
-        if (jwtClaimsSet.getClaim(StringPool.ACCESS_TOKEN) != null) {
-            innerAccessToken = jwtClaimsSet.getClaim(StringPool.ACCESS_TOKEN).toString();
+        if (jwtClaimsSet.getClaim(Constants.ACCESS_TOKEN) != null) {
+            innerAccessToken = jwtClaimsSet.getClaim(Constants.ACCESS_TOKEN).toString();
         } else {
-            innerAccessToken = jwtClaimsSet.getClaim(StringPool.TOKEN).toString();
+            innerAccessToken = jwtClaimsSet.getClaim(Constants.TOKEN).toString();
         }
         JWTClaimsSet innerClaimSet = tokenService.verifyTokenAndGetClaims(innerAccessToken);
-        String callerBpn = innerClaimSet.getClaim(StringPool.BPN).toString();
-        List<String> vcTypesFromSIToken = innerClaimSet.getStringListClaim(StringPool.CREDENTIAL_TYPES);
-        String scopeFromSiToken = innerClaimSet.getClaim(StringPool.SCOPE).toString();
+        String callerBpn = innerClaimSet.getClaim(Constants.BPN).toString();
+        List<String> vcTypesFromSIToken = innerClaimSet.getStringListClaim(Constants.CREDENTIAL_TYPES);
+        String scopeFromSiToken = innerClaimSet.getClaim(Constants.SCOPE).toString();
 
         Set<String> requestedTypes = validateRequestedVcAndScope(request, vcTypesFromSIToken, scopeFromSiToken);
 
@@ -246,10 +246,10 @@ public class EDCStubServiceImpl implements EDCStubService {
 
 
         CustomVerifiablePresentation vp = new CustomVerifiablePresentation();
-        vp.put(StringPool.ID, issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + UUID.randomUUID());
-        vp.put(StringPool.VERIFIABLE_CREDENTIAL_CAMEL_CASE, vsAsJwt);
-        vp.put(StringPool.CONTEXT, List.of("https://www.w3.org/2018/credentials/v1", "https://w3id.org/security/suites/jws-2020/v1"));
-        vp.put(StringPool.TYPE, List.of("VerifiablePresentation"));
+        vp.put(Constants.ID, issuerDidDocument.getId() + Constants.HASH_SEPARATOR + UUID.randomUUID());
+        vp.put(Constants.VERIFIABLE_CREDENTIAL_CAMEL_CASE, vsAsJwt);
+        vp.put(Constants.CONTEXT, List.of("https://www.w3.org/2018/credentials/v1", "https://w3id.org/security/suites/jws-2020/v1"));
+        vp.put(Constants.TYPE, List.of("VerifiablePresentation"));
 
 
         //create new access token
@@ -259,8 +259,8 @@ public class EDCStubServiceImpl implements EDCStubService {
                 .jwtID(UUID.randomUUID().toString())
                 .audience(audience)
                 .expirationTime(expiryTime)
-                .claim(StringPool.BPN, callerBpn)
-                .claim(StringPool.VP, vp)
+                .claim(Constants.BPN, callerBpn)
+                .claim(Constants.VP, vp)
                 .issuer(issuerDidDocument.getId())
                 .subject(issuerDidDocument.getId())
                 .build();
@@ -273,7 +273,7 @@ public class EDCStubServiceImpl implements EDCStubService {
         QueryPresentationResponse response = new QueryPresentationResponse();
         response.setPresentation(List.of(vpAccessToken));
         response.setContexts(List.of("https://w3id.org/tractusx-trust/v0.8"));
-        response.setType(StringPool.PRESENTATION_RESPONSE_MESSAGE);
+        response.setType(Constants.PRESENTATION_RESPONSE_MESSAGE);
         return response;
     }
 }

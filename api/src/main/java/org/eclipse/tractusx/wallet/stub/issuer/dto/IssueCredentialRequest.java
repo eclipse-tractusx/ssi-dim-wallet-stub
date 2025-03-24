@@ -29,7 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -54,7 +54,7 @@ public class IssueCredentialRequest {
             return false;
         } else if (getCredentialPayload().getDerive() == null) {
             if (!CollectionUtils.isEmpty(getCredentialPayload().getIssueWithSignature())
-                    && !getCredentialPayload().getIssueWithSignature().containsKey(StringPool.CONTENT)) {
+                    && !getCredentialPayload().getIssueWithSignature().containsKey(Constants.CONTENT)) {
                 log.error("The issueWithSignature and Content can be null in case of creating credential with signature");
                 return false;
             }

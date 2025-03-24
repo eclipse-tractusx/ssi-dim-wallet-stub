@@ -28,7 +28,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.wallet.stub.token.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.dto.TokenResponse;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +56,7 @@ public class TokenController implements TokenApi {
     private void setClientInfo(TokenRequest request, String token) {
         if (StringUtils.isNoneBlank(token)) {
             String[] split = token.split(StringUtils.SPACE);
-            if (split.length == 2 && split[0].equals(StringPool.BASIC)) {
+            if (split.length == 2 && split[0].equals(Constants.BASIC)) {
                 String encodedString = split[1];
                 // Decode the Base64 encoded string
                 byte[] decodedBytes = Base64.getDecoder().decode(encodedString);

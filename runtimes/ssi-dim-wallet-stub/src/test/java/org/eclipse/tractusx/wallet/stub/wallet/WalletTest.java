@@ -26,7 +26,7 @@ import org.eclipse.tractusx.wallet.stub.config.TestContextInitializer;
 import org.eclipse.tractusx.wallet.stub.config.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.DidDocument;
 import org.eclipse.tractusx.wallet.stub.storage.Storage;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -63,7 +63,7 @@ class WalletTest {
         Assertions.assertTrue(storage.getDidDocument(baseWalletBPN).isPresent());
 
         //check status list VC is created
-        Assertions.assertTrue(storage.getCredentialsByHolderBpnAndType(baseWalletBPN, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
+        Assertions.assertTrue(storage.getCredentialsByHolderBpnAndType(baseWalletBPN, Constants.STATUS_LIST_2021_CREDENTIAL).isPresent());
     }
 
 
@@ -96,7 +96,7 @@ class WalletTest {
             Assertions.assertTrue(storage.getDidDocument(bpn).isPresent());
 
             //check status list VC is created
-            Assertions.assertTrue(storage.getCredentialsByHolderBpnAndType(bpn, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
+            Assertions.assertTrue(storage.getCredentialsByHolderBpnAndType(bpn, Constants.STATUS_LIST_2021_CREDENTIAL).isPresent());
         }
     }
 
@@ -117,6 +117,6 @@ class WalletTest {
         Assertions.assertFalse(storage.getDidDocument(bpnRand).isPresent());
 
         //check status list VC is not created
-        Assertions.assertFalse(storage.getCredentialsByHolderBpnAndType(bpnRand, StringPool.STATUS_LIST_2021_CREDENTIAL).isPresent());
+        Assertions.assertFalse(storage.getCredentialsByHolderBpnAndType(bpnRand, Constants.STATUS_LIST_2021_CREDENTIAL).isPresent());
     }
 }

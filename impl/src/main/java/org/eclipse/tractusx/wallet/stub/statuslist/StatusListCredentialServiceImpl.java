@@ -30,7 +30,7 @@ import org.eclipse.tractusx.wallet.stub.did.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.CustomCredential;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -50,7 +50,7 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
     @SneakyThrows
     public CustomCredential getStatusListCredential(String bpn, String vcId) {
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(bpn);
-        URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + vcId);
+        URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + vcId);
         Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
         return verifiableCredentials.orElseGet(() -> credentialService.issueStatusListCredential(bpn, vcId));
 

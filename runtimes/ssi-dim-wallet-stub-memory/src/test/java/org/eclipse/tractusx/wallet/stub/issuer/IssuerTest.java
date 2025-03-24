@@ -40,7 +40,7 @@ import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.token.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -115,7 +115,7 @@ class IssuerTest {
         Assertions.assertNotNull(responseBody.getId());
         Assertions.assertNotNull(responseBody.getJwt());
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
-        URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + responseBody.getId());
+        URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + responseBody.getId());
         Assertions.assertTrue(storage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
         Assertions.assertTrue(storage.getVerifiableCredentials(vcIdUri.toString()).isPresent());
     }
@@ -136,7 +136,7 @@ class IssuerTest {
         Assertions.assertNotNull(responseBody);
         Assertions.assertNotNull(responseBody.getId());
         DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
-        URI vcIdUri = URI.create(issuerDidDocument.getId() + StringPool.HASH_SEPARATOR + responseBody.getId());
+        URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + responseBody.getId());
         Assertions.assertTrue(storage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
         Assertions.assertTrue(storage.getVerifiableCredentials(vcIdUri.toString()).isPresent());
     }
@@ -189,7 +189,7 @@ class IssuerTest {
     private ResponseEntity<IssueCredentialResponse> createCredentialWithSignature(HttpHeaders headers, String bpn, String did) {
         Map<String, Object> vcMap = getVcObject(bpn, did);
         CredentialPayload requestPayload = CredentialPayload.builder()
-                .issueWithSignature(Map.of(StringPool.CONTENT, vcMap)).build();
+                .issueWithSignature(Map.of(Constants.CONTENT, vcMap)).build();
         IssueCredentialRequest issueCredentialRequest = IssueCredentialRequest.builder()
                 .application("Cofiniy-X")
                 .credentialPayload(requestPayload)
@@ -236,7 +236,7 @@ class IssuerTest {
                        }
                     }
                 """;
-        vc = vc.replace("##type", StringPool.BPN_CREDENTIAL).replace("##bpn", bpn).replace("##did", did);
+        vc = vc.replace("##type", Constants.BPN_CREDENTIAL).replace("##bpn", bpn).replace("##did", did);
         return objectMapper.readValue(vc, Map.class);
     }
 

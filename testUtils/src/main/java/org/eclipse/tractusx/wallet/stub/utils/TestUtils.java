@@ -64,7 +64,7 @@ public class TestUtils {
      * @return A random BPM number as a String.
      */
     public static String getRandomBpmNumber() {
-        RgxGen rgxGen = RgxGen.parse(StringPool.BPN_NUMBER_REGEX);
+        RgxGen rgxGen = RgxGen.parse(Constants.BPN_NUMBER_REGEX);
         return rgxGen.generate();
     }
 
@@ -96,7 +96,7 @@ public class TestUtils {
 
         //verify token
         JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(tokenResponse.getAccessToken());
-        Assertions.assertEquals(jwtClaimsSet.getStringClaim(StringPool.BPN), bpn);
+        Assertions.assertEquals(jwtClaimsSet.getStringClaim(Constants.BPN), bpn);
         return tokenResponse.getTokenType() + StringUtils.SPACE + tokenResponse.getAccessToken();
     }
 
@@ -123,7 +123,7 @@ public class TestUtils {
         String requestedInnerToken = getToken(keyService, didDocumentService, consumerDid, providerDid, consumerBpn, readScope, typeList);
         String jwt = createStsWithoutScope(restTemplate, tokenService, tokenSettings, consumerDid, providerDid, consumerBpn, requestedInnerToken);
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, StringPool.BEARER + jwt);
+        headers.add(HttpHeaders.AUTHORIZATION, Constants.BEARER + jwt);
 
         QueryPresentationRequest request = getQueryPresentationRequest(typeList);
 
@@ -183,11 +183,11 @@ public class TestUtils {
                 .audience(consumerDid)
                 .subject(consumerDid)
                 .issueTime(Date.from(Instant.now()))
-                .claim(StringPool.CREDENTIAL_TYPES, vcTypes)
-                .claim(StringPool.SCOPE, scope)
-                .claim(StringPool.CONSUMER_DID, consumerDid)
-                .claim(StringPool.PROVIDER_DID, providerDid)
-                .claim(StringPool.BPN, consumerBpn)
+                .claim(Constants.CREDENTIAL_TYPES, vcTypes)
+                .claim(Constants.SCOPE, scope)
+                .claim(Constants.CONSUMER_DID, consumerDid)
+                .claim(Constants.PROVIDER_DID, providerDid)
+                .claim(Constants.BPN, consumerBpn)
                 .build();
         return CommonUtils.signedJWT(tokeJwtClaimsSet, keyService.getKeyPair(consumerBpn), didDocumentService.getDidDocument(consumerBpn).getVerificationMethod().get(0).getId()).serialize();
     }

@@ -31,7 +31,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.token.TokenService;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,8 +66,8 @@ public class IssuerStubController implements IssuerStubApi{
             vcId = issuerCredentialService.storeCredential(request, CommonUtils.getBpnFromToken(token, tokenService));
         } else {
             Map<String, String> map = issuerCredentialService.issueCredential(request, CommonUtils.getBpnFromToken(token, tokenService));
-            vcId = map.get(StringPool.ID);
-            jwt = map.get(StringPool.JWT);
+            vcId = map.get(Constants.ID);
+            jwt = map.get(Constants.JWT);
         }
         IssueCredentialResponse response = IssueCredentialResponse.builder()
                 .id(vcId)

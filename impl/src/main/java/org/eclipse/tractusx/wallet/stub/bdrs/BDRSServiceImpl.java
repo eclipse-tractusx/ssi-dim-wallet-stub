@@ -31,7 +31,7 @@ import org.eclipse.tractusx.wallet.stub.did.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.VPValidationFailedException;
 import org.eclipse.tractusx.wallet.stub.storage.Storage;
 import org.eclipse.tractusx.wallet.stub.token.TokenService;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -81,19 +81,19 @@ public class BDRSServiceImpl implements BDRSService {
                 throw new IllegalArgumentException("JWT token is missing in headers");
             }
             JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(jwtToken);
-            Map<String, Object> vp = jwtClaimsSet.getJSONObjectClaim(StringPool.VP);
+            Map<String, Object> vp = jwtClaimsSet.getJSONObjectClaim(Constants.VP);
 
-            List<String> vcs = (List<String>) vp.get(StringPool.VERIFIABLE_CREDENTIAL_CAMEL_CASE);
+            List<String> vcs = (List<String>) vp.get(Constants.VERIFIABLE_CREDENTIAL_CAMEL_CASE);
 
             String vcToken = vcs.get(0);
             JWTClaimsSet vcTokenClaim = tokenService.verifyTokenAndGetClaims(vcToken);
 
-            List<String> vcTypes = (List<String>) vcTokenClaim.getJSONObjectClaim(StringPool.VC).get(StringPool.TYPE);
-            if (! vcTypes.contains(StringPool.MEMBERSHIP_CREDENTIAL)) {
+            List<String> vcTypes = (List<String>) vcTokenClaim.getJSONObjectClaim(Constants.VC).get(Constants.TYPE);
+            if (! vcTypes.contains(Constants.MEMBERSHIP_CREDENTIAL)) {
                 log.error("Invalid VC type, expected MembershipCredential but got -> {}", vcTypes);
             }
-            Map<String, String> vcSubject = (Map<String, String>) vcTokenClaim.getJSONObjectClaim(StringPool.VC).get(StringPool.CREDENTIAL_SUBJECT_CAMEL_CASE);
-            String holderBpn = vcSubject.get(StringPool.HOLDER_IDENTIFIER);
+            Map<String, String> vcSubject = (Map<String, String>) vcTokenClaim.getJSONObjectClaim(Constants.VC).get(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE);
+            String holderBpn = vcSubject.get(Constants.HOLDER_IDENTIFIER);
 
             //create wallet if not created
             didDocumentService.getDidDocument(holderBpn);

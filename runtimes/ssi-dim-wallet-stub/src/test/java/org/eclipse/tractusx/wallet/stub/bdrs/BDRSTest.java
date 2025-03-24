@@ -32,7 +32,7 @@ import org.eclipse.tractusx.wallet.stub.utils.TestUtils;
 import org.eclipse.tractusx.wallet.stub.token.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.CommonUtils;
-import org.eclipse.tractusx.wallet.stub.utils.StringPool;
+import org.eclipse.tractusx.wallet.stub.utils.Constants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,7 +84,7 @@ class BDRSTest {
         Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.UNAUTHORIZED.value());
 
         //pass invalid token
-        headers.add(HttpHeaders.AUTHORIZATION, StringPool.BEARER + "Some dummy token");
+        headers.add(HttpHeaders.AUTHORIZATION, Constants.BEARER + "Some dummy token");
         entity = new HttpEntity<>(headers);
         response = restTemplate.exchange("/api/v1/directory/bpn-directory", HttpMethod.GET, entity, Map.class);
         Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.UNAUTHORIZED.value());
@@ -100,12 +100,12 @@ class BDRSTest {
         String consumerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), consumerBpn);
         String providerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), providerBpn);
 
-        String vpToken = TestUtils.getVPToken(restTemplate, keyService, didDocumentService, tokenService, tokenSettings, consumerDid, providerDid, consumerBpn, readScope, List.of(StringPool.BPN_CREDENTIAL));
+        String vpToken = TestUtils.getVPToken(restTemplate, keyService, didDocumentService, tokenService, tokenSettings, consumerDid, providerDid, consumerBpn, readScope, List.of(Constants.BPN_CREDENTIAL));
         Assertions.assertNotNull(vpToken);
 
         //make directory API call
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, StringPool.BEARER + vpToken);
+        headers.add(HttpHeaders.AUTHORIZATION, Constants.BEARER + vpToken);
         HttpEntity<QueryPresentationRequest> entity = new HttpEntity<>(headers);
         ResponseEntity<Map> response = restTemplate.exchange("/api/v1/directory/bpn-directory?bpn=" + StringUtils.join(List.of(consumerBpn, providerBpn), ", "), HttpMethod.GET, entity, Map.class);
         Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
