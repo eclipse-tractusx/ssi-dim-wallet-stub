@@ -37,6 +37,7 @@ repositories {
 
 dependencies {
     implementation project(':api')
+    implementation project(':persistence:persistence-api')
 
     // SPRING
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3'

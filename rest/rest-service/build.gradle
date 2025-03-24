@@ -37,6 +37,7 @@ repositories {
 
 dependencies {
     implementation project(':api')
+    implementation project(':persistence:persistence-api')
     implementation project(':utils')
     implementation project(':rest:rest-api')
 
