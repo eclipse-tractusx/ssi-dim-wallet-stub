@@ -49,7 +49,7 @@ import java.util.Map;
 
 
 @SuppressWarnings("rawtypes")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {WalletStubApplication.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = { WalletStubApplication.class})
 @ContextConfiguration(initializers = {TestContextInitializer.class})
 @ComponentScan(basePackages = "org.eclipse.tractusx.wallet.stub.bdrs")
 class BDRSTest {
