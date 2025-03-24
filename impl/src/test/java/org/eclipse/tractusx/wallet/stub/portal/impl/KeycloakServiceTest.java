@@ -54,11 +54,12 @@ class KeycloakServiceTest {
     }
 
     public void setupStub() {
-
+        // SonarQube: This method is empty
     }
 
     @AfterEach
     void afterEach() {
+        // SonarQube: This method is empty
     }
 
 
