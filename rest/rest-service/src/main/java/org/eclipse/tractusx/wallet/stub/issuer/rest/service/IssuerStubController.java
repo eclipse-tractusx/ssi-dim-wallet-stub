@@ -58,6 +58,7 @@ public class IssuerStubController implements IssuerStubApi {
 
     private final TokenService tokenService;
 
+    @Override
     public ResponseEntity<IssueCredentialResponse> createCredential(@RequestBody IssueCredentialRequest request,
                                                                     @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         Validate.isTrue(request.isValid(), "Invalid request");
@@ -78,6 +79,7 @@ public class IssuerStubController implements IssuerStubApi {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @Override
     public ResponseEntity<SignCredentialResponse> signOrRevokeCredential(@RequestBody SignCredentialRequest request, @PathVariable String credentialId) {
         if (Objects.nonNull(request.getPayload()) && request.getPayload().isRevoke()) {
             return ResponseEntity.ok(null);
@@ -91,6 +93,7 @@ public class IssuerStubController implements IssuerStubApi {
         }
     }
 
+    @Override
     public GetCredentialsResponse getCredential(@PathVariable String externalCredentialId) {
         return issuerCredentialService.getCredential(externalCredentialId);
     }

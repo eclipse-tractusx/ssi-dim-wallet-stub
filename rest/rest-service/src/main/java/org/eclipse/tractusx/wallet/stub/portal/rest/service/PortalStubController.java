@@ -42,11 +42,13 @@ public class PortalStubController implements PortalStubApi {
 
     private final PortalStubService portalStubService;
 
+    @Override
     public ResponseEntity<Void> setupDim(@ParameterObject SetupDimRequest request) {
         portalStubService.setupDim(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @Override
     public ResponseEntity<Void> createTechUser(@RequestBody CreateTechUserRequest request, @PathVariable(name = "bpn") String bpn) {
         portalStubService.createTechUser(request, bpn);
         return new ResponseEntity<>(HttpStatus.OK);

@@ -49,6 +49,7 @@ public class TokenController implements TokenApi {
 
     private final TokenService tokenService;
 
+    @Override
     public ResponseEntity<TokenResponse> createAccessToken(@ModelAttribute @RequestBody TokenRequest request, @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
         setClientInfo(request, token);
         return ResponseEntity.ok(tokenService.createAccessTokenResponse(request));

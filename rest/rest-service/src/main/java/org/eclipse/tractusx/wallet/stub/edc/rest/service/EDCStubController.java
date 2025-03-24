@@ -46,6 +46,7 @@ public class EDCStubController implements EDCStubApi {
 
     private final EDCStubService edcStubService;
 
+    @Override
     public ResponseEntity<StsTokeResponse> createTokenWithScope(
             @RequestBody Map<String, Object> request,
             @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token
@@ -53,6 +54,7 @@ public class EDCStubController implements EDCStubApi {
         return ResponseEntity.ok(StsTokeResponse.builder().jwt(edcStubService.createStsToken(request, token)).build());
     }
 
+    @Override
     public ResponseEntity<QueryPresentationResponse> queryPresentations(
             @RequestBody QueryPresentationRequest request,
             @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token

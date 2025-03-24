@@ -46,6 +46,7 @@ public class StatusListCredentialController implements StatusListCredentialApi {
     private final Storage storage;
     private final DidDocumentService didDocumentService;
 
+    @Override
     public ResponseEntity<CustomCredential> getStatusListVc(@PathVariable(name = "bpn") String bpn, @PathVariable(name = "vcId") String vcId) {
 
         //currently we are returning one VC

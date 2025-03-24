@@ -46,6 +46,7 @@ public class DidController implements DidApi {
 
     private final Storage storage;
 
+    @Override
     public ResponseEntity<DidDocument> getDocument(@PathVariable(name = Constants.BPN) String bpn) {
         log.debug("Did document requested for bpn ->{}", bpn);
         Optional<DidDocument> didDocument = storage.getDidDocument(bpn);

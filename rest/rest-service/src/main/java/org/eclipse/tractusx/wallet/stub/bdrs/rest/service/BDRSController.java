@@ -57,6 +57,7 @@ public class BDRSController implements BDRSApi {
      * @param response  The HTTP response object to handle the response.
      * @throws IOException If there is an error writing to the response output stream.
      */
+    @Override
     public void getBpnDirectory(@RequestParam(name = Constants.BPN, required = false) String bpnString,
                                 @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String jwtToken,
                                 HttpServletResponse response) throws IOException {
