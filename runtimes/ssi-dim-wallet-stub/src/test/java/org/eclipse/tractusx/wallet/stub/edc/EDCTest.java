@@ -118,12 +118,12 @@ class EDCTest {
         String consumerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), consumerBpn);
         String providerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), providerBpn);
 
-        String requestedInnerToken = getToken(consumerDid, providerDid, consumerBpn, readScope, List.of(StringPool.BPN_CREDENTIAL,StringPool.DATA_EXCHANGE_CREDENTIAL));
+        String requestedInnerToken = getToken(consumerDid, providerDid, consumerBpn, readScope, List.of(StringPool.BPN_CREDENTIAL, StringPool.DATA_EXCHANGE_CREDENTIAL));
         String jwt = createStsWithoutScope(consumerDid, providerDid, consumerBpn, requestedInnerToken);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, BEARER + jwt);
 
-        QueryPresentationRequest request = getQueryPresentationRequest(List.of(StringPool.BPN_CREDENTIAL,StringPool.DATA_EXCHANGE_CREDENTIAL));
+        QueryPresentationRequest request = getQueryPresentationRequest(List.of(StringPool.BPN_CREDENTIAL, StringPool.DATA_EXCHANGE_CREDENTIAL));
 
         HttpEntity<QueryPresentationRequest> entity = new HttpEntity<>(request, headers);
         ResponseEntity<QueryPresentationResponse> response = restTemplate.exchange("/api/presentations/query", HttpMethod.POST, entity, QueryPresentationResponse.class);

@@ -45,8 +45,8 @@ dependencies {
     implementation project(':api')
     implementation project(':utils')
     implementation project(':impl')
-    implementation project(':openapi')
-    implementation project(':rest-service')
+    implementation project(':rest:rest-api')
+    implementation project(':rest:rest-service')
     implementation project(':persistence:postgresql')
 
     testImplementation project(':testUtils')

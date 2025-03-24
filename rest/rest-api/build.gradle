@@ -27,7 +27,7 @@ group = 'org.eclipse.tractusx.wallet.stub'
 version = 'latest'
 
 build {
-    archivesBaseName = "wallet-rest-service"
+    archivesBaseName = "wallet-rest-api"
     version = "latest"
 }
 
@@ -37,19 +37,13 @@ repositories {
 
 dependencies {
     implementation project(':api')
-    implementation project(':utils')
-    implementation project(':openapi')
 
     // SPRING
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // SPRING DOC - SWAGGER
-    implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
-
-    // UTILS
-    implementation 'org.apache.commons:commons-lang3:3.15.0'
 }
 
 test {
