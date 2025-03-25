@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -19,20 +19,13 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.config.api;
+package org.eclipse.tractusx.wallet.stub.token.impl;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.List;
-
-
 /**
- * This class represents the configuration settings for the Wallet Stub application.
- * The settings are defined using Spring Boot's {@code @ConfigurationProperties} annotation,
- * allowing them to be configured via application properties files.
+ * This class contains configuration properties related to access token
  */
-@ConfigurationProperties(prefix = "stub")
-public record WalletStubSettings(String env, String didHost, String stubUrl,
-                                 List<String> seedWalletsBPN,
-                                 String baseWalletBPN, String statusListVcId) {
+@ConfigurationProperties(prefix = "stub.token")
+public record TokenSettings(int tokenExpiryTime) {
 }

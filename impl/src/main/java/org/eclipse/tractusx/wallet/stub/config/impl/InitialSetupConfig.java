@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import org.eclipse.tractusx.wallet.stub.config.api.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.portal.api.PortalStubService;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.SetupDimRequest;
 import org.eclipse.tractusx.wallet.stub.statuslist.api.StatusListCredentialService;

@@ -22,14 +22,14 @@
 package org.eclipse.tractusx.wallet.stub.bdrs;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.wallet.stub.WalletStubApplication;
+import org.eclipse.tractusx.wallet.stub.runtime.postgresql.WalletStubApplication;
 import org.eclipse.tractusx.wallet.stub.config.TestContextInitializer;
-import org.eclipse.tractusx.wallet.stub.config.api.WalletStubSettings;
+import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.edc.api.dto.QueryPresentationRequest;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
-import org.eclipse.tractusx.wallet.stub.token.api.TokenSettings;
+import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
 import org.eclipse.tractusx.wallet.stub.utils.common.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;

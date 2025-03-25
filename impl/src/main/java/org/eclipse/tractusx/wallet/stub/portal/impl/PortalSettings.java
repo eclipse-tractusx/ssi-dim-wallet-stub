@@ -19,34 +19,20 @@
  * ******************************************************************************
  */
 
-plugins {
-    id 'java'
-}
+package org.eclipse.tractusx.wallet.stub.portal.impl;
 
-group = 'org.eclipse.tractusx.wallet.stub'
-version = '0.0.1'
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-repositories {
-    mavenCentral()
-}
-dependencies {
-    implementation project(':api')
-    implementation project(':impl')
-    implementation project(':utils')
-
-    // SPRING
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    implementation 'com.github.curious-odd-man:rgxgen:2.0'
-    implementation 'org.springframework.boot:spring-boot-starter-test'
-
-    // UTILS
-    implementation 'org.apache.commons:commons-lang3:3.15.0'
-
-    // EDC
-    implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
-}
-
-test {
-    useJUnitPlatform()
+/**
+ * Setting class configuration properties related to portal backend
+ *
+ * @param portalWaitTime The number of seconds to wait before pushing data to portal backend
+ * @param clientId       The client id of portal
+ * @param clientSecret   The client secret of portal
+ * @param realm          The keycloak of the realm
+ * @param authServerUrl  The auth server url
+ */
+@ConfigurationProperties(prefix = "stub.portal")
+public record PortalSettings(long portalWaitTime, String clientId, String clientSecret, String realm,
+                             String authServerUrl) {
 }

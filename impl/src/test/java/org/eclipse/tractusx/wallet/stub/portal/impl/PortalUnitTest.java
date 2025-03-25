@@ -23,12 +23,10 @@ package org.eclipse.tractusx.wallet.stub.portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.iam.did.spi.document.Service;
-import org.eclipse.tractusx.wallet.stub.config.api.WalletStubSettings;
+import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.portal.api.KeycloakService;
-import org.eclipse.tractusx.wallet.stub.portal.api.PortalClient;
-import org.eclipse.tractusx.wallet.stub.portal.api.PortalSettings;
 import org.eclipse.tractusx.wallet.stub.portal.api.PortalStubService;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.AuthenticationDetails;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.CreateTechUserRequest;

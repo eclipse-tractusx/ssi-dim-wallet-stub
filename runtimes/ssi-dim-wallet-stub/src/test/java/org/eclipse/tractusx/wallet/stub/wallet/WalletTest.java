@@ -21,9 +21,9 @@
 
 package org.eclipse.tractusx.wallet.stub.wallet;
 
-import org.eclipse.tractusx.wallet.stub.WalletStubApplication;
+import org.eclipse.tractusx.wallet.stub.runtime.postgresql.WalletStubApplication;
 import org.eclipse.tractusx.wallet.stub.config.TestContextInitializer;
-import org.eclipse.tractusx.wallet.stub.config.api.WalletStubSettings;
+import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;

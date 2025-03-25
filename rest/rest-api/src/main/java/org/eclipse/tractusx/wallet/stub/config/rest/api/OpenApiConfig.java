@@ -29,6 +29,7 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 
@@ -38,6 +39,7 @@ import java.util.Collections;
  * OpenApiConfig is used for managing the swagger with basic security setup if security is enabled.
  */
 @Configuration
+@ComponentScan(basePackages = "org.eclipse.tractusx.wallet.stub.apidoc.rest.api")
 public class OpenApiConfig {
 
 

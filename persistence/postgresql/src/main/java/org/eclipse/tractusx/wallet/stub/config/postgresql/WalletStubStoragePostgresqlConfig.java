@@ -19,34 +19,23 @@
  * ******************************************************************************
  */
 
-plugins {
-    id 'java'
-}
+package org.eclipse.tractusx.wallet.stub.config.postgresql;
 
-group = 'org.eclipse.tractusx.wallet.stub'
-version = '0.0.1'
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-repositories {
-    mavenCentral()
-}
-dependencies {
-    implementation project(':api')
-    implementation project(':impl')
-    implementation project(':utils')
-
-    // SPRING
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    implementation 'com.github.curious-odd-man:rgxgen:2.0'
-    implementation 'org.springframework.boot:spring-boot-starter-test'
-
-    // UTILS
-    implementation 'org.apache.commons:commons-lang3:3.15.0'
-
-    // EDC
-    implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
-}
-
-test {
-    useJUnitPlatform()
+@Configuration
+@ComponentScan(basePackages = {
+        "org.eclipse.tractusx.wallet.stub.storage.postgresql",
+        "org.eclipse.tractusx.wallet.stub.utils.postgresql"
+})
+@EntityScan(basePackages = {
+        "org.eclipse.tractusx.wallet.stub.dao.postgresql.entity"
+})
+@EnableJpaRepositories(basePackages = {
+        "org.eclipse.tractusx.wallet.stub.dao.postgresql.repository"
+})
+public class WalletStubStoragePostgresqlConfig {
 }

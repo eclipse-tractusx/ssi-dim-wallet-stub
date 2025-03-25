@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -19,20 +19,21 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.portal.api;
+package org.eclipse.tractusx.wallet.stub.config.rest.service;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * Setting class configuration properties related to portal backend
- *
- * @param portalWaitTime The number of seconds to wait before pushing data to portal backend
- * @param clientId       The client id of portal
- * @param clientSecret   The client secret of portal
- * @param realm          The keycloak of the realm
- * @param authServerUrl  The auth server url
- */
-@ConfigurationProperties(prefix = "stub.portal")
-public record PortalSettings(long portalWaitTime, String clientId, String clientSecret, String realm,
-                             String authServerUrl) {
+@Configuration
+@ComponentScan({
+        "org.eclipse.tractusx.wallet.stub.bdrs.rest.service",
+        "org.eclipse.tractusx.wallet.stub.config.rest.service",
+        "org.eclipse.tractusx.wallet.stub.did.rest.service",
+        "org.eclipse.tractusx.wallet.stub.edc.rest.service",
+        "org.eclipse.tractusx.wallet.stub.issuer.rest.service",
+        "org.eclipse.tractusx.wallet.stub.portal.rest.service",
+        "org.eclipse.tractusx.wallet.stub.statuslist.rest.service",
+        "org.eclipse.tractusx.wallet.stub.token.rest.service"
+})
+public class WalletStubRestServiceConfig {
 }

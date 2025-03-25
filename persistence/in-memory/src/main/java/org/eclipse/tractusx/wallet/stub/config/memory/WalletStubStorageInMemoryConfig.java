@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -19,13 +19,14 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.token.api;
+package org.eclipse.tractusx.wallet.stub.config.memory;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * This class contains configuration properties related to access token
- */
-@ConfigurationProperties(prefix = "stub.token")
-public record TokenSettings(int tokenExpiryTime) {
+@Configuration
+@ComponentScan(basePackages = {
+        "org.eclipse.tractusx.wallet.stub.storage.memory"
+})
+public class WalletStubStorageInMemoryConfig {
 }

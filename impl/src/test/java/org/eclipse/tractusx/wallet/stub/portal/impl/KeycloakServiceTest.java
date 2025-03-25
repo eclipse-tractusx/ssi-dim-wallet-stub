@@ -22,7 +22,6 @@
 package org.eclipse.tractusx.wallet.stub.portal.impl;
 
 import org.eclipse.tractusx.wallet.stub.portal.api.KeycloakService;
-import org.eclipse.tractusx.wallet.stub.portal.api.PortalSettings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

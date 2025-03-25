@@ -40,8 +40,10 @@ dependencies {
     implementation project(':persistence:persistence-api')
     implementation project(':utils')
     testImplementation project(':utils')
-
     testImplementation project(':testUtils')
+
+    // SPRING
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3'
 
     // SPRING DOC - SWAGGER
     implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"

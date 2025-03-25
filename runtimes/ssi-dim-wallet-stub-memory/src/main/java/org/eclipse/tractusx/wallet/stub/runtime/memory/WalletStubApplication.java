@@ -19,21 +19,31 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub;
+package org.eclipse.tractusx.wallet.stub.runtime.memory;
 
+import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubImplConfig;
+import org.eclipse.tractusx.wallet.stub.config.memory.WalletStubStorageInMemoryConfig;
+import org.eclipse.tractusx.wallet.stub.config.rest.api.OpenApiConfig;
+import org.eclipse.tractusx.wallet.stub.config.rest.service.ApplicationConfig;
+import org.eclipse.tractusx.wallet.stub.config.rest.service.WalletStubRestServiceConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * The type Wallet demo application.
  */
 @SpringBootApplication
-@ConfigurationPropertiesScan
+@Import({ WalletStubImplConfig.class,
+        WalletStubStorageInMemoryConfig.class,
+        OpenApiConfig.class,
+        ApplicationConfig.class,
+        WalletStubRestServiceConfig.class
+})
 @EnableAsync
-@EnableFeignClients
 public class WalletStubApplication {
 
     /**

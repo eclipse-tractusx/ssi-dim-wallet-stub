@@ -31,7 +31,7 @@ build {
 }
 
 application {
-    mainClass = 'org.eclipse.tractusx.wallet.stub.WalletStubApplication'
+    mainClass = 'org.eclipse.tractusx.wallet.stub.runtime.memory.WalletStubApplication'
 }
 
 group = 'org.eclipse.tractusx.wallet.stub'

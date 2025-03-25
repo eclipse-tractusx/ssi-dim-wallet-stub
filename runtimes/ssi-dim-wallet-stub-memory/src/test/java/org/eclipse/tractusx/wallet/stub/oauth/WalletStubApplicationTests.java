@@ -22,10 +22,10 @@
 package org.eclipse.tractusx.wallet.stub.oauth;
 
 import lombok.SneakyThrows;
-import org.eclipse.tractusx.wallet.stub.WalletStubApplication;
+import org.eclipse.tractusx.wallet.stub.runtime.memory.WalletStubApplication;
 import org.eclipse.tractusx.wallet.stub.config.TestContextInitializer;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
-import org.eclipse.tractusx.wallet.stub.token.api.TokenSettings;
+import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
 import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
 import org.junit.jupiter.api.Assertions;

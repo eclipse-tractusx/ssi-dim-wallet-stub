@@ -19,34 +19,20 @@
  * ******************************************************************************
  */
 
-plugins {
-    id 'java'
-}
+package org.eclipse.tractusx.wallet.stub.config.impl;
 
-group = 'org.eclipse.tractusx.wallet.stub'
-version = '0.0.1'
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-repositories {
-    mavenCentral()
-}
-dependencies {
-    implementation project(':api')
-    implementation project(':impl')
-    implementation project(':utils')
+import java.util.List;
 
-    // SPRING
-    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    implementation 'com.github.curious-odd-man:rgxgen:2.0'
-    implementation 'org.springframework.boot:spring-boot-starter-test'
-
-    // UTILS
-    implementation 'org.apache.commons:commons-lang3:3.15.0'
-
-    // EDC
-    implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
-}
-
-test {
-    useJUnitPlatform()
+/**
+ * This class represents the configuration settings for the Wallet Stub application.
+ * The settings are defined using Spring Boot's {@code @ConfigurationProperties} annotation,
+ * allowing them to be configured via application properties files.
+ */
+@ConfigurationProperties(prefix = "stub")
+public record WalletStubSettings(String env, String didHost, String stubUrl,
+                                 List<String> seedWalletsBPN,
+                                 String baseWalletBPN, String statusListVcId) {
 }
