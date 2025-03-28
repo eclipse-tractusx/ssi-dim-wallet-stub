@@ -88,6 +88,9 @@ public class PortalStubServiceImpl implements PortalStubService {
             }
         } catch (InternalErrorException e) {
             throw e;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         } catch (Exception e){
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
@@ -119,6 +122,9 @@ public class PortalStubServiceImpl implements PortalStubService {
             log.debug("Response of post technical user details->{}", responseEntity.getStatusCode().value());
         } catch (InternalErrorException e) {
             throw e;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         } catch (Exception e){
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
