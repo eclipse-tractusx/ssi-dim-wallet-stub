@@ -22,7 +22,13 @@ FROM gradle:8.9-jdk21-alpine AS build
 COPY --chown=gradle:gradle --chmod=400 . /home/gradle/src
 WORKDIR /home/gradle/src
 
-RUN gradle :runtimes:ssi-dim-wallet-stub-memory:clean :runtimes:ssi-dim-wallet-stub-memory:build --no-daemon -i -x test -x javadoc;
+RUN gradle \
+    :runtimes:ssi-dim-wallet-stub-memory:clean \
+    :runtimes:ssi-dim-wallet-stub-memory:build \
+    --no-daemon \
+    -i \
+    -x test \
+    -x javadoc;
 
 FROM eclipse-temurin:21-jre-alpine
 
