@@ -49,7 +49,7 @@ public class CredentialsApiDoc {
             New credential sign with issuer wallet and saved in in-memory db and send VC id in the response. | Store credential will give only static response with id.
             """, summary = "Create a new credential | Store credential for a holder")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "JWT presentation", content = {
+            @ApiResponse(responseCode = "201", description = "JWT presentation", content = {
                     @Content(examples = {
                             @ExampleObject(name = "Create a new credential", value = """
                                     {
@@ -65,6 +65,82 @@ public class CredentialsApiDoc {
                             @ExampleObject(name = "Store credential for a holder", value = """
                                     {
                                        "id": "1f36af58-0fc0-4b24-9b1c-e37d59668089"
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Illegal Argument Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Bad request: Invalid token -> token",
+                              "status": 400,
+                              "detail": "IllegalArgumentException: Invalid token -> token",
+                              "instance": "/api/v2.0.0/credentials",
+                              "properties": {
+                                "timestamp": 1743154190590
+                              }
+                            }
+                            """),
+                            @ExampleObject(name = "Parse Stub Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                              "status": 400,
+                              "detail": "ParseStubException: Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                              "instance": "/api/v2.0.0/credentials",
+                              "properties": {
+                                "timestamp": 1743156805552
+                              }
+                            }
+                            """)
+                    })
+            }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Missing Request Header Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Please provide the required header: Authorization",
+                              "status": 401,
+                              "detail": "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                              "instance": "/api/v2.0.0/credentials",
+                              "properties": {
+                                "timestamp": 1743085396772
+                              }
+                            }
+                            """)
+                    })
+            }),
+            @ApiResponse(responseCode = "422", description = "Unprocessable Entity", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "No VC Type Found Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Unprocessable Entity: No type found in VC",
+                              "status": 422,
+                              "detail": "NoVCTypeFoundException: No type found in VC",
+                              "instance": "/api/v2.0.0/credentials",
+                              "properties": {
+                                "timestamp": 1743157807618
+                              }
+                            }
+                            """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: ...",
+                                      "instance": "/api/v2.0.0/credentials",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
                                     }
                                     """)
                     })
@@ -177,6 +253,38 @@ public class CredentialsApiDoc {
                                     }
                                     """)
                     })
+            }),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Credential Not Found Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Not Found: No credential found for credentialId -> S",
+                              "status": 404,
+                              "detail": "CredentialNotFoundException: No credential found for credentialId -> S",
+                              "instance": "/api/v2.0.0/credentials/a",
+                              "properties": {
+                                "timestamp": 1743154020889
+                              }
+                            }
+                            """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: ...",
+                                      "instance": "/api/v2.0.0/credentials/a",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
+                                    }
+                                    """)
+                    })
             })
     })
     @RequestBody(content = {
@@ -239,6 +347,38 @@ public class CredentialsApiDoc {
                                       },
                                       "revocationStatus": "false",
                                       "signing_key_id": "did:web:localhost:BPNL000000000000#c3932ff5-8da4-3de9-a942-62125f394e41"
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Credential Not Found Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Not Found: No credential found for credentialId -> s",
+                              "status": 404,
+                              "detail": "CredentialNotFoundException: No credential found for credentialId -> s",
+                              "instance": "/api/v2.0.0/credentials/a",
+                              "properties": {
+                                "timestamp": 1743154132008
+                              }
+                            }
+                            """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: ...",
+                                      "instance": "/api/v2.0.0/credentials/a",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
                                     }
                                     """)
                     })

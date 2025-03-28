@@ -36,6 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.interfaces.ECPrivateKey;
+import java.text.ParseException;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
@@ -48,6 +49,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 
+import org.eclipse.tractusx.wallet.stub.exception.api.ParseStubException;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
@@ -128,9 +130,13 @@ public class CommonUtils {
      */
     @SneakyThrows
     public static String getBpnFromToken(String token, TokenService tokenService) {
-        SignedJWT signedJWT = SignedJWT.parse(cleanToken(token));
-        JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(signedJWT.serialize());
-        return jwtClaimsSet.getClaim(Constants.BPN).toString();
+        try{
+            SignedJWT signedJWT = SignedJWT.parse(cleanToken(token));
+            JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(signedJWT.serialize());
+            return jwtClaimsSet.getClaim(Constants.BPN).toString();
+        }catch (ParseException e){
+            throw new ParseStubException(e.getMessage());
+        }
     }
 
 

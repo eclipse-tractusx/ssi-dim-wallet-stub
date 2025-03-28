@@ -54,6 +54,66 @@ public class EDCStubApiDoc {
                                     }
                                     """)
                     })
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Illegal Argument Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Bad request: Invalid token request",
+                              "status": 400,
+                              "detail": "IllegalArgumentException: Invalid token request",
+                              "instance": "/api/sts",
+                              "properties": {
+                                "timestamp": 1743159060052
+                              }
+                            }
+                            """),
+                            @ExampleObject(name = "Parse Stub Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                              "status": 400,
+                              "detail": "ParseStubException: Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                              "instance": "/api/sts",
+                              "properties": {
+                                "timestamp": 1743159332157
+                              }
+                            }
+                            """)
+                    })
+            }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Missing Request Header Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Please provide the required header: Authorization",
+                              "status": 401,
+                              "detail": "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                              "instance": "/api/sts",
+                              "properties": {
+                                "timestamp": 1743158852368
+                              }
+                            }
+                            """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Internal Server Error",
+                              "status": 500,
+                              "detail": "InternalErrorException: Internal Error: Index 1 out of bounds for length 1",
+                              "instance": "/api/sts",
+                              "properties": {
+                                "timestamp": 1743158954960
+                              }
+                            }
+                            """)
+                    })
             })
     })
     @RequestBody(content = {
@@ -112,6 +172,66 @@ public class EDCStubApiDoc {
                                       "@type": "PresentationResponseMessage"
                                     }
                                     """)
+                    })
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Illegal Argument Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Bad request: Invalid VC types in scope , vcTypesFromSIToken -> [MembershipCredential, DataExchangeGovernanceCredential] , requestedTypes->[MembershipCredentia]",
+                              "status": 400,
+                              "detail": "IllegalArgumentException: Invalid VC types in scope , vcTypesFromSIToken -> [MembershipCredential, DataExchangeGovernanceCredential] , requestedTypes->[MembershipCredentia]",
+                              "instance": "/api/presentations/query",
+                              "properties": {
+                                "timestamp": 1743161743131
+                              }
+                            }
+                            """),
+                            @ExampleObject(name = "Parse Stub Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                              "status": 400,
+                              "detail": "ParseStubException: Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                              "instance": "/api/presentations/query",
+                              "properties": {
+                                "timestamp": 1743160676038
+                              }
+                            }
+                            """)
+                    })
+            }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Missing Request Header Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Please provide the required header: Authorization",
+                              "status": 401,
+                              "detail": "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                              "instance": "/api/presentations/query",
+                              "properties": {
+                                "timestamp": 1743161769113
+                              }
+                            }
+                            """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: Internal Error: Cannot invoke \\"Object.toString()\\" because the return value of \\"com.nimbusds.jwt.JWTClaimsSet.getClaim(String)\\" is null",
+                                      "instance": "/api/presentations/query",
+                                      "properties": {
+                                        "timestamp": 1743160775200
+                                      }
+                                    }
+                            """)
                     })
             })
     })

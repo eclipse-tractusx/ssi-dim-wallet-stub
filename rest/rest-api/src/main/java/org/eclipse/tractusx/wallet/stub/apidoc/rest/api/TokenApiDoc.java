@@ -60,6 +60,38 @@ public class TokenApiDoc {
                                       }
                                     """)
                     })
+            }),
+            @ApiResponse(responseCode = "422", description = "Authorization header invalid", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Error: response status is 422", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Unprocessable Entity: Authorization header invalid",
+                                      "status": 422,
+                                      "detail": "MalformedCredentialsException: Authorization header invalid",
+                                      "instance": "/oauth/token",
+                                      "properties": {
+                                        "timestamp": 1743066806253
+                                      }
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: Internal Error: **",
+                                      "instance": "/oauth/token",
+                                      "properties": {
+                                        "timestamp": 1743160775200
+                                      }
+                                    }
+                            """)
+                    })
             })
     })
     public @interface CreateIdpToken {

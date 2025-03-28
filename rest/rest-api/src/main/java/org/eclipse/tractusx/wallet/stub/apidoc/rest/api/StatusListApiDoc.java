@@ -71,6 +71,38 @@ public class StatusListApiDoc {
                                      }
                                     """)
                     })
+            }),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "No Status List Found Exception", value = """
+                            {
+                              "type": "about:blank",
+                              "title": "Not Found: No status list credential found for bpn -> sda",
+                              "status": 404,
+                              "detail": "NoStatusListFoundException: No status list credential found for bpn -> sda",
+                              "instance": "/api/dim/status-list/a/a",
+                              "properties": {
+                                "timestamp": 1743161965833
+                              }
+                            }
+                            """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: Internal Error: **",
+                                      "instance": "/api/dim/status-list/a/a",
+                                      "properties": {
+                                        "timestamp": 1743160775200
+                                      }
+                                    }
+                            """)
+                    })
             })
     })
     public @interface GetStatusList {

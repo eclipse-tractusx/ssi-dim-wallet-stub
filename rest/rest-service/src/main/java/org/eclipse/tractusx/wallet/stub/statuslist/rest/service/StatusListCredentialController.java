@@ -25,15 +25,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
+import org.eclipse.tractusx.wallet.stub.exception.api.NoStatusListFoundException;
 import org.eclipse.tractusx.wallet.stub.statuslist.rest.api.StatusListCredentialApi;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.util.Optional;
@@ -55,7 +54,7 @@ public class StatusListCredentialController implements StatusListCredentialApi {
         if (verifiableCredentials.isPresent()) {
             return ResponseEntity.ok(verifiableCredentials.get());
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No status list credential found for bpn -> " + bpn);
+            throw new NoStatusListFoundException("No status list credential found for bpn -> " + bpn);
         }
     }
 }

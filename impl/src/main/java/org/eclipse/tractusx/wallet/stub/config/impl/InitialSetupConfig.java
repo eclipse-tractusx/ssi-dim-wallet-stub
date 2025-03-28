@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.portal.api.PortalStubService;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.SetupDimRequest;
 import org.eclipse.tractusx.wallet.stub.statuslist.api.StatusListCredentialService;
@@ -59,33 +60,39 @@ public class InitialSetupConfig {
     @SneakyThrows
     @EventListener(ApplicationReadyEvent.class)
     public void setupBaseWallet() {
-        if(storage.getDidDocument(walletStubSettings.baseWalletBPN()).isEmpty()){
-            SetupDimRequest request = new SetupDimRequest();
-            request.setBpn(walletStubSettings.baseWalletBPN());
-            request.setCompanyName("Eclipse Tractus-x Operating Company");
-            request.setDidDocumentLocation(walletStubSettings.didHost());
+        try{
+            if(storage.getDidDocument(walletStubSettings.baseWalletBPN()).isEmpty()){
+                SetupDimRequest request = new SetupDimRequest();
+                request.setBpn(walletStubSettings.baseWalletBPN());
+                request.setCompanyName("Eclipse Tractus-x Operating Company");
+                request.setDidDocumentLocation(walletStubSettings.didHost());
 
-            //create did a document and lry pair
-            portalStubService.setupDim(request);
+                //create did a document and lry pair
+                portalStubService.setupDim(request);
 
-            //create status list VC
-            statusListCredentialService.getStatusListCredential(walletStubSettings.baseWalletBPN(), walletStubSettings.statusListVcId());
+                //create status list VC
+                statusListCredentialService.getStatusListCredential(walletStubSettings.baseWalletBPN(), walletStubSettings.statusListVcId());
 
-            //create wallets for the seeded BPNs specified in the configuration
-            int cont = 1;
-            for (String bpn: walletStubSettings.seedWalletsBPN()){
-                SetupDimRequest seedRequest = new SetupDimRequest();
-                seedRequest.setBpn(bpn);
-                seedRequest.setCompanyName("Seed Wallet "+cont);
-                seedRequest.setDidDocumentLocation(walletStubSettings.didHost());
-                portalStubService.setupDim(seedRequest);
-                statusListCredentialService.getStatusListCredential(bpn, walletStubSettings.statusListVcId());
-                cont++;
+                //create wallets for the seeded BPNs specified in the configuration
+                int cont = 1;
+                for (String bpn: walletStubSettings.seedWalletsBPN()){
+                    SetupDimRequest seedRequest = new SetupDimRequest();
+                    seedRequest.setBpn(bpn);
+                    seedRequest.setCompanyName("Seed Wallet "+cont);
+                    seedRequest.setDidDocumentLocation(walletStubSettings.didHost());
+                    portalStubService.setupDim(seedRequest);
+                    statusListCredentialService.getStatusListCredential(bpn, walletStubSettings.statusListVcId());
+                    cont++;
+                }
+
+                log.debug("Base wallet with bpn is {} created and status list VC is also created", walletStubSettings.baseWalletBPN());
+            }else {
+                log.debug("Wallet is using persistent data.");
             }
-
-            log.debug("Base wallet with bpn is {} created and status list VC is also created", walletStubSettings.baseWalletBPN());
-        }else {
-            log.debug("Wallet is using persistent data.");
+        } catch (InternalErrorException e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 }

@@ -25,6 +25,7 @@ package org.eclipse.tractusx.wallet.stub.portal.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.portal.api.KeycloakService;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -48,6 +49,8 @@ public class KeycloakServiceImpl implements KeycloakService {
                 .build()) {
             AccessTokenResponse accessToken = keycloak.tokenManager().getAccessToken();
             return accessToken.getTokenType() + StringUtils.SPACE + accessToken.getToken();
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 }

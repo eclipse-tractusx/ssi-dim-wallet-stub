@@ -38,6 +38,9 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
+import org.eclipse.tractusx.wallet.stub.exception.api.CredentialNotFoundException;
+import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
+import org.eclipse.tractusx.wallet.stub.exception.api.NoVCTypeFoundException;
 import org.eclipse.tractusx.wallet.stub.issuer.api.IssuerCredentialService;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
@@ -71,126 +74,153 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
 
     @SuppressWarnings("unchecked")
     private static String getHolderBpn(CustomCredential verifiableCredential) {
-        //get Holder BPN
-        Map<String, Object> subject = (Map<String, Object>) verifiableCredential.get("credentialSubject");
-        if (subject.containsKey(Constants.BPN)) {
-            return subject.get(Constants.BPN).toString();
-        } else if (subject.containsKey(Constants.HOLDER_IDENTIFIER)) {
-            return subject.get(Constants.HOLDER_IDENTIFIER).toString();
-        } else {
-            throw new IllegalArgumentException("Can not identify holder BPN from VC");
+        try{
+            //get Holder BPN
+            Map<String, Object> subject = (Map<String, Object>) verifiableCredential.get("credentialSubject");
+            if (subject.containsKey(Constants.BPN)) {
+                return subject.get(Constants.BPN).toString();
+            } else if (subject.containsKey(Constants.HOLDER_IDENTIFIER)) {
+                return subject.get(Constants.HOLDER_IDENTIFIER).toString();
+            } else {
+                throw new IllegalArgumentException("Can not identify holder BPN from VC");
+            }
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
     public Map<String, String> issueCredential(IssueCredentialRequest request, String issuerBPN) {
+        try{
+            KeyPair issuerKeypair = keyService.getKeyPair(walletStubSettings.baseWalletBPN());
 
-        KeyPair issuerKeypair = keyService.getKeyPair(walletStubSettings.baseWalletBPN());
+            DidDocument issuerDidDocument = didDocumentService.getDidDocument(issuerBPN);
 
-        DidDocument issuerDidDocument = didDocumentService.getDidDocument(issuerBPN);
+            CustomCredential verifiableCredential = new CustomCredential();
 
-        CustomCredential verifiableCredential = new CustomCredential();
+            //we have two options here, user can ask only to provide VC ID or JWT and VC ID
+            if (!CollectionUtils.isEmpty(request.getCredentialPayload().getIssue())) {
+                verifiableCredential.putAll(request.getCredentialPayload().getIssue());
+            } else {
+                verifiableCredential.putAll((Map<String, Object>) request.getCredentialPayload().getIssueWithSignature().get(Constants.CONTENT));
+            }
+            String holderBpn = getHolderBpn(verifiableCredential);
 
-        //we have two options here, user can ask only to provide VC ID or JWT and VC ID
-        if (!CollectionUtils.isEmpty(request.getCredentialPayload().getIssue())) {
-            verifiableCredential.putAll(request.getCredentialPayload().getIssue());
-        } else {
-            verifiableCredential.putAll((Map<String, Object>) request.getCredentialPayload().getIssueWithSignature().get(Constants.CONTENT));
-        }
-        String holderBpn = getHolderBpn(verifiableCredential);
+            DidDocument holderDidDocument = didDocumentService.getDidDocument(holderBpn);
 
-        DidDocument holderDidDocument = didDocumentService.getDidDocument(holderBpn);
+            String type;
+            List<String> types = (List<String>) verifiableCredential.get(Constants.TYPE);
+            //https://www.w3.org/TR/vc-data-model/#types As per the VC schema, types can be multiple, but index 1 should have the correct type.
+            if (types.size() == 2) {
+                type = types.get(1);
+            } else if (types.size() == 1) {
+                type = types.getFirst();
+            } else {
+                throw new NoVCTypeFoundException("No type found in VC");
+            }
 
-        String type;
-        List<String> types = (List<String>) verifiableCredential.get(Constants.TYPE);
-        //https://www.w3.org/TR/vc-data-model/#types As per the VC schema, types can be multiple, but index 1 should have the correct type.
-        if (types.size() == 2) {
-            type = types.get(1);
-        } else if (types.size() == 1) {
-            type = types.getFirst();
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "No type found in VC");
-        }
+            //sign
+            String vcId = CommonUtils.getUuid(holderBpn, type);
+            URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + vcId);
+            URI issuer = new URI("did:web:" + walletStubSettings.didHost() + ":" + walletStubSettings.baseWalletBPN());
 
-        //sign
-        String vcId = CommonUtils.getUuid(holderBpn, type);
-        URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + vcId);
-        URI issuer = new URI("did:web:" + walletStubSettings.didHost() + ":" + walletStubSettings.baseWalletBPN());
+            verifiableCredential.put(Constants.ID, vcIdUri.toString());
+            verifiableCredential.put("issuer", issuer.toString());
 
-        verifiableCredential.put(Constants.ID, vcIdUri.toString());
-        verifiableCredential.put("issuer", issuer.toString());
+            //sign JWT
+            JWSHeader membershipTokenHeader = new JWSHeader.Builder(JWSAlgorithm.ES256K)
+                    .type(JOSEObjectType.JWT)
+                    .keyID(issuerDidDocument.getVerificationMethod().getFirst().getId())
+                    .build();
 
-        //sign JWT
-        JWSHeader membershipTokenHeader = new JWSHeader.Builder(JWSAlgorithm.ES256K)
-                .type(JOSEObjectType.JWT)
-                .keyID(issuerDidDocument.getVerificationMethod().getFirst().getId())
-                .build();
+            //time config
+            Date time = new Date();
+            Date expiryTime = DateUtils.addMinutes(time, tokenSettings.tokenExpiryTime());
 
-        //time config
-        Date time = new Date();
-        Date expiryTime = DateUtils.addMinutes(time, tokenSettings.tokenExpiryTime());
+            //claims
+            JWTClaimsSet membershipTokenBody = new JWTClaimsSet.Builder()
+                    .issueTime(time)
+                    .jwtID(UUID.randomUUID().toString())
+                    .audience(List.of(issuerDidDocument.getId(), holderDidDocument.getId()))
+                    .expirationTime(expiryTime)
+                    .claim(Constants.BPN, holderBpn)
+                    .claim(Constants.VC, verifiableCredential)
+                    .issuer(issuerDidDocument.getId())
+                    .subject(issuerDidDocument.getId())
+                    .build();
 
-        //claims
-        JWTClaimsSet membershipTokenBody = new JWTClaimsSet.Builder()
-                .issueTime(time)
-                .jwtID(UUID.randomUUID().toString())
-                .audience(List.of(issuerDidDocument.getId(), holderDidDocument.getId()))
-                .expirationTime(expiryTime)
-                .claim(Constants.BPN, holderBpn)
-                .claim(Constants.VC, verifiableCredential)
-                .issuer(issuerDidDocument.getId())
-                .subject(issuerDidDocument.getId())
-                .build();
+            SignedJWT vcJWT = new SignedJWT(membershipTokenHeader, membershipTokenBody);
+            JWSSigner signer = new ECDSASigner((ECPrivateKey) issuerKeypair.getPrivate());
+            signer.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+            vcJWT.sign(signer);
+            String vcAsJwt = vcJWT.serialize();
 
-        SignedJWT vcJWT = new SignedJWT(membershipTokenHeader, membershipTokenBody);
-        JWSSigner signer = new ECDSASigner((ECPrivateKey) issuerKeypair.getPrivate());
-        signer.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-        vcJWT.sign(signer);
-        String vcAsJwt = vcJWT.serialize();
+            //save JWT
+            storage.saveCredentialAsJwt(vcIdUri.toString(), vcAsJwt, holderBpn, type);
 
-        //save JWT
-        storage.saveCredentialAsJwt(vcIdUri.toString(), vcAsJwt, holderBpn, type);
+            //save JSON-LD
+            storage.saveCredentials(vcIdUri.toString(), verifiableCredential, holderBpn, type);
 
-        //save JSON-LD
-        storage.saveCredentials(vcIdUri.toString(), verifiableCredential, holderBpn, type);
-
-        if (!CollectionUtils.isEmpty(request.getCredentialPayload().getIssueWithSignature())) {
-            return Map.of(Constants.ID, vcId, Constants.JWT, vcAsJwt);
-        } else {
-            return Map.of(Constants.ID, vcId);
+            if (!CollectionUtils.isEmpty(request.getCredentialPayload().getIssueWithSignature())) {
+                return Map.of(Constants.ID, vcId, Constants.JWT, vcAsJwt);
+            } else {
+                return Map.of(Constants.ID, vcId);
+            }
+        } catch (IllegalArgumentException | NoVCTypeFoundException | InternalErrorException e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 
     @SneakyThrows
     public Optional<String> signCredential(String credentialId) {
-        DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
-        URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + credentialId);
-        return storage.getCredentialAsJwt(vcIdUri.toString());
+        try{
+            DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
+            URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + credentialId);
+            return storage.getCredentialAsJwt(vcIdUri.toString());
+        } catch (InternalErrorException e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
     }
 
     @SneakyThrows
     public GetCredentialsResponse getCredential(String externalCredentialId) {
-        DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
-        URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + externalCredentialId);
-        Optional<String> jwtVc = storage.getCredentialAsJwt(vcIdUri.toString());
-        if (jwtVc.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No credential found for credentialId -> " + externalCredentialId);
-        }
-        Optional<CustomCredential> optionalCustomVerifiableCredential = storage.getVerifiableCredentials(vcIdUri.toString());
+        try{
+            DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
+            URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + externalCredentialId);
+            Optional<String> jwtVc = storage.getCredentialAsJwt(vcIdUri.toString());
+            if (jwtVc.isEmpty()) {
+                throw new CredentialNotFoundException("No credential found for credentialId -> " + externalCredentialId);
+            }
+            Optional<CustomCredential> optionalCustomVerifiableCredential = storage.getVerifiableCredentials(vcIdUri.toString());
 
-        if (optionalCustomVerifiableCredential.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No credential found for credentialId -> " + externalCredentialId);
+            if (optionalCustomVerifiableCredential.isEmpty()) {
+                throw new CredentialNotFoundException("No credential found for credentialId -> " + externalCredentialId);
+            }
+            return GetCredentialsResponse.builder()
+                    .signingKeyId(issuerDidDocument.getVerificationMethod().getFirst().getId())
+                    .revocationStatus("false")
+                    .verifiableCredential(jwtVc.get())
+                    .credential(optionalCustomVerifiableCredential.get())
+                    .build();
+        } catch (CredentialNotFoundException | InternalErrorException e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
-        return GetCredentialsResponse.builder()
-                .signingKeyId(issuerDidDocument.getVerificationMethod().getFirst().getId())
-                .revocationStatus("false")
-                .verifiableCredential(jwtVc.get())
-                .credential(optionalCustomVerifiableCredential.get())
-                .build();
     }
 
     public String storeCredential(IssueCredentialRequest request, String holderBpn) {
-        return CommonUtils.getUuid(holderBpn, StringUtils.join(request.getCredentialPayload().getDerive(), ""));
+        try{
+            return CommonUtils.getUuid(holderBpn, StringUtils.join(request.getCredentialPayload().getDerive(), ""));
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
     }
 }

@@ -50,6 +50,82 @@ public class BDRSApiDoc {
                                     }
                                     """)
                     })
+            }),
+            @ApiResponse(responseCode = "400", description = "Illegal Argument", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Illegal Argument Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Bad request: Invalid token -> Bearer token",
+                                      "status": 400,
+                                      "detail": "IllegalArgumentException: Invalid token -> Bearer token",
+                                      "instance": "/api/v1/directory/bpn-directory",
+                                      "properties": {
+                                        "timestamp": 1743084920633
+                                      }
+                                    }
+                                    """),
+                            @ExampleObject(name = "Parse Stub Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Invalid serialized unsecured/JWS/JWE object: Missing part delimiters",
+                                      "status": 400,
+                                      "detail": "ParseStubException: Invalid serialized unsecured/JWS/JWE object: Missing part delimiters",
+                                      "instance": "/api/v1/directory/bpn-directory",
+                                      "properties": {
+                                        "timestamp": 1743084809964
+                                      }
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Missing Request Header Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Please provide the required header: Authorization",
+                                      "status": 401,
+                                      "detail": "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                                      "instance": "/api/v1/directory/bpn-directory",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "422", description = "VP Validation Failed", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "VP Validation Failed Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Invalid Verifiable Presentation",
+                                      "status": 422,
+                                      "detail": "VPValidationFailedException: Invalid VP token: e...",
+                                      "instance": "/api/v1/directory/bpn-directory",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: ...",
+                                      "instance": "/api/v1/directory/bpn-directory",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
+                                    }
+                                    """)
+                    })
             })
     })
     public @interface BDRSDirectory {

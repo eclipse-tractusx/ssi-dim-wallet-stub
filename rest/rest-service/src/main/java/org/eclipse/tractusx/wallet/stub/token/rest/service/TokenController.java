@@ -26,19 +26,18 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.wallet.stub.exception.api.MalformedCredentialsException;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
 import org.eclipse.tractusx.wallet.stub.token.rest.api.TokenApi;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -71,10 +70,10 @@ public class TokenController implements TokenApi {
                     request.setClientId(parts[0]);
                     request.setClientSecret(parts[1]);
                 } else {
-                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Authorization header invalid");
+                    throw new MalformedCredentialsException("Authorization header invalid");
                 }
             } else {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Authorization header invalid");
+                throw new MalformedCredentialsException("Authorization header invalid");
             }
         }
     }

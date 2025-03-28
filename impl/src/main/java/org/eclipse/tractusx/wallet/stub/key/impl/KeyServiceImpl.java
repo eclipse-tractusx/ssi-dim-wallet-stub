@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
+import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.common.DeterministicECKeyPairGenerator;
@@ -43,11 +44,15 @@ public class KeyServiceImpl implements KeyService{
     private final WalletStubSettings walletStubSettings;
 
     public KeyPair getKeyPair(String bpn) {
-        Optional<KeyPair> optionalKeyPair = storage.getKeyPair(bpn);
-        return optionalKeyPair.orElseGet(() -> {
-            KeyPair keyPair = DeterministicECKeyPairGenerator.createKeyPair(bpn, walletStubSettings.env());
-            storage.saveKeyPair(bpn, keyPair);
-            return keyPair;
-        });
+        try{
+            Optional<KeyPair> optionalKeyPair = storage.getKeyPair(bpn);
+            return optionalKeyPair.orElseGet(() -> {
+                KeyPair keyPair = DeterministicECKeyPairGenerator.createKeyPair(bpn, walletStubSettings.env());
+                storage.saveKeyPair(bpn, keyPair);
+                return keyPair;
+            });
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
     }
 }

@@ -29,6 +29,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
+import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.portal.api.KeycloakService;
 import org.eclipse.tractusx.wallet.stub.portal.api.PortalStubService;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.AuthenticationDetails;
@@ -57,57 +58,69 @@ public class PortalStubServiceImpl implements PortalStubService {
 
     @SneakyThrows
     public void setupDim(SetupDimRequest request) {
-        log.debug("Request to setup dim received for company name -> {}, bpn ->{} waiting for 60 sec", StringEscapeUtils.escapeJava(request.getCompanyName()), StringEscapeUtils.escapeJava(request.getBpn()));
+        try{
+            log.debug("Request to setup dim received for company name -> {}, bpn ->{} waiting for 60 sec", StringEscapeUtils.escapeJava(request.getCompanyName()), StringEscapeUtils.escapeJava(request.getBpn()));
 
-        //wait for defined time before pushing data to the portal
-        Thread.sleep(portalSettings.portalWaitTime() * 1000);
+            //wait for defined time before pushing data to the portal
+            Thread.sleep(portalSettings.portalWaitTime() * 1000);
 
-        //create did a document
-        DidDocument didDocument = didDocumentService.getDidDocument(request.getBpn());
+            //create did a document
+            DidDocument didDocument = didDocumentService.getDidDocument(request.getBpn());
 
-        DidDocumentRequest didDocumentRequest = DidDocumentRequest.builder()
-                .didDocument(didDocument)
-                .did(didDocument.getId())
-                .authenticationDetails(
-                        AuthenticationDetails.builder()
-                                .authenticationServiceUrl(walletStubSettings.stubUrl())
-                                .clientId(request.getBpn())
-                                .clientSecret(request.getBpn())
-                                .build()
-                )
-                .build();
+            DidDocumentRequest didDocumentRequest = DidDocumentRequest.builder()
+                    .didDocument(didDocument)
+                    .did(didDocument.getId())
+                    .authenticationDetails(
+                            AuthenticationDetails.builder()
+                                    .authenticationServiceUrl(walletStubSettings.stubUrl())
+                                    .clientId(request.getBpn())
+                                    .clientSecret(request.getBpn())
+                                    .build()
+                    )
+                    .build();
 
-        log.debug("Did document create for bpn -> {} , didDocument - >{}", StringEscapeUtils.escapeJava(request.getBpn()), objectMapper.writeValueAsString(didDocumentRequest));
+            log.debug("Did document create for bpn -> {} , didDocument - >{}", StringEscapeUtils.escapeJava(request.getBpn()), objectMapper.writeValueAsString(didDocumentRequest));
 
-        if (!request.getBpn().equals(walletStubSettings.baseWalletBPN()) && !walletStubSettings.seedWalletsBPN().contains(request.getBpn())) {
-            //post did document to portal
-            ResponseEntity<Void> responseEntity = portalClient.sendDidDocument(request.getBpn(), didDocumentRequest, keycloakService.createPortalAccessToken());
-            log.debug("Response of post did document status->{}", responseEntity.getStatusCode().value());
+            if (!request.getBpn().equals(walletStubSettings.baseWalletBPN()) && !walletStubSettings.seedWalletsBPN().contains(request.getBpn())) {
+                //post did document to portal
+                ResponseEntity<Void> responseEntity = portalClient.sendDidDocument(request.getBpn(), didDocumentRequest, keycloakService.createPortalAccessToken());
+                log.debug("Response of post did document status->{}", responseEntity.getStatusCode().value());
+            }
+        } catch (InternalErrorException e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 
     @SneakyThrows
     public void createTechUser(CreateTechUserRequest request, String bpn) {
-        log.debug("Request to create tech received for name -> {}, bpn ->{} waiting for 60 sec", StringEscapeUtils.escapeJava(request.getName()), StringEscapeUtils.escapeJava(bpn));
+        try{
+            log.debug("Request to create tech received for name -> {}, bpn ->{} waiting for 60 sec", StringEscapeUtils.escapeJava(request.getName()), StringEscapeUtils.escapeJava(bpn));
 
-        //For this application, we do not have any external IDP(ie. keycloak)
-        //BPN number will be client_id and client_secret to create OAuth token. No validation for client_secret
-        //in the real world, we might create tech user in keycloak
+            //For this application, we do not have any external IDP(ie. keycloak)
+            //BPN number will be client_id and client_secret to create OAuth token. No validation for client_secret
+            //in the real world, we might create tech user in keycloak
 
-        //create technical user details
-        AuthenticationDetails authenticationDetails = AuthenticationDetails.builder()
-                .authenticationServiceUrl(walletStubSettings.stubUrl() + "/oauth/token")
-                .clientId(bpn)
-                .clientSecret(bpn)
-                .build();
+            //create technical user details
+            AuthenticationDetails authenticationDetails = AuthenticationDetails.builder()
+                    .authenticationServiceUrl(walletStubSettings.stubUrl() + "/oauth/token")
+                    .clientId(bpn)
+                    .clientSecret(bpn)
+                    .build();
 
-        log.debug("Technical user details for bpn -> {} , user - >{}", StringEscapeUtils.escapeJava(bpn), objectMapper.writeValueAsString(authenticationDetails));
+            log.debug("Technical user details for bpn -> {} , user - >{}", StringEscapeUtils.escapeJava(bpn), objectMapper.writeValueAsString(authenticationDetails));
 
-        //wait for configured time
-        Thread.sleep(portalSettings.portalWaitTime() * 1000);
+            //wait for configured time
+            Thread.sleep(portalSettings.portalWaitTime() * 1000);
 
-        // post technical user details to portal
-        ResponseEntity<Void> responseEntity = portalClient.sendTechnicalUserDetails(request.getExternalId(), authenticationDetails, keycloakService.createPortalAccessToken());
-        log.debug("Response of post technical user details->{}", responseEntity.getStatusCode().value());
+            // post technical user details to portal
+            ResponseEntity<Void> responseEntity = portalClient.sendTechnicalUserDetails(request.getExternalId(), authenticationDetails, keycloakService.createPortalAccessToken());
+            log.debug("Response of post technical user details->{}", responseEntity.getStatusCode().value());
+        } catch (InternalErrorException e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
     }
 }

@@ -32,6 +32,8 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
+import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
+import org.eclipse.tractusx.wallet.stub.exception.api.ParseStubException;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
@@ -42,6 +44,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
 import java.security.interfaces.ECPublicKey;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -59,52 +62,71 @@ public class TokenServiceImpl implements TokenService {
 
     @SneakyThrows
     private boolean verifyToken(String token) {
-        SignedJWT signedJWT = SignedJWT.parse(CommonUtils.cleanToken(token));
-        String keyID = signedJWT.getHeader().getKeyID(); //this will be DID
-        String bpn = CommonUtils.getBpnFromDid(keyID);
-        KeyPair keyPair = keyService.getKeyPair(bpn);
-        ECPublicKey aPublic = (ECPublicKey) keyPair.getPublic();
-        ECDSAVerifier ecdsaVerifier = new ECDSAVerifier(aPublic);
-        ecdsaVerifier.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-        return signedJWT.verify(ecdsaVerifier);
+        try{
+            SignedJWT signedJWT = SignedJWT.parse(CommonUtils.cleanToken(token));
+            String keyID = signedJWT.getHeader().getKeyID(); //this will be DID
+            String bpn = CommonUtils.getBpnFromDid(keyID);
+            KeyPair keyPair = keyService.getKeyPair(bpn);
+            ECPublicKey aPublic = (ECPublicKey) keyPair.getPublic();
+            ECDSAVerifier ecdsaVerifier = new ECDSAVerifier(aPublic);
+            ecdsaVerifier.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+            return signedJWT.verify(ecdsaVerifier);
+        } catch (InternalErrorException e) {
+            throw e;
+        } catch (ParseException e){
+            throw new ParseStubException(e.getMessage());
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
     }
 
     @SneakyThrows
     public JWTClaimsSet verifyTokenAndGetClaims(String token) {
-        if (verifyToken(token)) {
-            return SignedJWT.parse(CommonUtils.cleanToken(token)).getJWTClaimsSet();
-        } else {
-            throw new IllegalArgumentException("Invalid token: " + token);
+        try {
+            if (verifyToken(token)) {
+                return SignedJWT.parse(CommonUtils.cleanToken(token)).getJWTClaimsSet();
+            } else {
+                throw new IllegalArgumentException("Invalid token -> " + token);
+            }
+        } catch (IllegalArgumentException | InternalErrorException | ParseStubException e){
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 
     @SneakyThrows
     public TokenResponse createAccessTokenResponse(TokenRequest request) {
+        try {
+            //here clientId will be BPN
+            KeyPair keyPair = keyService.getKeyPair(request.getClientId());
+            DidDocument didDocument = didDocumentService.getDidDocument(request.getClientId());
 
-        //here clientId will be BPN
-        KeyPair keyPair = keyService.getKeyPair(request.getClientId());
-        DidDocument didDocument = didDocumentService.getDidDocument(request.getClientId());
+            //time config
+            Date time = new Date();
+            Date expiryTime = DateUtils.addMinutes(time, tokenSettings.tokenExpiryTime());
 
-        //time config
-        Date time = new Date();
-        Date expiryTime = DateUtils.addMinutes(time, tokenSettings.tokenExpiryTime());
+            //claims
+            JWTClaimsSet body = new JWTClaimsSet.Builder()
+                    .issueTime(time)
+                    .jwtID(UUID.randomUUID().toString())
+                    .audience(didDocument.getId())
+                    .expirationTime(expiryTime)
+                    .claim(Constants.BPN, request.getClientId())
+                    .issuer(didDocument.getId())
+                    .notBeforeTime(time)
+                    .subject(didDocument.getId())
+                    .build();
 
-        //claims
-        JWTClaimsSet body = new JWTClaimsSet.Builder()
-                .issueTime(time)
-                .jwtID(UUID.randomUUID().toString())
-                .audience(didDocument.getId())
-                .expirationTime(expiryTime)
-                .claim(Constants.BPN, request.getClientId())
-                .issuer(didDocument.getId())
-                .notBeforeTime(time)
-                .subject(didDocument.getId())
-                .build();
+            SignedJWT signedJWT = CommonUtils.signedJWT(body, keyPair, didDocument.getVerificationMethod().getFirst().getId());
 
-        SignedJWT signedJWT = CommonUtils.signedJWT(body, keyPair, didDocument.getVerificationMethod().getFirst().getId());
-
-        String token = signedJWT.serialize();
-        log.debug("Token created for client id -> {}  token -> {}", StringEscapeUtils.escapeJava(request.getClientId()), token);
-        return new TokenResponse(token, Constants.TOKEN_TYPE_BEARER, tokenSettings.tokenExpiryTime() * 60L, 0, 0, "email profile");
+            String token = signedJWT.serialize();
+            log.debug("Token created for client id -> {}  token -> {}", StringEscapeUtils.escapeJava(request.getClientId()), token);
+            return new TokenResponse(token, Constants.TOKEN_TYPE_BEARER, tokenSettings.tokenExpiryTime() * 60L, 0, 0, "email profile");
+        } catch (InternalErrorException e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
     }
 }

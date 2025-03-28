@@ -86,6 +86,22 @@ public class DidApiDoc {
                                     }
                                     """)
                     })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: ...",
+                                      "instance": "/BPNL12121221/did.json",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
+                                    }
+                                    """)
+                    })
             })
     })
     public @interface DidDocument {

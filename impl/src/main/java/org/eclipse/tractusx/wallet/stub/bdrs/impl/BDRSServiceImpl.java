@@ -29,12 +29,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.wallet.stub.bdrs.api.BDRSService;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
+import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
+import org.eclipse.tractusx.wallet.stub.exception.api.ParseStubException;
 import org.eclipse.tractusx.wallet.stub.exception.api.VPValidationFailedException;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,34 +52,39 @@ public class BDRSServiceImpl implements BDRSService {
     private final TokenService tokenService;
 
     public Map<String, String> getBpnDirectory(String jwtToken, String bpnString) {
+        try {
+            //validate jwt token
+            validateVP(jwtToken);
 
-        //validate jwt token
-        validateVP(jwtToken);
+            //create wallet if we have bpns in request param
+            createWallets(bpnString);
 
-        //create wallet if we have bpns in request param
-        createWallets(bpnString);
+            Map<String, String> response = new HashMap<>();
 
-        Map<String, String> response = new HashMap<>();
+            storage.getAllDidDocumentMap().forEach((bpn, didDocument) -> response.put(bpn, didDocument.getId()));
 
-        storage.getAllDidDocumentMap().forEach((bpn, didDocument) -> response.put(bpn, didDocument.getId()));
-
-        //if bpnString is not empty, return only specific BPNs
-        if (StringUtils.isNoneBlank(bpnString)) {
-            String[] bpnArray = StringUtils.split(bpnString, ",");
-            Map<String, String> filteredResponse = new HashMap<>();
-            for (String bpn : bpnArray) {
-                String trimmedBpn = bpn.trim();
-                if (response.containsKey(trimmedBpn)) {
-                    filteredResponse.put(trimmedBpn, response.get(trimmedBpn));
+            //if bpnString is not empty, return only specific BPNs
+            if (StringUtils.isNoneBlank(bpnString)) {
+                String[] bpnArray = StringUtils.split(bpnString, ",");
+                Map<String, String> filteredResponse = new HashMap<>();
+                for (String bpn : bpnArray) {
+                    String trimmedBpn = bpn.trim();
+                    if (response.containsKey(trimmedBpn)) {
+                        filteredResponse.put(trimmedBpn, response.get(trimmedBpn));
+                    }
                 }
+                return filteredResponse;
             }
-            return filteredResponse;
+            return response;
+        } catch (VPValidationFailedException | InternalErrorException | IllegalArgumentException | ParseStubException  e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
-        return response;
     }
 
     @SuppressWarnings("unchecked")
-    private void validateVP(String jwtToken) {
+    private void validateVP(String jwtToken) { // ParseException from tokenService
         try {
             if (StringUtils.isBlank(jwtToken)) {
                 throw new IllegalArgumentException("JWT token is missing in headers");
@@ -98,19 +106,26 @@ public class BDRSServiceImpl implements BDRSService {
 
             //create wallet if not created
             didDocumentService.getDidDocument(holderBpn);
+        } catch (IllegalArgumentException | InternalErrorException | ParseStubException e) {
+            throw e;
         } catch (Exception e) {
-            log.error("Error validating VP: {}", e.getMessage(), e);
             throw new VPValidationFailedException("Invalid VP token: " + e.getMessage());
         }
     }
 
     private void createWallets(String bpnString) {
-        if (StringUtils.isNoneBlank(bpnString)) {
-            //create wallet if not exists
-            String[] split = StringUtils.split(bpnString, ",");
-            for (String bpn : split) {
-                didDocumentService.getDidDocument(bpn.trim());
+        try{
+            if (StringUtils.isNoneBlank(bpnString)) {
+                //create wallet if not exists
+                String[] split = StringUtils.split(bpnString, ",");
+                for (String bpn : split) {
+                    didDocumentService.getDidDocument(bpn.trim());
+                }
             }
+        } catch (InternalErrorException e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 }

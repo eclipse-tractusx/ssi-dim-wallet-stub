@@ -24,6 +24,7 @@ package org.eclipse.tractusx.wallet.stub.issuer.rest.service;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.Validate;
+import org.eclipse.tractusx.wallet.stub.exception.api.CredentialNotFoundException;
 import org.eclipse.tractusx.wallet.stub.issuer.api.IssuerCredentialService;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
@@ -41,7 +42,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 import java.util.Objects;
@@ -88,7 +88,7 @@ public class IssuerStubController implements IssuerStubApi {
             if (jwtVc.isPresent()) {
                 return ResponseEntity.ok(new SignCredentialResponse(jwtVc.get()));
             } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No credential found for credentialId -> " + credentialId);
+                throw new CredentialNotFoundException("No credential found for credentialId -> " + credentialId);
             }
         }
     }
