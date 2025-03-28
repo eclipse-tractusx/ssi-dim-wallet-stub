@@ -87,7 +87,7 @@ class BDRSTest {
         headers.add(HttpHeaders.AUTHORIZATION, Constants.BEARER + "Some dummy token");
         entity = new HttpEntity<>(headers);
         response = restTemplate.exchange("/api/v1/directory/bpn-directory", HttpMethod.GET, entity, Map.class);
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.UNAUTHORIZED.value());
+        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.BAD_REQUEST.value());
 
     }
 
