@@ -273,11 +273,10 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
                 vcId = map.get(Constants.ID);
                 jwt = map.get(Constants.JWT);
             }
-            IssueCredentialResponse response = IssueCredentialResponse.builder()
+            return IssueCredentialResponse.builder()
                     .id(vcId)
                     .jwt(jwt)
                     .build();
-            return response;
         } catch (ParseStubException | IllegalArgumentException | NoVCTypeFoundException | InternalErrorException e){
             throw e;
         } catch (Exception e){
