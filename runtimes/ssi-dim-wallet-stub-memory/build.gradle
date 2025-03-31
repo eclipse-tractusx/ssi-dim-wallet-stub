@@ -21,8 +21,6 @@
 
 plugins {
     id 'java'
-    id 'application'
-    id 'org.springframework.boot'
 }
 
 build {
@@ -30,7 +28,7 @@ build {
     version = "latest"
 }
 
-application {
+springBoot {
     mainClass = 'org.eclipse.tractusx.wallet.stub.runtime.memory.WalletStubApplication'
 }
 

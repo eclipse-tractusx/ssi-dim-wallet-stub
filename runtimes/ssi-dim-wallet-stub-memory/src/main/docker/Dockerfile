@@ -19,7 +19,22 @@
 
 FROM gradle:8.9-jdk21-alpine AS build
 
-COPY --chown=gradle:gradle --chmod=400 . /home/gradle/src
+COPY --chown=gradle:gradle api /home/gradle/src/api
+COPY --chown=gradle:gradle gradle /home/gradle/src/gradle
+COPY --chown=gradle:gradle impl /home/gradle/src/impl
+COPY --chown=gradle:gradle persistence/persistence-api /home/gradle/src/persistence/persistence-api
+COPY --chown=gradle:gradle persistence/in-memory /home/gradle/src/persistence/in-memory
+COPY --chown=gradle:gradle rest /home/gradle/src/rest
+COPY --chown=gradle:gradle runtimes/ssi-dim-wallet-stub-memory /home/gradle/src/runtimes/ssi-dim-wallet-stub-memory
+COPY --chown=gradle:gradle testUtils /home/gradle/src/testUtils
+COPY --chown=gradle:gradle utils /home/gradle/src/utils
+COPY --chown=gradle:gradle .dockerignore /home/gradle/src/
+COPY --chown=gradle:gradle build.gradle /home/gradle/src/
+COPY --chown=gradle:gradle gradle.properties /home/gradle/src/
+COPY --chown=gradle:gradle gradlew /home/gradle/src/
+COPY --chown=gradle:gradle gradlew.bat /home/gradle/src/
+COPY --chown=gradle:gradle settings.gradle /home/gradle/src/
+
 WORKDIR /home/gradle/src
 
 RUN gradle \
