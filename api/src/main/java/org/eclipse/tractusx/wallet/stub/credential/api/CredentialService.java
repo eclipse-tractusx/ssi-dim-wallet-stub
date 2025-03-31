@@ -37,18 +37,6 @@ public interface CredentialService {
     public String getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type);
 
     /**
-     * Retrieves a verifiable credential based on the specified holder's BPN and type.
-     * If the credential already exists in memory, it is returned directly.
-     * If not, a new verifiable credential is issued and returned.
-     *
-     * @param holderBpn The BPN of the holder for whom the credential is issued.
-     * @param type      The type of the credential.
-     * @return The verifiable credential for the specified holder's BPN and type.
-     */
-    public CustomCredential getVerifiableCredentialByHolderBpnAndType(String holderBpn, String type);
-
-
-    /**
      * Issues a status list credential for the specified holder's BPN and VC ID.
      * The status list credential is a type of verifiable credential used for revocation.
      *

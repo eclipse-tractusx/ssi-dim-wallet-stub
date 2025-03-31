@@ -24,7 +24,11 @@
 package org.eclipse.tractusx.wallet.stub.did.api;
 
 
+import java.util.Optional;
+
 public interface DidDocumentService {
 
     public DidDocument getDidDocument(String issuerBpn);
+
+    public Optional<DidDocument> storeDidDocument(String bpn);
 }

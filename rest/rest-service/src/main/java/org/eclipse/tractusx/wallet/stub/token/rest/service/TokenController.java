@@ -24,23 +24,16 @@ package org.eclipse.tractusx.wallet.stub.token.rest.service;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.wallet.stub.exception.api.MalformedCredentialsException;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
 import org.eclipse.tractusx.wallet.stub.token.rest.api.TokenApi;
-import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,31 +43,7 @@ public class TokenController implements TokenApi {
 
     @Override
     public ResponseEntity<TokenResponse> createAccessToken(@ModelAttribute @RequestBody TokenRequest request, @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        setClientInfo(request, token);
+        tokenService.setClientInfo(request, token);
         return ResponseEntity.ok(tokenService.createAccessTokenResponse(request));
-    }
-
-    @SneakyThrows
-    private void setClientInfo(TokenRequest request, String token) {
-        if (StringUtils.isNoneBlank(token)) {
-            String[] split = token.split(StringUtils.SPACE);
-            if (split.length == 2 && split[0].equals(Constants.BASIC)) {
-                String encodedString = split[1];
-                // Decode the Base64 encoded string
-                byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
-                String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
-
-                // Split the decoded string by colon to get clientId and clientSecret
-                String[] parts = decodedString.split(":");
-                if (parts.length == 2) {
-                    request.setClientId(parts[0]);
-                    request.setClientSecret(parts[1]);
-                } else {
-                    throw new MalformedCredentialsException("Authorization header invalid");
-                }
-            } else {
-                throw new MalformedCredentialsException("Authorization header invalid");
-            }
-        }
     }
 }

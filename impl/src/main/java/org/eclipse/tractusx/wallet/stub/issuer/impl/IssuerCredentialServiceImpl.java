@@ -34,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
@@ -41,19 +42,22 @@ import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.api.CredentialNotFoundException;
 import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.exception.api.NoVCTypeFoundException;
+import org.eclipse.tractusx.wallet.stub.exception.api.ParseStubException;
 import org.eclipse.tractusx.wallet.stub.issuer.api.IssuerCredentialService;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
+import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.common.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.security.KeyPair;
@@ -70,6 +74,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
     private final KeyService keyService;
     private final DidDocumentService didDocumentService;
     private final Storage storage;
+    private final TokenService tokenService;
     private final TokenSettings tokenSettings;
 
     @SuppressWarnings("unchecked")
@@ -91,9 +96,18 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
         }
     }
 
+    /**
+     * Issues a verifiable credential based on the provided request and issuer BPN.
+     * This method creates, signs, and stores a verifiable credential as both JWT and JSON-LD formats.
+     *
+     * @param request   The IssueCredentialRequest containing the credential payload and other necessary information.
+     * @param issuerBPN The Business Partner Number (BPN) of the issuer.
+     * @return A Map containing the credential ID ("vcId") and optionally the JWT representation of the credential ("jwt").
+     * If the request includes "issue", only the "vcId" is returned.
+     */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public Map<String, String> issueCredential(IssueCredentialRequest request, String issuerBPN) {
+    private Map<String, String> issueCredential(IssueCredentialRequest request, String issuerBPN) {
         try{
             KeyPair issuerKeypair = keyService.getKeyPair(walletStubSettings.baseWalletBPN());
 
@@ -177,7 +191,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
     }
 
     @SneakyThrows
-    public Optional<String> signCredential(String credentialId) {
+    private Optional<String> signCredential(String credentialId) {
         try{
             DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
             URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + credentialId);
@@ -216,9 +230,56 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
         }
     }
 
-    public String storeCredential(IssueCredentialRequest request, String holderBpn) {
+    @SneakyThrows
+    private String storeCredential(IssueCredentialRequest request, String holderBpn) {
         try{
             return CommonUtils.getUuid(holderBpn, StringUtils.join(request.getCredentialPayload().getDerive(), ""));
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
+    }
+
+    @SneakyThrows
+    public SignCredentialResponse getSignCredentialResponse(SignCredentialRequest request, String credentialId) {
+        try{
+            if (Objects.nonNull(request.getPayload()) && request.getPayload().isRevoke()) {
+                return null;
+            } else {
+                Optional<String> jwtVc = signCredential(credentialId);
+                if (jwtVc.isPresent()) {
+                    return new SignCredentialResponse(jwtVc.get());
+                } else {
+                    throw new CredentialNotFoundException("No credential found for credentialId -> " + credentialId);
+                }
+            }
+        } catch (CredentialNotFoundException | InternalErrorException e){
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
+    }
+
+    @SneakyThrows
+    public IssueCredentialResponse getIssueCredentialResponse(IssueCredentialRequest request, String token) {
+        try{
+            Validate.isTrue(request.isValid(), "Invalid request");
+
+            String vcId;
+            String jwt = null;
+            if (Objects.nonNull(request.getCredentialPayload().getDerive())) {
+                vcId = storeCredential(request, CommonUtils.getBpnFromToken(token, tokenService));
+            } else {
+                Map<String, String> map = issueCredential(request, CommonUtils.getBpnFromToken(token, tokenService));
+                vcId = map.get(Constants.ID);
+                jwt = map.get(Constants.JWT);
+            }
+            IssueCredentialResponse response = IssueCredentialResponse.builder()
+                    .id(vcId)
+                    .jwt(jwt)
+                    .build();
+            return response;
+        } catch (ParseStubException | IllegalArgumentException | NoVCTypeFoundException | InternalErrorException e){
+            throw e;
         } catch (Exception e){
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }

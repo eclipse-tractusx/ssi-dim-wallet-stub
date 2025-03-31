@@ -105,4 +105,14 @@ public class DidDocumentServiceImpl implements DidDocumentService {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
+
+    @SneakyThrows
+    public Optional<DidDocument> storeDidDocument(String bpn) {
+        try{
+            log.debug("Did document requested for bpn ->{}", bpn);
+            return storage.getDidDocument(bpn);
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
+    }
 }

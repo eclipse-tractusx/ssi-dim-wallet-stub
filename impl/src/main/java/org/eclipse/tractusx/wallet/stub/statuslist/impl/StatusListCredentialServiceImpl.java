@@ -30,6 +30,7 @@ import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
+import org.eclipse.tractusx.wallet.stub.exception.api.NoStatusListFoundException;
 import org.eclipse.tractusx.wallet.stub.statuslist.api.StatusListCredentialService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
@@ -58,6 +59,24 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
             Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
             return verifiableCredentials.orElseGet(() -> credentialService.issueStatusListCredential(bpn, vcId));
         } catch (InternalErrorException e) {
+            throw e;
+        } catch (Exception e){
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
+    }
+
+    @SneakyThrows
+    public CustomCredential getCustomCredential(String bpn, String vcId) {
+        try{
+            //currently we are returning one VC
+            URI vcIdUri = URI.create(didDocumentService.getDidDocument(bpn).getId() + Constants.HASH_SEPARATOR + vcId);
+            Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
+            if (verifiableCredentials.isPresent()) {
+                return verifiableCredentials.get();
+            } else {
+                throw new NoStatusListFoundException("No status list credential found for bpn -> " + bpn);
+            }
+        } catch (NoStatusListFoundException | InternalErrorException e){
             throw e;
         } catch (Exception e){
             throw new InternalErrorException("Internal Error: " + e.getMessage());

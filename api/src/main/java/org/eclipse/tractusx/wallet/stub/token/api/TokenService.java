@@ -37,4 +37,13 @@ public interface TokenService {
      * @return A {@link TokenResponse} object containing the access token, token type, and expiration time.
      */
     public TokenResponse createAccessTokenResponse(TokenRequest request);
+
+    /**
+     * Parses a Basic Authentication token string to extract the client ID and client secret,
+     * and sets them on the provided {@link TokenRequest} object.
+     *
+     * @param request The {@link TokenRequest} object whose {@code clientId} and {@code clientSecret} fields will be populated if the token is valid. This object is modified directly.
+     * @param token   The authorization token string, obtained from HTTP {@code Authorization} header. Expected to be in "Basic clientID:clientSecret" (Base64 encoded) format. Can be blank.
+     */
+    public void setClientInfo(TokenRequest request, String token);
 }

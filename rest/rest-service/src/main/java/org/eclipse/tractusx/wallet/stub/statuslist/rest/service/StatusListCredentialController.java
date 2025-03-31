@@ -24,37 +24,24 @@ package org.eclipse.tractusx.wallet.stub.statuslist.rest.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
-import org.eclipse.tractusx.wallet.stub.exception.api.NoStatusListFoundException;
+import org.eclipse.tractusx.wallet.stub.statuslist.api.StatusListCredentialService;
 import org.eclipse.tractusx.wallet.stub.statuslist.rest.api.StatusListCredentialApi;
-import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
-import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-import java.util.Optional;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 public class StatusListCredentialController implements StatusListCredentialApi {
 
-    private final Storage storage;
-    private final DidDocumentService didDocumentService;
+    private final StatusListCredentialService statusListCredentialService;
 
     @Override
     public ResponseEntity<CustomCredential> getStatusListVc(@PathVariable(name = "bpn") String bpn, @PathVariable(name = "vcId") String vcId) {
-
-        //currently we are returning one VC
-        URI vcIdUri = URI.create(didDocumentService.getDidDocument(bpn).getId() + Constants.HASH_SEPARATOR + vcId);
-        Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
-        if (verifiableCredentials.isPresent()) {
-            return ResponseEntity.ok(verifiableCredentials.get());
-        } else {
-            throw new NoStatusListFoundException("No status list credential found for bpn -> " + bpn);
-        }
+        CustomCredential verifiableCredentials = statusListCredentialService.getCustomCredential(bpn, vcId);
+        return ResponseEntity.ok(verifiableCredentials);
     }
 }

@@ -22,28 +22,18 @@
 
 package org.eclipse.tractusx.wallet.stub.issuer.api;
 
-import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 
 public interface IssuerCredentialService {
 
-    /**
-     * Issues a verifiable credential based on the provided request and issuer BPN.
-     * This method creates, signs, and stores a verifiable credential as both JWT and JSON-LD formats.
-     *
-     * @param request   The IssueCredentialRequest containing the credential payload and other necessary information.
-     * @param issuerBPN The Business Partner Number (BPN) of the issuer.
-     * @return A Map containing the credential ID ("vcId") and optionally the JWT representation of the credential ("jwt").
-     * If the request includes "issue", only the "vcId" is returned.
-     */
-    public Map<String, String> issueCredential(IssueCredentialRequest request, String issuerBPN);
-
-    public Optional<String> signCredential(String credentialId);
-
     public GetCredentialsResponse getCredential(String externalCredentialId);
 
-    public String storeCredential(IssueCredentialRequest request, String holderBpn);
+    public SignCredentialResponse getSignCredentialResponse(SignCredentialRequest request, String credentialId);
+
+    public IssueCredentialResponse getIssueCredentialResponse(IssueCredentialRequest request, String token);
 }

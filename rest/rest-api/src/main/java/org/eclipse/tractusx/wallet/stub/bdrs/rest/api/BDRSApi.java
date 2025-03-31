@@ -31,6 +31,15 @@ import java.io.IOException;
 
 @Tag(name = " BPN Did Resolution Service (BDRS) directory API")
 public interface BDRSApi {
+
+    /**
+     * Retrieves the Business Partner Number (BPN) directory from the BPN Did Resolution Service (BDRS).
+     *
+     * @param bpnString The Business Partner Number (BPN) to search for. If not provided, all BPN entries will be returned.
+     * @param jwtToken  The JSON Web Token (JWT) used for authentication and authorization.
+     * @param response  The HTTP response object to handle the response.
+     * @throws IOException If there is an error writing to the response output stream.
+     */
     @BDRSApiDoc.BDRSDirectory
     @GetMapping(path = "/api/v1/directory/bpn-directory", produces = MediaType.APPLICATION_JSON_VALUE)
     public void getBpnDirectory(String bpnString, String jwtToken, HttpServletResponse response) throws IOException;

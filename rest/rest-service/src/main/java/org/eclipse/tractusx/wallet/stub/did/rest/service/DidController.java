@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.did.rest.api.DidApi;
-import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,15 +40,11 @@ import java.util.Optional;
 @Slf4j
 public class DidController implements DidApi {
 
-
     private final DidDocumentService didDocumentService;
-
-    private final Storage storage;
 
     @Override
     public ResponseEntity<DidDocument> getDocument(@PathVariable(name = Constants.BPN) String bpn) {
-        log.debug("Did document requested for bpn ->{}", bpn);
-        Optional<DidDocument> didDocument = storage.getDidDocument(bpn);
+        Optional<DidDocument> didDocument = didDocumentService.storeDidDocument(bpn);
         return didDocument.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok(didDocumentService.getDidDocument(bpn)));
     }
 }
