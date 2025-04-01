@@ -19,21 +19,21 @@
 
 FROM gradle:8.9-jdk21-alpine AS build
 
-COPY --chown=gradle:gradle --chmod=755 api /home/gradle/src/api
-COPY --chown=gradle:gradle --chmod=755 gradle /home/gradle/src/gradle
-COPY --chown=gradle:gradle --chmod=755 impl /home/gradle/src/impl
-COPY --chown=gradle:gradle --chmod=755 persistence/persistence-api /home/gradle/src/persistence/persistence-api
-COPY --chown=gradle:gradle --chmod=755 persistence/postgresql /home/gradle/src/persistence/postgresql
-COPY --chown=gradle:gradle --chmod=755 rest /home/gradle/src/rest
-COPY --chown=gradle:gradle --chmod=755 runtimes/ssi-dim-wallet-stub /home/gradle/src/runtimes/ssi-dim-wallet-stub
-COPY --chown=gradle:gradle --chmod=755 testUtils /home/gradle/src/testUtils
-COPY --chown=gradle:gradle --chmod=755 utils /home/gradle/src/utils
-COPY --chown=gradle:gradle --chmod=755 .dockerignore /home/gradle/src/
-COPY --chown=gradle:gradle --chmod=755 build.gradle /home/gradle/src/
-COPY --chown=gradle:gradle --chmod=755 gradle.properties /home/gradle/src/
-COPY --chown=gradle:gradle --chmod=755 gradlew /home/gradle/src/
-COPY --chown=gradle:gradle --chmod=755 gradlew.bat /home/gradle/src/
-COPY --chown=gradle:gradle --chmod=755 settings.gradle /home/gradle/src/
+COPY api /home/gradle/src/api
+COPY gradle /home/gradle/src/gradle
+COPY impl /home/gradle/src/impl
+COPY persistence/persistence-api /home/gradle/src/persistence/persistence-api
+COPY persistence/postgresql /home/gradle/src/persistence/postgresql
+COPY rest /home/gradle/src/rest
+COPY runtimes/ssi-dim-wallet-stub /home/gradle/src/runtimes/ssi-dim-wallet-stub
+COPY testUtils /home/gradle/src/testUtils
+COPY utils /home/gradle/src/utils
+COPY .dockerignore /home/gradle/src/
+COPY build.gradle /home/gradle/src/
+COPY gradle.properties /home/gradle/src/
+COPY gradlew /home/gradle/src/
+COPY gradlew.bat /home/gradle/src/
+COPY settings.gradle /home/gradle/src/
 
 WORKDIR /home/gradle/src
 
