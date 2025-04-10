@@ -27,7 +27,6 @@ COPY persistence/in-memory /home/gradle/src/persistence/in-memory
 COPY rest /home/gradle/src/rest
 COPY runtimes/ssi-dim-wallet-stub-memory /home/gradle/src/runtimes/ssi-dim-wallet-stub-memory
 COPY testUtils /home/gradle/src/testUtils
-COPY utils /home/gradle/src/utils
 COPY .dockerignore /home/gradle/src/
 COPY build.gradle /home/gradle/src/
 COPY gradle.properties /home/gradle/src/

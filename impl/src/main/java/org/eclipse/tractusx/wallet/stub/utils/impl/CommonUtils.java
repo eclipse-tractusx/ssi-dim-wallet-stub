@@ -251,15 +251,4 @@ public class CommonUtils {
         credential.put("expirationDate", DATE_TIME_FORMATER.format(expiryDate.toInstant()));
         return credential;
     }
-
-    /**
-     * Sanitizes the input string by removing any carriage return (\r) or newline (\n) characters.
-     * If the input is null, it returns the string "null".
-     *
-     * @param input The string to sanitize.
-     * @return A sanitized string with all carriage return and newline characters removed, or "null" if the input is null.
-     */
-    public String sanitize(String input) {
-        return input != null ? input.replaceAll("[\\r\\n]", "") : "null";
-    }
 }
