@@ -40,7 +40,8 @@ import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
-import org.eclipse.tractusx.wallet.stub.utils.common.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.token.internal.api.InternalTokenValidationService;
+import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.stereotype.Service;
 
@@ -59,35 +60,17 @@ public class TokenServiceImpl implements TokenService {
 
     private final KeyService keyService;
 
+    private final InternalTokenValidationService internalTokenValidationService;
+
     private final DidDocumentService didDocumentService;
 
     private final TokenSettings tokenSettings;
 
 
     @SneakyThrows
-    private boolean verifyToken(String token) {
-        try{
-            SignedJWT signedJWT = SignedJWT.parse(CommonUtils.cleanToken(token));
-            String keyID = signedJWT.getHeader().getKeyID(); //this will be DID
-            String bpn = CommonUtils.getBpnFromDid(keyID);
-            KeyPair keyPair = keyService.getKeyPair(bpn);
-            ECPublicKey aPublic = (ECPublicKey) keyPair.getPublic();
-            ECDSAVerifier ecdsaVerifier = new ECDSAVerifier(aPublic);
-            ecdsaVerifier.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-            return signedJWT.verify(ecdsaVerifier);
-        } catch (InternalErrorException e) {
-            throw e;
-        } catch (ParseException e){
-            throw new ParseStubException(e.getMessage());
-        } catch (Exception e){
-            throw new InternalErrorException("Internal Error: " + e.getMessage());
-        }
-    }
-
-    @SneakyThrows
     public JWTClaimsSet verifyTokenAndGetClaims(String token) {
         try {
-            if (verifyToken(token)) {
+            if (internalTokenValidationService.verifyToken(token)) {
                 return SignedJWT.parse(CommonUtils.cleanToken(token)).getJWTClaimsSet();
             } else {
                 throw new IllegalArgumentException("Invalid token -> " + token);

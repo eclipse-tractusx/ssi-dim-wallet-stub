@@ -30,7 +30,7 @@ import org.eclipse.tractusx.wallet.stub.edc.api.dto.QueryPresentationRequest;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
-import org.eclipse.tractusx.wallet.stub.utils.common.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
 import org.junit.jupiter.api.Assertions;

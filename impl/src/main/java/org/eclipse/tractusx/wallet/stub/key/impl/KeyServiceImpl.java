@@ -28,7 +28,7 @@ import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
-import org.eclipse.tractusx.wallet.stub.utils.common.DeterministicECKeyPairGenerator;
+import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;

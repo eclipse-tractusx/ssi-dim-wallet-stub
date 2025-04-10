@@ -19,37 +19,9 @@
  * ******************************************************************************
  */
 
-plugins {
-    id 'java'
-}
+package org.eclipse.tractusx.wallet.stub.token.internal.api;
 
-group = 'org.eclipse.tractusx.wallet.stub'
-version = '0.0.1'
+public interface InternalTokenValidationService {
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation project(':api')
-
-    // SPRING DOC - SWAGGER
-    implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
-
-    // UTILS
-    implementation("org.apache.commons:commons-text:1.12.0")
-
-    // EDC
-    implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
-
-    // TEST
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testCompileOnly 'org.projectlombok:lombok'
-    testAnnotationProcessor 'org.projectlombok:lombok'
-    testImplementation group: 'com.github.curious-odd-man', name: 'rgxgen', version: '2.0'
-}
-
-test {
-    useJUnitPlatform()
+    boolean verifyToken(String token);
 }

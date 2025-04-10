@@ -38,8 +38,6 @@ repositories {
 dependencies {
     implementation project(':api')
     implementation project(':persistence:persistence-api')
-    implementation project(':utils')
-    testImplementation project(':utils')
     testImplementation project(':testUtils')
 
     // SPRING

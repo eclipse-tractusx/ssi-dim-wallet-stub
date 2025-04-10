@@ -36,7 +36,7 @@ import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
-import org.eclipse.tractusx.wallet.stub.utils.common.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.stereotype.Service;
 

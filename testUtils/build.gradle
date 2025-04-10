@@ -32,7 +32,6 @@ repositories {
 dependencies {
     implementation project(':api')
     implementation project(':impl')
-    implementation project(':utils')
 
     // SPRING
     implementation 'org.springframework.boot:spring-boot-starter-web'

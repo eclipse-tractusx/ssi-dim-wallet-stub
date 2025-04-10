@@ -45,7 +45,9 @@ import org.springframework.context.annotation.Configuration;
         "org.eclipse.tractusx.wallet.stub.key.impl",
         "org.eclipse.tractusx.wallet.stub.portal.impl",
         "org.eclipse.tractusx.wallet.stub.statuslist.impl",
-        "org.eclipse.tractusx.wallet.stub.token.impl"
+        "org.eclipse.tractusx.wallet.stub.token.impl",
+        "org.eclipse.tractusx.wallet.stub.token.internal.api",
+        "org.eclipse.tractusx.wallet.stub.token.internal.impl"
 })
 @EnableFeignClients(basePackageClasses = PortalClient.class)
 public class WalletStubImplConfig {
