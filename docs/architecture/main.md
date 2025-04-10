@@ -339,6 +339,75 @@ EDCService --> EDCService : Catalog Request to other EDC
 | Version Control | GitHub                                                                                                                                                            |
 | Other Lib       | Swagger Open API, SSI Agent, Lombok, org.eclipse.edc:verifiable-credentials-api:0.7.0,  org.eclipse.edc:identity-trust-sts-api, org.eclipse.edc:crypto-common-lib |
 
+## **Modules**
+
+The project is divided into the following modules:
+
+- **`api`**
+- **`impl`**
+- **`persistence:persistence-api`**
+- **`persistence:in-memory`**
+- **`persistence:postgresql`**
+- **`rest:rest-api`**
+- **`rest:rest-service`**
+- **`runtimes:ssi-dim-wallet-stub`**
+- **`runtimes:ssi-dim-wallet-stub-memory`**
+- **`testUtils`**
+
+### api
+
+Contains the core public interfaces, data transfer objects (DTOs), exceptions, and constants.
+
+### impl
+
+Provides the concrete implementations of the interfaces defined in the `api` module. This is where the main business logic resides, orchestrating operations and applying business rules.
+
+### persistence:persistence-api
+
+Defines the persistence layer interfaces responsible for abstracting data storage operations, ensuring independence from specific database technologies.
+
+### persistence:in-memory
+
+An implementation of the `persistence:persistence-api` interfaces that stores data in the computer's main memory.
+
+### persistence:postgresql
+
+An implementation of the `persistence:persistence-api` interfaces using a PostgreSQL relational database for persistent data storage. This module contain database-specific logic, entity mappings, and repository implementations.
+
+### rest:rest-api
+
+Defines the contracts for the RESTful web services offered by the application. This includes API endpoint definitions, and API documentation specifications.
+
+### rest:rest-service
+
+Contains the implementation of the REST API endpoints defined in `rest:rest-api`. These are controller classes that handle incoming HTTP requests, call the business logic layer (`api`), and format/return HTTP responses.
+
+### runtimes:ssi-dim-wallet-stub
+
+Provides the main runnable application entry point and configuration, assembling components from other modules into a deployable unit. This specific runtime is configured by default to use the `persistence:postgresql` module. It includes necessary setup for building a deployable artifact (Docker).
+
+### runtimes:ssi-dim-wallet-stub-memory
+
+Provides an alternative runnable application configuration, specifically wiring the application to use the `persistence:in-memory` module. Like the primary runtime, it includes setup for building a deployable artifact (Docker).
+
+### testUtils
+
+Contains shared testing utilities used across different test suites in other modules.
+
+## **Exceptions**
+
+The project handles the following exceptions, mapping them to appropriate HTTP responses:
+
+-   **`CredentialNotFoundException`**: Thrown when requested credentials cannot be found in the system. (Returns HTTP 404 NOT_FOUND)
+-   **`InternalErrorException`**: Represents unexpected internal server errors during request processing. (Returns HTTP 500 INTERNAL_SERVER_ERROR)
+-   **`MalformedCredentialsException`**: Thrown when provided credentials are syntactically incorrect or structurally invalid. (Returns HTTP 422 UNPROCESSABLE_ENTITY)
+-   **`NoStatusListFoundException`**: Thrown when a requested status list (e.g., by BPN) cannot be found. (Returns HTTP 404 NOT_FOUND)
+-   **`NoVCTypeFoundException`**: Signals that necessary 'type' information was missing or incorrectly formatted within a Verifiable Credential. (Returns HTTP 422 UNPROCESSABLE_ENTITY)
+-   **`ParseStubException`**: Thrown when a string or data segment cannot be parsed into the expected format. (Returns HTTP 400 BAD_REQUEST)
+-   **`VPValidationFailedException`**: Thrown when a verifiable presentation fails validation checks. (Returns HTTP 401 UNAUTHORIZED)
+-   **`IllegalArgumentException`**: Thrown when a method receives an illegal or inappropriate argument. (Returns HTTP 400 BAD_REQUEST)
+-   **`MissingRequestHeaderException`**: Thrown when a required HTTP request header is missing. (Returns HTTP 401 UNAUTHORIZED)
+
 # **Interfaces**
 
 Wallet stub service offers external interfaces for issuer component, portal, and EDC.
