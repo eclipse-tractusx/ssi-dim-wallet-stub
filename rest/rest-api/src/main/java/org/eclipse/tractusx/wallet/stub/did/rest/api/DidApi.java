@@ -25,9 +25,11 @@ package org.eclipse.tractusx.wallet.stub.did.rest.api;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.eclipse.tractusx.wallet.stub.apidoc.rest.api.DidApiDoc;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
+import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "Resolve DID Document")
 public interface DidApi {
@@ -40,5 +42,5 @@ public interface DidApi {
      */
     @DidApiDoc.DidDocument
     @GetMapping(path = "{bpn}/did.json", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DidDocument> getDocument(String bpn);
+    public ResponseEntity<DidDocument> getDocument(@PathVariable(name = Constants.BPN) String bpn);
 }

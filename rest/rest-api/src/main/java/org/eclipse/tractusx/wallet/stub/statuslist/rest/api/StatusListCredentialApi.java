@@ -26,6 +26,7 @@ import org.eclipse.tractusx.wallet.stub.apidoc.rest.api.StatusListApiDoc;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -44,5 +45,5 @@ public interface StatusListCredentialApi {
      */
     @StatusListApiDoc.GetStatusList
     @GetMapping(path = "api/dim/status-list/{bpn}/{vcId}")
-    public ResponseEntity<CustomCredential> getStatusListVc(String bpn, String vcId);
+    public ResponseEntity<CustomCredential> getStatusListVc(@PathVariable(name = "bpn") String bpn, @PathVariable(name = "vcId") String vcId);
 }

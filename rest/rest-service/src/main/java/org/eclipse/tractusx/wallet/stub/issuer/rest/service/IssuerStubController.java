@@ -21,7 +21,6 @@
 
 package org.eclipse.tractusx.wallet.stub.issuer.rest.service;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.tractusx.wallet.stub.issuer.api.IssuerCredentialService;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
@@ -30,12 +29,8 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.rest.api.IssuerStubApi;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -48,20 +43,19 @@ public class IssuerStubController implements IssuerStubApi {
     private final IssuerCredentialService issuerCredentialService;
 
     @Override
-    public ResponseEntity<IssueCredentialResponse> createCredential(@RequestBody IssueCredentialRequest request,
-                                                                    @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+    public ResponseEntity<IssueCredentialResponse> createCredential(IssueCredentialRequest request, String token) {
         IssueCredentialResponse issueCredentialResponse = issuerCredentialService.getIssueCredentialResponse(request, token);
         return new ResponseEntity<>(issueCredentialResponse, HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<SignCredentialResponse> signOrRevokeCredential(@RequestBody SignCredentialRequest request, @PathVariable String credentialId) {
+    public ResponseEntity<SignCredentialResponse> signOrRevokeCredential(SignCredentialRequest request, String credentialId) {
         SignCredentialResponse signCredentialResponse = issuerCredentialService.getSignCredentialResponse(request, credentialId);
         return ResponseEntity.ok(signCredentialResponse);
     }
 
     @Override
-    public GetCredentialsResponse getCredential(@PathVariable String externalCredentialId) {
+    public GetCredentialsResponse getCredential(String externalCredentialId) {
         return issuerCredentialService.getCredential(externalCredentialId);
     }
 }

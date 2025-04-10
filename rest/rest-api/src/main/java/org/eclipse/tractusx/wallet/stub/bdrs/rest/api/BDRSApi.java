@@ -21,11 +21,16 @@
 
 package org.eclipse.tractusx.wallet.stub.bdrs.rest.api;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.tractusx.wallet.stub.apidoc.rest.api.BDRSApiDoc;
+import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 
@@ -42,5 +47,7 @@ public interface BDRSApi {
      */
     @BDRSApiDoc.BDRSDirectory
     @GetMapping(path = "/api/v1/directory/bpn-directory", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void getBpnDirectory(String bpnString, String jwtToken, HttpServletResponse response) throws IOException;
+    public void getBpnDirectory(@RequestParam(name = Constants.BPN, required = false) String bpnString,
+                                @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String jwtToken,
+                                HttpServletResponse response) throws IOException;
 }

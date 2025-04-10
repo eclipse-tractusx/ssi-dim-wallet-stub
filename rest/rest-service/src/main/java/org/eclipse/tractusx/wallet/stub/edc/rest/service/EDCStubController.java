@@ -22,7 +22,6 @@
 package org.eclipse.tractusx.wallet.stub.edc.rest.service;
 
 
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,10 +30,7 @@ import org.eclipse.tractusx.wallet.stub.edc.api.dto.QueryPresentationRequest;
 import org.eclipse.tractusx.wallet.stub.edc.api.dto.QueryPresentationResponse;
 import org.eclipse.tractusx.wallet.stub.edc.api.dto.StsTokeResponse;
 import org.eclipse.tractusx.wallet.stub.edc.rest.api.EDCStubApi;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -47,18 +43,12 @@ public class EDCStubController implements EDCStubApi {
     private final EDCStubService edcStubService;
 
     @Override
-    public ResponseEntity<StsTokeResponse> createTokenWithScope(
-            @RequestBody Map<String, Object> request,
-            @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token
-    ) {
+    public ResponseEntity<StsTokeResponse> createTokenWithScope(Map<String, Object> request, String token) {
         return ResponseEntity.ok(StsTokeResponse.builder().jwt(edcStubService.createStsToken(request, token)).build());
     }
 
     @Override
-    public ResponseEntity<QueryPresentationResponse> queryPresentations(
-            @RequestBody QueryPresentationRequest request,
-            @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token
-    ) {
+    public ResponseEntity<QueryPresentationResponse> queryPresentations(QueryPresentationRequest request, String token) {
         return ResponseEntity.ok(edcStubService.queryPresentations(request, token));
     }
 }

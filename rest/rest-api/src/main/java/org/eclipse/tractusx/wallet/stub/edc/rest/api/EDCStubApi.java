@@ -22,14 +22,18 @@
 package org.eclipse.tractusx.wallet.stub.edc.rest.api;
 
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.eclipse.tractusx.wallet.stub.apidoc.rest.api.EDCStubApiDoc;
 import org.eclipse.tractusx.wallet.stub.edc.api.dto.QueryPresentationRequest;
 import org.eclipse.tractusx.wallet.stub.edc.api.dto.QueryPresentationResponse;
 import org.eclipse.tractusx.wallet.stub.edc.api.dto.StsTokeResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
@@ -45,7 +49,8 @@ public interface EDCStubApi {
      */
     @EDCStubApiDoc.GetSts
     @PostMapping(path = "/api/sts", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StsTokeResponse> createTokenWithScope(Map<String, Object> request, String token);
+    public ResponseEntity<StsTokeResponse> createTokenWithScope(@RequestBody Map<String, Object> request,
+                                                                @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 
 
     /**
@@ -57,5 +62,6 @@ public interface EDCStubApi {
      */
     @EDCStubApiDoc.QueryPresentation
     @PostMapping(path = "/api/presentations/query")
-    public ResponseEntity<QueryPresentationResponse> queryPresentations(QueryPresentationRequest request, String token);
+    public ResponseEntity<QueryPresentationResponse> queryPresentations(@RequestBody QueryPresentationRequest request,
+                                                                        @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 }

@@ -22,6 +22,7 @@
 
 package org.eclipse.tractusx.wallet.stub.issuer.rest.api;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.eclipse.tractusx.wallet.stub.apidoc.rest.api.CredentialsApiDoc;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
@@ -29,10 +30,14 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -51,7 +56,8 @@ public interface IssuerStubApi {
      */
     @CredentialsApiDoc.CreateStoreCredential
     @PostMapping("/credentials")
-    public ResponseEntity<IssueCredentialResponse> createCredential(IssueCredentialRequest request, String token);
+    public ResponseEntity<IssueCredentialResponse> createCredential(@RequestBody IssueCredentialRequest request,
+                                                                    @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 
     /**
      * Sign or revoke credential jwt.
@@ -61,7 +67,7 @@ public interface IssuerStubApi {
      */
     @CredentialsApiDoc.SignRevokeCredential
     @PatchMapping("/credentials/{credentialId}")
-    public ResponseEntity<SignCredentialResponse> signOrRevokeCredential(SignCredentialRequest request, String credentialId);
+    public ResponseEntity<SignCredentialResponse> signOrRevokeCredential(@RequestBody SignCredentialRequest request, @PathVariable String credentialId);
 
     /**
      * Gets credential.
@@ -71,6 +77,6 @@ public interface IssuerStubApi {
      */
     @CredentialsApiDoc.GetCredentials
     @GetMapping("/credentials/{externalCredentialId}")
-    public GetCredentialsResponse getCredential(String externalCredentialId);
+    public GetCredentialsResponse getCredential(@PathVariable String externalCredentialId);
 
 }

@@ -24,16 +24,12 @@
 package org.eclipse.tractusx.wallet.stub.bdrs.rest.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.tractusx.wallet.stub.bdrs.api.BDRSService;
 import org.eclipse.tractusx.wallet.stub.bdrs.rest.api.BDRSApi;
-import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -50,8 +46,8 @@ public class BDRSController implements BDRSApi {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void getBpnDirectory(@RequestParam(name = Constants.BPN, required = false) String bpnString,
-                                @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String jwtToken,
+    public void getBpnDirectory(String bpnString,
+                                String jwtToken,
                                 HttpServletResponse response) throws IOException {
         Map<String, String> bpnDirectory = bdrsService.getBpnDirectory(jwtToken, bpnString);
         // Convert the map to a JSON string

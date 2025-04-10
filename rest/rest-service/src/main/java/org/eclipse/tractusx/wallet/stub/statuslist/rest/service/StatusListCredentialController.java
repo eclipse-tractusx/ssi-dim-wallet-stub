@@ -28,7 +28,6 @@ import org.eclipse.tractusx.wallet.stub.statuslist.api.StatusListCredentialServi
 import org.eclipse.tractusx.wallet.stub.statuslist.rest.api.StatusListCredentialApi;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -40,7 +39,7 @@ public class StatusListCredentialController implements StatusListCredentialApi {
     private final StatusListCredentialService statusListCredentialService;
 
     @Override
-    public ResponseEntity<CustomCredential> getStatusListVc(@PathVariable(name = "bpn") String bpn, @PathVariable(name = "vcId") String vcId) {
+    public ResponseEntity<CustomCredential> getStatusListVc(String bpn, String vcId) {
         CustomCredential verifiableCredentials = statusListCredentialService.getCustomCredential(bpn, vcId);
         return ResponseEntity.ok(verifiableCredentials);
     }

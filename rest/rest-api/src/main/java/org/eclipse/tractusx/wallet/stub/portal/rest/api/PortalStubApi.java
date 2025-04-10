@@ -56,5 +56,5 @@ public interface PortalStubApi {
      */
     @PortalApiDoc.CreateNewTechUser
     @PostMapping(path = "/dim/technical-user/{bpn}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createTechUser(CreateTechUserRequest request, String bpn);
+    public ResponseEntity<Void> createTechUser(@RequestBody CreateTechUserRequest request, @PathVariable(name = "bpn") String bpn);
 }

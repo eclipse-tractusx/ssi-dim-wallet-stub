@@ -22,17 +22,12 @@
 package org.eclipse.tractusx.wallet.stub.token.rest.service;
 
 
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
 import org.eclipse.tractusx.wallet.stub.token.rest.api.TokenApi;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -42,7 +37,7 @@ public class TokenController implements TokenApi {
     private final TokenService tokenService;
 
     @Override
-    public ResponseEntity<TokenResponse> createAccessToken(@ModelAttribute @RequestBody TokenRequest request, @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
+    public ResponseEntity<TokenResponse> createAccessToken(TokenRequest request, String token) {
         tokenService.setClientInfo(request, token);
         return ResponseEntity.ok(tokenService.createAccessTokenResponse(request));
     }

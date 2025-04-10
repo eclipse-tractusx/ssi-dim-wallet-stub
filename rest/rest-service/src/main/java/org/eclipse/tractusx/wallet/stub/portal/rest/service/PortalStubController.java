@@ -28,11 +28,8 @@ import org.eclipse.tractusx.wallet.stub.portal.api.PortalStubService;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.CreateTechUserRequest;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.SetupDimRequest;
 import org.eclipse.tractusx.wallet.stub.portal.rest.api.PortalStubApi;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -43,13 +40,13 @@ public class PortalStubController implements PortalStubApi {
     private final PortalStubService portalStubService;
 
     @Override
-    public ResponseEntity<Void> setupDim(@ParameterObject SetupDimRequest request) {
+    public ResponseEntity<Void> setupDim(SetupDimRequest request) {
         portalStubService.setupDim(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<Void> createTechUser(@RequestBody CreateTechUserRequest request, @PathVariable(name = "bpn") String bpn) {
+    public ResponseEntity<Void> createTechUser(CreateTechUserRequest request, String bpn) {
         portalStubService.createTechUser(request, bpn);
         return new ResponseEntity<>(HttpStatus.OK);
     }
