@@ -68,6 +68,7 @@ public class TokenServiceImpl implements TokenService {
 
 
     @SneakyThrows
+    @Override
     public JWTClaimsSet verifyTokenAndGetClaims(String token) {
         try {
             if (internalTokenValidationService.verifyToken(token)) {
@@ -83,6 +84,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @SneakyThrows
+    @Override
     public TokenResponse createAccessTokenResponse(TokenRequest request) {
         try {
             //here clientId will be BPN
@@ -118,6 +120,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @SneakyThrows
+    @Override
     public void setClientInfo(TokenRequest request, String token) {
         try{
             if (StringUtils.isNoneBlank(token)) {

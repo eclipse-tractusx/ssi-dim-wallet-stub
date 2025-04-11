@@ -39,6 +39,7 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     private final PortalSettings portalSettings;
 
+    @Override
     public String createPortalAccessToken() {
         try (Keycloak keycloak = KeycloakBuilder.builder()
                 .clientId(portalSettings.clientId())

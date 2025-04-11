@@ -51,6 +51,7 @@ public class BDRSServiceImpl implements BDRSService {
     private final DidDocumentService didDocumentService;
     private final TokenService tokenService;
 
+    @Override
     public Map<String, String> getBpnDirectory(String jwtToken, String bpnString) {
         try {
             //validate jwt token

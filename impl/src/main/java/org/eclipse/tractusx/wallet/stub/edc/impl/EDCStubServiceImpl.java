@@ -180,14 +180,7 @@ public class EDCStubServiceImpl implements EDCStubService {
         }
     }
 
-    /**
-     * This method is responsible for creating a JWT token with specific scope.
-     *
-     * @param request The request object containing necessary data for creating the token.
-     * @param token   The existing token to be used for creating the new token with scope.
-     * @return A string representing the newly created JWT token with the specified scope.
-     */
-
+    @Override
     public String createStsToken(Map<String, Object> request, String token) {
         try{
             log.debug("Getting request to create STS with request -> {} and token ->{}", objectMapper.writeValueAsString(request), StringEscapeUtils.escapeJava(token));
@@ -231,6 +224,7 @@ public class EDCStubServiceImpl implements EDCStubService {
     }
 
     @SneakyThrows
+    @Override
     public QueryPresentationResponse queryPresentations(QueryPresentationRequest request, String token) {
         try{
             log.debug("getting request for query credential with body-> {} token -> {}", objectMapper.writeValueAsString(request), StringEscapeUtils.escapeJava(token));

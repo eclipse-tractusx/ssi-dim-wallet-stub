@@ -57,6 +57,7 @@ public class PortalStubServiceImpl implements PortalStubService {
     private final KeycloakService keycloakService;
 
     @SneakyThrows
+    @Override
     public void setupDim(SetupDimRequest request) {
         try{
             log.debug("Request to setup dim received for company name -> {}, bpn ->{} waiting for 60 sec", StringEscapeUtils.escapeJava(request.getCompanyName()), StringEscapeUtils.escapeJava(request.getBpn()));
@@ -97,6 +98,7 @@ public class PortalStubServiceImpl implements PortalStubService {
     }
 
     @SneakyThrows
+    @Override
     public void createTechUser(CreateTechUserRequest request, String bpn) {
         try{
             log.debug("Request to create tech received for name -> {}, bpn ->{} waiting for 60 sec", StringEscapeUtils.escapeJava(request.getName()), StringEscapeUtils.escapeJava(bpn));

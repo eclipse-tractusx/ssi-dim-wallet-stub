@@ -52,6 +52,7 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
     private final CredentialService credentialService;
 
     @SneakyThrows
+    @Override
     public CustomCredential getStatusListCredential(String bpn, String vcId) {
         try{
             DidDocument issuerDidDocument = didDocumentService.getDidDocument(bpn);
@@ -66,6 +67,7 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
     }
 
     @SneakyThrows
+    @Override
     public CustomCredential getCustomCredential(String bpn, String vcId) {
         try{
             //currently we are returning one VC

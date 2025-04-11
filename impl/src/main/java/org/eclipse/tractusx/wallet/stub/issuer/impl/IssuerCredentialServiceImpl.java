@@ -204,6 +204,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
     }
 
     @SneakyThrows
+    @Override
     public GetCredentialsResponse getCredential(String externalCredentialId) {
         try{
             DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
@@ -240,6 +241,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
     }
 
     @SneakyThrows
+    @Override
     public SignCredentialResponse getSignCredentialResponse(SignCredentialRequest request, String credentialId) {
         try{
             if (Objects.nonNull(request.getPayload()) && request.getPayload().isRevoke()) {
@@ -260,6 +262,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
     }
 
     @SneakyThrows
+    @Override
     public IssueCredentialResponse getIssueCredentialResponse(IssueCredentialRequest request, String token) {
         try{
             Validate.isTrue(request.isValid(), "Invalid request");

@@ -43,6 +43,7 @@ public class KeyServiceImpl implements KeyService{
 
     private final WalletStubSettings walletStubSettings;
 
+    @Override
     public KeyPair getKeyPair(String bpn) {
         try{
             Optional<KeyPair> optionalKeyPair = storage.getKeyPair(bpn);

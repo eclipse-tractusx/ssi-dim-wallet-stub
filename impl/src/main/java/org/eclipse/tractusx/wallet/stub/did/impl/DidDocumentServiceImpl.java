@@ -58,6 +58,7 @@ public class DidDocumentServiceImpl implements DidDocumentService {
     private final Storage storage;
 
     @SneakyThrows
+    @Override
     public DidDocument getDidDocument(String issuerBpn) {
         try{
             Optional<DidDocument> optionalDidDocument = storage.getDidDocument(issuerBpn);
@@ -107,6 +108,7 @@ public class DidDocumentServiceImpl implements DidDocumentService {
     }
 
     @SneakyThrows
+    @Override
     public Optional<DidDocument> storeDidDocument(String bpn) {
         try{
             log.debug("Did document requested for bpn ->{}", bpn);

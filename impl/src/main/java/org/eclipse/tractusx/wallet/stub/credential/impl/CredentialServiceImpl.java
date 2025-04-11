@@ -63,6 +63,7 @@ public class CredentialServiceImpl implements CredentialService {
 
 
     @SneakyThrows
+    @Override
     public String getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type) {
         try{
             Optional<String> optionalVC = storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type);
@@ -143,6 +144,7 @@ public class CredentialServiceImpl implements CredentialService {
         }
     }
 
+    @Override
     public CustomCredential issueStatusListCredential(String holderBpn, String vcId) {
         try{
             DidDocument issuerDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
