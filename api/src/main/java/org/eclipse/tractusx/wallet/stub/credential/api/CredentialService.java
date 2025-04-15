@@ -34,7 +34,7 @@ public interface CredentialService {
      * @param type      The type of the credential.
      * @return The verifiable credential in JWT format for the specified holder's BPN and type.
      */
-    public String getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type);
+    String getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type);
 
     /**
      * Issues a status list credential for the specified holder's BPN and VC ID.
@@ -44,5 +44,5 @@ public interface CredentialService {
      * @param vcId      The unique identifier for the status list credential.
      * @return The issued status list credential.
      */
-    public CustomCredential issueStatusListCredential(String holderBpn, String vcId);
+    CustomCredential issueStatusListCredential(String holderBpn, String vcId);
 }

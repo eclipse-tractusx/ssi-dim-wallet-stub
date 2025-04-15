@@ -36,7 +36,7 @@ public interface PortalStubService {
      * @param request The request object containing company information.
      */
     @Async
-    public void setupDim(SetupDimRequest request);
+    void setupDim(SetupDimRequest request);
 
     /**
      * Creates a technical user with the given information.
@@ -45,5 +45,5 @@ public interface PortalStubService {
      * @param bpn     The business partner number associated with the user.
      */
     @Async
-    public void createTechUser(CreateTechUserRequest request, String bpn);
+    void createTechUser(CreateTechUserRequest request, String bpn);
 }

@@ -36,7 +36,7 @@ public interface Storage {
      * @return A Map containing the Business Partner Numbers (bpn) as keys and their corresponding DID Documents as values.
      * If no DID Documents are found, returns an empty Map.
      */
-    public Map<String, DidDocument> getAllDidDocumentMap();
+    Map<String, DidDocument> getAllDidDocumentMap();
 
     /**
      * Saves the provided JWT credential as a Verifiable Credential (vcId) in the memory store.
@@ -44,7 +44,7 @@ public interface Storage {
      * @param vcId The Verifiable Credential ID associated with the JWT credential.
      * @param jwt  The JWT credential to be saved.
      */
-    public void saveCredentialAsJwt(String vcId, String jwt, String holderBPn, String type);
+    void saveCredentialAsJwt(String vcId, String jwt, String holderBPn, String type);
 
     /**
      * Retrieves the JWT credential associated with the provided Verifiable Credential ID (vcId).
@@ -52,7 +52,7 @@ public interface Storage {
      * @param vcId The Verifiable Credential ID.
      * @return An Optional containing the JWT credential associated with the provided vcId if found, otherwise an empty Optional.
      */
-    public Optional<String> getCredentialAsJwt(String vcId);
+    Optional<String> getCredentialAsJwt(String vcId);
 
 
     /**
@@ -61,11 +61,11 @@ public interface Storage {
      * @param vcId       Credential id.
      * @param credential The Verifiable Credential to be saved.
      */
-    public void saveCredentials(String vcId, CustomCredential credential, String holderBpn, String type);
+    void saveCredentials(String vcId, CustomCredential credential, String holderBpn, String type);
 
-    public Optional<CustomCredential> getCredentialsByHolderBpnAndType(String holderBpn, String type);
+    Optional<CustomCredential> getCredentialsByHolderBpnAndType(String holderBpn, String type);
 
-    public Optional<String> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type);
+    Optional<String> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type);
 
 
     /**
@@ -74,7 +74,7 @@ public interface Storage {
      * @param vcId The Verifiable Credential ID.
      * @return An Optional containing the Verifiable Credential associated with the provided vcId if found, otherwise an empty Optional.
      */
-    public Optional<CustomCredential> getVerifiableCredentials(String vcId);
+    Optional<CustomCredential> getVerifiableCredentials(String vcId);
 
 
     /**
@@ -83,7 +83,7 @@ public interface Storage {
      * @param bpn     The Business Partner Number for which the KeyPair is being saved.
      * @param keyPair The KeyPair to be saved.
      */
-    public void saveKeyPair(String bpn, KeyPair keyPair);
+    void saveKeyPair(String bpn, KeyPair keyPair);
 
 
     /**
@@ -92,7 +92,7 @@ public interface Storage {
      * @param bpn         The Business Partner Number (bpn) for which the DID Document is saved.
      * @param didDocument The DID Document to be saved.
      */
-    public void saveDidDocument(String bpn, DidDocument didDocument);
+    void saveDidDocument(String bpn, DidDocument didDocument);
 
 
     /**
@@ -101,7 +101,7 @@ public interface Storage {
      * @param bpn the Business Partner Number
      * @return an Optional containing the KeyPair associated with the provided bpn if found, otherwise an empty Optional
      */
-    public Optional<KeyPair> getKeyPair(String bpn);
+    Optional<KeyPair> getKeyPair(String bpn);
 
 
     /**
@@ -110,5 +110,5 @@ public interface Storage {
      * @param bpn The business partner number (bpn) for which to retrieve the DID Document.
      * @return An Optional containing the DID Document associated with the provided bpn. If no DID Document is found, return an empty Optional.
      */
-    public Optional<DidDocument> getDidDocument(String bpn);
+    Optional<DidDocument> getDidDocument(String bpn);
 }

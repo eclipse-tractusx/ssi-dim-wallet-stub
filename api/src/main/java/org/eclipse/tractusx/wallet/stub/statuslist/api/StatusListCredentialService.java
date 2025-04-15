@@ -33,7 +33,7 @@ public interface StatusListCredentialService {
      * @param vcId The VC ID.
      * @return The status list verifiable credential.
      */
-    public CustomCredential getStatusListCredential(String bpn, String vcId);
+    CustomCredential getStatusListCredential(String bpn, String vcId);
 
     /**
      * Retrieves the verifiable credential associated with the given Business Partner Number (bpn) and VC ID.
@@ -42,5 +42,5 @@ public interface StatusListCredentialService {
      * @param vcId The VC ID.
      * @return The verifiable credential.
      */
-    public CustomCredential getCustomCredential(String bpn, String vcId);
+    CustomCredential getCustomCredential(String bpn, String vcId);
 }

@@ -56,7 +56,7 @@ public interface IssuerStubApi {
      */
     @CredentialsApiDoc.CreateStoreCredential
     @PostMapping("/credentials")
-    public ResponseEntity<IssueCredentialResponse> createCredential(@RequestBody IssueCredentialRequest request,
+    ResponseEntity<IssueCredentialResponse> createCredential(@RequestBody IssueCredentialRequest request,
                                                                     @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 
     /**
@@ -67,7 +67,7 @@ public interface IssuerStubApi {
      */
     @CredentialsApiDoc.SignRevokeCredential
     @PatchMapping("/credentials/{credentialId}")
-    public ResponseEntity<SignCredentialResponse> signOrRevokeCredential(@RequestBody SignCredentialRequest request, @PathVariable String credentialId);
+    ResponseEntity<SignCredentialResponse> signOrRevokeCredential(@RequestBody SignCredentialRequest request, @PathVariable String credentialId);
 
     /**
      * Gets credential.
@@ -77,6 +77,6 @@ public interface IssuerStubApi {
      */
     @CredentialsApiDoc.GetCredentials
     @GetMapping("/credentials/{externalCredentialId}")
-    public GetCredentialsResponse getCredential(@PathVariable String externalCredentialId);
+    GetCredentialsResponse getCredential(@PathVariable String externalCredentialId);
 
 }

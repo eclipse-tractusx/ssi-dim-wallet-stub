@@ -49,7 +49,7 @@ public interface EDCStubApi {
      */
     @EDCStubApiDoc.GetSts
     @PostMapping(path = "/api/sts", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StsTokeResponse> createTokenWithScope(@RequestBody Map<String, Object> request,
+    ResponseEntity<StsTokeResponse> createTokenWithScope(@RequestBody Map<String, Object> request,
                                                                 @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 
 
@@ -62,6 +62,6 @@ public interface EDCStubApi {
      */
     @EDCStubApiDoc.QueryPresentation
     @PostMapping(path = "/api/presentations/query")
-    public ResponseEntity<QueryPresentationResponse> queryPresentations(@RequestBody QueryPresentationRequest request,
+    ResponseEntity<QueryPresentationResponse> queryPresentations(@RequestBody QueryPresentationRequest request,
                                                                         @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 }

@@ -28,7 +28,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 
 public interface TokenService {
 
-    public JWTClaimsSet verifyTokenAndGetClaims(String token);
+    JWTClaimsSet verifyTokenAndGetClaims(String token);
 
     /**
      * Creates an access token response for the given client ID.
@@ -36,7 +36,7 @@ public interface TokenService {
      * @param request The token request containing the client ID.
      * @return A {@link TokenResponse} object containing the access token, token type, and expiration time.
      */
-    public TokenResponse createAccessTokenResponse(TokenRequest request);
+    TokenResponse createAccessTokenResponse(TokenRequest request);
 
     /**
      * Parses a Basic Authentication token string to extract the client ID and client secret,
@@ -45,5 +45,5 @@ public interface TokenService {
      * @param request The {@link TokenRequest} object whose {@code clientId} and {@code clientSecret} fields will be populated if the token is valid. This object is modified directly.
      * @param token   The authorization token string, obtained from HTTP {@code Authorization} header. Expected to be in "Basic clientID:clientSecret" (Base64 encoded) format. Can be blank.
      */
-    public void setClientInfo(TokenRequest request, String token);
+    void setClientInfo(TokenRequest request, String token);
 }

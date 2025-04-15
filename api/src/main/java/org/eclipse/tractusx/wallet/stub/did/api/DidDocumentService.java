@@ -28,7 +28,7 @@ import java.util.Optional;
 
 public interface DidDocumentService {
 
-    public DidDocument getDidDocument(String issuerBpn);
+    DidDocument getDidDocument(String issuerBpn);
 
-    public Optional<DidDocument> storeDidDocument(String bpn);
+    Optional<DidDocument> storeDidDocument(String bpn);
 }

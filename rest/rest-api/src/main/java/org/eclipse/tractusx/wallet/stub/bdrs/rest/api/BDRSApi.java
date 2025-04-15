@@ -47,7 +47,7 @@ public interface BDRSApi {
      */
     @BDRSApiDoc.BDRSDirectory
     @GetMapping(path = "/api/v1/directory/bpn-directory", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void getBpnDirectory(@RequestParam(name = Constants.BPN, required = false) String bpnString,
+    void getBpnDirectory(@RequestParam(name = Constants.BPN, required = false) String bpnString,
                                 @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String jwtToken,
                                 HttpServletResponse response) throws IOException;
 }

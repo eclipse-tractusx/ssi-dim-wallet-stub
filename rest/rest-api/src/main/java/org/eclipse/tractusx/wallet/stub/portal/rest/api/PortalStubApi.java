@@ -45,7 +45,7 @@ public interface PortalStubApi {
      */
     @PortalApiDoc.CreateNewWallet
     @PostMapping(path = "/dim/setup-dim")
-    public ResponseEntity<Void> setupDim(@ParameterObject SetupDimRequest request);
+    ResponseEntity<Void> setupDim(@ParameterObject SetupDimRequest request);
 
     /**
      * Create tech user response entity.
@@ -56,5 +56,5 @@ public interface PortalStubApi {
      */
     @PortalApiDoc.CreateNewTechUser
     @PostMapping(path = "/dim/technical-user/{bpn}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createTechUser(@RequestBody CreateTechUserRequest request, @PathVariable(name = "bpn") String bpn);
+    ResponseEntity<Void> createTechUser(@RequestBody CreateTechUserRequest request, @PathVariable(name = "bpn") String bpn);
 }

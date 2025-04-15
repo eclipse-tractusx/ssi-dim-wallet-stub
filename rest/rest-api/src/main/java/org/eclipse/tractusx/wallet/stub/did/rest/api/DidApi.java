@@ -42,5 +42,5 @@ public interface DidApi {
      */
     @DidApiDoc.DidDocument
     @GetMapping(path = "{bpn}/did.json", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DidDocument> getDocument(@PathVariable(name = Constants.BPN) String bpn);
+    ResponseEntity<DidDocument> getDocument(@PathVariable(name = Constants.BPN) String bpn);
 }

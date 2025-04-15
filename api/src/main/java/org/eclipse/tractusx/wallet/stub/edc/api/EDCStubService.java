@@ -35,7 +35,7 @@ public interface EDCStubService {
      * @param token   The existing token to be used for creating the new token with scope.
      * @return A string representing the newly created JWT token with the specified scope.
      */
-    public String createStsToken(Map<String, Object> request, String token);
+    String createStsToken(Map<String, Object> request, String token);
 
-    public QueryPresentationResponse queryPresentations(QueryPresentationRequest request, String token);
+    QueryPresentationResponse queryPresentations(QueryPresentationRequest request, String token);
 }

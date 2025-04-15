@@ -31,9 +31,9 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 
 public interface IssuerCredentialService {
 
-    public GetCredentialsResponse getCredential(String externalCredentialId);
+    GetCredentialsResponse getCredential(String externalCredentialId);
 
-    public SignCredentialResponse getSignCredentialResponse(SignCredentialRequest request, String credentialId);
+    SignCredentialResponse getSignCredentialResponse(SignCredentialRequest request, String credentialId);
 
-    public IssueCredentialResponse getIssueCredentialResponse(IssueCredentialRequest request, String token);
+    IssueCredentialResponse getIssueCredentialResponse(IssueCredentialRequest request, String token);
 }

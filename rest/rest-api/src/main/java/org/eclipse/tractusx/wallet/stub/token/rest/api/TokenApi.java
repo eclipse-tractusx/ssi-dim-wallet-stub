@@ -49,5 +49,5 @@ public interface TokenApi {
      */
     @TokenApiDoc.CreateIdpToken
     @PostMapping(path = "/oauth/token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TokenResponse> createAccessToken(@ModelAttribute @RequestBody TokenRequest request, @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token);
+    ResponseEntity<TokenResponse> createAccessToken(@ModelAttribute @RequestBody TokenRequest request, @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token);
 }

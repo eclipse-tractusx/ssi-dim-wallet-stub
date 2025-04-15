@@ -45,5 +45,5 @@ public interface StatusListCredentialApi {
      */
     @StatusListApiDoc.GetStatusList
     @GetMapping(path = "api/dim/status-list/{bpn}/{vcId}")
-    public ResponseEntity<CustomCredential> getStatusListVc(@PathVariable(name = "bpn") String bpn, @PathVariable(name = "vcId") String vcId);
+    ResponseEntity<CustomCredential> getStatusListVc(@PathVariable(name = "bpn") String bpn, @PathVariable(name = "vcId") String vcId);
 }

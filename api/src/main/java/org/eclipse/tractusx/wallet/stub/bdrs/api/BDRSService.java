@@ -26,5 +26,5 @@ package org.eclipse.tractusx.wallet.stub.bdrs.api;
 import java.util.Map;
 
 public interface BDRSService {
-    public Map<String, String> getBpnDirectory(String jwtToken, String bpnString);
+    Map<String, String> getBpnDirectory(String jwtToken, String bpnString);
 }

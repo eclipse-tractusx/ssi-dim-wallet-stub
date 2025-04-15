@@ -27,7 +27,7 @@ package org.eclipse.tractusx.wallet.stub.portal.api;
 public interface KeycloakService {
 
 
-    public final String CLIENT_CREDENTIALS = "client_credentials";
+    String CLIENT_CREDENTIALS = "client_credentials";
 
     /**
      * This method creates a portal access token using Keycloak's client credentials grant type.
@@ -35,5 +35,5 @@ public interface KeycloakService {
      *
      * @return A string representing the portal access token in the format: "Bearer <access_token>".
      */
-    public String createPortalAccessToken();
+    String createPortalAccessToken();
 }
