@@ -1,5 +1,6 @@
 /*
  * *******************************************************************************
+ *  Copyright (c) 2025 LKS Next
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
@@ -21,8 +22,6 @@
 
 package org.eclipse.tractusx.wallet.stub.token.impl;
 
-import com.nimbusds.jose.crypto.ECDSAVerifier;
-import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +46,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
-import java.security.interfaces.ECPublicKey;
-import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
