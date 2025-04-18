@@ -1,5 +1,5 @@
 #################################################################################
-#  Copyright (c) 2024 Contributors to the Eclipse Foundation
+#  Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -31,6 +31,9 @@ RUN addgroup -g 11111 -S wallet && adduser -u 11111 -S -s /bin/false -G wallet w
 
 # add curl for healthcheck
 RUN apk --no-cache add curl
+
+# Added to mitigate CVE-2024-8176
+RUN apk upgrade
 
 USER wallet
 
