@@ -40,6 +40,7 @@ public class StringPool {
     public static final String MEMBERSHIP_CREDENTIAL = "MembershipCredential";
     public static final String BPN_CREDENTIAL = "BpnCredential";
     public static final String DATA_EXCHANGE_CREDENTIAL = "DataExchangeGovernanceCredential";
+    public static final String USAGE_PURPOSE_CREDENTIAL = "UsagePurposeCredential";
     public static final String STATUS_LIST_2021_CREDENTIAL = "StatusList2021Credential";
     public static final String ENCODED_LIST = "encodedList";
     public static final String VERIFIABLE_CREDENTIAL_CAMEL_CASE = "verifiableCredential";

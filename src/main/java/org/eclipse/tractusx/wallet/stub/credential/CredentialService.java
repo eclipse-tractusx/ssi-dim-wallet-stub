@@ -138,6 +138,8 @@ public class CredentialService {
                 return issueBpnCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
             } else if (type.equals(StringPool.DATA_EXCHANGE_CREDENTIAL)) {
                 return issueDataExchangeGovernanceCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
+            } else if (type.equals(StringPool.USAGE_PURPOSE_CREDENTIAL)) {
+                return issueUsagePurposeCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
             } else {
                 throw new IllegalArgumentException("vc type -> " + type + " is not supported");
             }
@@ -191,6 +193,22 @@ public class CredentialService {
                 vcIdUri.toString(), StringPool.BPN_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
         memoryStorage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.BPN_CREDENTIAL);
+        return credentialWithoutProof;
+    }
+
+    private CustomCredential issueUsagePurposeCredential(String holderBpn, DidDocument issuerDocument, DidDocument holderDocument, URI vcIdUri, String vcId) {
+        Map<String, Object> subject = new HashMap<>();
+        subject.put(StringPool.ID, holderDocument.getId());
+        subject.put(StringPool.HOLDER_IDENTIFIER, holderBpn);
+        // here does this specification for group and UC come from?
+        // subject.put(StringPool.GROUP, "UseCaseFramework");
+        // subject.put(StringPool.USE_CASE, "DataExchangeGovernance");
+        // subject.put(StringPool.CONTRACT_TEMPLATE, "https://example.org/temp-1");
+        // subject.put(StringPool.CONTRACT_VERSION, "1.0");
+        CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
+                vcIdUri.toString(), StringPool.USAGE_PURPOSE_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
+
+        memoryStorage.saveCredentials(vcId, credentialWithoutProof, holderBpn, StringPool.USAGE_PURPOSE_CREDENTIAL);
         return credentialWithoutProof;
     }
 
