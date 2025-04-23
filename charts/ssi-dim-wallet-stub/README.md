@@ -89,7 +89,6 @@ helm install wallet-stub -n wallet charts/ssi-dim-wallet-stub
 | `wallet.portal.clientSecret`                  | Keycloak client secret for accessing portal backend APIs                               | `"client_secret"`                                 |
 | `wallet.keycloak.realm`                       | Keycloak realm name                                                                    | `"CX-Central"`                                    |
 | `wallet.keycloak.authServerUrl`               | Keycloak host URL                                                                      | `"http://localhost:28080/auth"`                   |
-| `wallet.storageType`                          | The available storage options are: in-memory or database                               | `database`                                        |
 | `wallet.postgresql.enabled`                   | Enable PostgraSQL driver, otherwise H2 will be use instead                             | `true`                                            |
 | `wallet.postgresql.url`                       | The URL to connect to the database                                                     | `jdbc:postgresql://wallet-postgres:5432/postgres` |
 | `wallet.postgresql.username`                  | The username to access the database                                                    | `postgres`                                        |

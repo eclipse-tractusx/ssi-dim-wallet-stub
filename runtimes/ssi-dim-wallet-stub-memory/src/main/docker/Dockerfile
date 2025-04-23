@@ -58,9 +58,6 @@ COPY --from=build /home/gradle/src/runtimes/ssi-dim-wallet-stub-memory/build/lib
 
 WORKDIR /app
 
-# Set the active Spring profile to 'prod'
-ENV SPRING_PROFILES_ACTIVE=in-memory
-
 HEALTHCHECK --start-period=30s CMD ["/bin/sh", "-c", "curl --fail http://localhost:8080/actuator/health/liveness || exit 1"]
 
 CMD ["java", "-jar", "wallet-memory-latest.jar"]

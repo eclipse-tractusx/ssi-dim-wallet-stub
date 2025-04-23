@@ -38,7 +38,6 @@ The DIM Wallet is part of the Self-Sovereign Identity (SSI) Flow of Eclipse Trac
 | PORTAL_REALM                        | keycloak realm                                                                   |                                      |
 | PORTAL_AUTH_SERVER_URL              | Authentication server(keycloak)                                                  |                                      |
 | APP_LOG_LEVEL                       | Log level of application                                                         | DEBUG                                |
-| STORAGE_TYPE                        | The available storage options are: in-memory or database                         | database                             |
 | SPRING_DATASOURCE_URL               | The URL to connect to the database                                               | jdbc:h2:mem:testdb;MODE=PostgreSQL   |
 | SPRING_DATASOURCE_USERNAME          | The username to access the database                                              | sa                                   |
 | SPRING_DATASOURCE_PASSWORD          | The password to access the database                                              |                                      |
@@ -61,7 +60,8 @@ Detailed documentation can be found [here](docs%2FREADME.md)
 
 ### Important notes and limitation of application
 
-1. There are two possible options, each defined in separate Spring profiles: in-memory and database.
+1. There are two possible options, each defined in a separate runtimes: `ssi-dim-wallet-stub` (with optional
+   persistence) and `ssi-dim-wallet-stub-memory` (in-memory only).
     1. Simple Java ``Map`` is used to store keypair, VC and VP of wallet to avoid any further complexity. Please
        refer [MemoryStorage.java](src%2Fmain%2Fjava%2Forg%2Feclipse%2Ftractusx%2Fwallet%2Fstub%2Fstorage%2FMemoryStorage.java)
     2. Stored in the

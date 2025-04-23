@@ -136,8 +136,6 @@ wallet:
     realm: "CX-Central"
     # -- keycloak host
     authServerUrl: "http://localhost:28080/auth"
-  # --- Storage Type: in-memory (In memory storage) or database (Using database)
-  storageType: database
   # --- PostgreSQL storage
   postgresql:
     # --- Enable PostgraSQL driver, otherwise H2 will be use instead

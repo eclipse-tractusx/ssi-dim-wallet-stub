@@ -58,8 +58,6 @@ COPY --from=build /home/gradle/src/runtimes/ssi-dim-wallet-stub/build/libs/walle
 
 WORKDIR /app
 
-ENV SPRING_PROFILES_ACTIVE=database
-
 HEALTHCHECK --start-period=30s CMD ["/bin/sh", "-c", "curl --fail http://localhost:8080/actuator/health/liveness || exit 1"]
 
 CMD ["java", "-jar", "wallet-latest.jar"]

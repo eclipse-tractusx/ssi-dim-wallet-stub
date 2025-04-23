@@ -28,8 +28,6 @@ spring:
       enabled: true
   application:
     name: SSI DIM Wallet stub
-  profiles:
-    active: in-memory #Two options: in-memory(MemoryStorage) and database(DatabaseMemory)
 
 springdoc:
   swagger-ui:

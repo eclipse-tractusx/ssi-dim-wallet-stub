@@ -29,8 +29,6 @@ spring:
       enabled: true
   application:
     name: SSI DIM Wallet stub
-  profiles:
-    active: database #Two options: in-memory(MemoryStorage) and database(DatabaseMemory)
   liquibase:
     change-log: classpath:/db/changelog/changelog-master.xml
   datasource:
