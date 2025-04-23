@@ -73,61 +73,61 @@ public class CredentialsApiDoc {
             @ApiResponse(responseCode = "400", description = "Bad request", content = {
                     @Content(examples = {
                             @ExampleObject(name = "Illegal Argument Exception", value = """
-                            {
-                              "type": "about:blank",
-                              "title": "Bad request: Invalid token -> token",
-                              "status": 400,
-                              "detail": "IllegalArgumentException: Invalid token -> token",
-                              "instance": "/api/v2.0.0/credentials",
-                              "properties": {
-                                "timestamp": 1743154190590
-                              }
-                            }
-                            """),
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Bad request: Invalid token -> token",
+                                      "status": 400,
+                                      "detail": "IllegalArgumentException: Invalid token -> token",
+                                      "instance": "/api/v2.0.0/credentials",
+                                      "properties": {
+                                        "timestamp": 1743154190590
+                                      }
+                                    }
+                                    """),
                             @ExampleObject(name = "Parse Stub Exception", value = """
-                            {
-                              "type": "about:blank",
-                              "title": "Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
-                              "status": 400,
-                              "detail": "ParseStubException: Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
-                              "instance": "/api/v2.0.0/credentials",
-                              "properties": {
-                                "timestamp": 1743156805552
-                              }
-                            }
-                            """)
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                                      "status": 400,
+                                      "detail": "ParseStubException: Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                                      "instance": "/api/v2.0.0/credentials",
+                                      "properties": {
+                                        "timestamp": 1743156805552
+                                      }
+                                    }
+                                    """)
                     })
             }),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
                     @Content(examples = {
                             @ExampleObject(name = "Missing Request Header Exception", value = """
-                            {
-                              "type": "about:blank",
-                              "title": "Please provide the required header: Authorization",
-                              "status": 401,
-                              "detail": "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
-                              "instance": "/api/v2.0.0/credentials",
-                              "properties": {
-                                "timestamp": 1743085396772
-                              }
-                            }
-                            """)
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Please provide the required header: Authorization",
+                                      "status": 401,
+                                      "detail": "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                                      "instance": "/api/v2.0.0/credentials",
+                                      "properties": {
+                                        "timestamp": 1743085396772
+                                      }
+                                    }
+                                    """)
                     })
             }),
             @ApiResponse(responseCode = "422", description = "Unprocessable Entity", content = {
                     @Content(examples = {
                             @ExampleObject(name = "No VC Type Found Exception", value = """
-                            {
-                              "type": "about:blank",
-                              "title": "Unprocessable Entity: No type found in VC",
-                              "status": 422,
-                              "detail": "NoVCTypeFoundException: No type found in VC",
-                              "instance": "/api/v2.0.0/credentials",
-                              "properties": {
-                                "timestamp": 1743157807618
-                              }
-                            }
-                            """)
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Unprocessable Entity: No type found in VC",
+                                      "status": 422,
+                                      "detail": "NoVCTypeFoundException: No type found in VC",
+                                      "instance": "/api/v2.0.0/credentials",
+                                      "properties": {
+                                        "timestamp": 1743157807618
+                                      }
+                                    }
+                                    """)
                     })
             }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
@@ -258,17 +258,17 @@ public class CredentialsApiDoc {
             @ApiResponse(responseCode = "404", description = "Not Found", content = {
                     @Content(examples = {
                             @ExampleObject(name = "Credential Not Found Exception", value = """
-                            {
-                              "type": "about:blank",
-                              "title": "Not Found: No credential found for credentialId -> S",
-                              "status": 404,
-                              "detail": "CredentialNotFoundException: No credential found for credentialId -> S",
-                              "instance": "/api/v2.0.0/credentials/a",
-                              "properties": {
-                                "timestamp": 1743154020889
-                              }
-                            }
-                            """)
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Not Found: No credential found for credentialId -> S",
+                                      "status": 404,
+                                      "detail": "CredentialNotFoundException: No credential found for credentialId -> S",
+                                      "instance": "/api/v2.0.0/credentials/a",
+                                      "properties": {
+                                        "timestamp": 1743154020889
+                                      }
+                                    }
+                                    """)
                     })
             }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
@@ -355,17 +355,17 @@ public class CredentialsApiDoc {
             @ApiResponse(responseCode = "404", description = "Not Found", content = {
                     @Content(examples = {
                             @ExampleObject(name = "Credential Not Found Exception", value = """
-                            {
-                              "type": "about:blank",
-                              "title": "Not Found: No credential found for credentialId -> s",
-                              "status": 404,
-                              "detail": "CredentialNotFoundException: No credential found for credentialId -> s",
-                              "instance": "/api/v2.0.0/credentials/a",
-                              "properties": {
-                                "timestamp": 1743154132008
-                              }
-                            }
-                            """)
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Not Found: No credential found for credentialId -> s",
+                                      "status": 404,
+                                      "detail": "CredentialNotFoundException: No credential found for credentialId -> s",
+                                      "instance": "/api/v2.0.0/credentials/a",
+                                      "properties": {
+                                        "timestamp": 1743154132008
+                                      }
+                                    }
+                                    """)
                     })
             }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {

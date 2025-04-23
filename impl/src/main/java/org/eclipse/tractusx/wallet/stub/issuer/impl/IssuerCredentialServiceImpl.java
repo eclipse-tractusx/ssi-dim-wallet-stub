@@ -68,7 +68,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class IssuerCredentialServiceImpl implements IssuerCredentialService{
+public class IssuerCredentialServiceImpl implements IssuerCredentialService {
 
     private final WalletStubSettings walletStubSettings;
 
@@ -80,7 +80,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
 
     @SuppressWarnings("unchecked")
     private static String getHolderBpn(CustomCredential verifiableCredential) {
-        try{
+        try {
             //get Holder BPN
             Map<String, Object> subject = (Map<String, Object>) verifiableCredential.get("credentialSubject");
             if (subject.containsKey(Constants.BPN)) {
@@ -92,7 +92,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
             }
         } catch (IllegalArgumentException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -109,7 +109,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
     @SuppressWarnings("unchecked")
     @SneakyThrows
     private Map<String, String> issueCredential(IssueCredentialRequest request, String issuerBPN) {
-        try{
+        try {
             KeyPair issuerKeypair = keyService.getKeyPair(walletStubSettings.baseWalletBPN());
 
             DidDocument issuerDidDocument = didDocumentService.getDidDocument(issuerBPN);
@@ -186,20 +186,20 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
             }
         } catch (IllegalArgumentException | NoVCTypeFoundException | InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 
     @SneakyThrows
     private Optional<String> signCredential(String credentialId) {
-        try{
+        try {
             DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
             URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + credentialId);
             return storage.getCredentialAsJwt(vcIdUri.toString());
         } catch (InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -207,7 +207,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
     @SneakyThrows
     @Override
     public GetCredentialsResponse getCredential(String externalCredentialId) {
-        try{
+        try {
             DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
             URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + externalCredentialId);
             Optional<String> jwtVc = storage.getCredentialAsJwt(vcIdUri.toString());
@@ -227,16 +227,16 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
                     .build();
         } catch (CredentialNotFoundException | InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 
     @SneakyThrows
     private String storeCredential(IssueCredentialRequest request, String holderBpn) {
-        try{
+        try {
             return CommonUtils.getUuid(holderBpn, StringUtils.join(request.getCredentialPayload().getDerive(), ""));
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -244,7 +244,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
     @SneakyThrows
     @Override
     public SignCredentialResponse getSignCredentialResponse(SignCredentialRequest request, String credentialId) {
-        try{
+        try {
             if (Objects.nonNull(request.getPayload()) && request.getPayload().isRevoke()) {
                 return null;
             } else {
@@ -255,9 +255,9 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
                     throw new CredentialNotFoundException("No credential found for credentialId -> " + credentialId);
                 }
             }
-        } catch (CredentialNotFoundException | InternalErrorException e){
+        } catch (CredentialNotFoundException | InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -265,7 +265,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
     @SneakyThrows
     @Override
     public IssueCredentialResponse getIssueCredentialResponse(IssueCredentialRequest request, String token) {
-        try{
+        try {
             Validate.isTrue(request.isValid(), "Invalid request");
 
             String vcId;
@@ -281,9 +281,9 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService{
                     .id(vcId)
                     .jwt(jwt)
                     .build();
-        } catch (ParseStubException | IllegalArgumentException | NoVCTypeFoundException | InternalErrorException e){
+        } catch (ParseStubException | IllegalArgumentException | NoVCTypeFoundException | InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }

@@ -57,7 +57,7 @@ public interface IssuerStubApi {
     @CredentialsApiDoc.CreateStoreCredential
     @PostMapping("/credentials")
     ResponseEntity<IssueCredentialResponse> createCredential(@RequestBody IssueCredentialRequest request,
-                                                                    @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
+                                                             @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 
     /**
      * Sign or revoke credential jwt.

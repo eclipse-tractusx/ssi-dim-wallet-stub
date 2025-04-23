@@ -107,17 +107,17 @@ public class TestUtils {
      * Retrieves a Verifiable Presentation (VP) token by performing a series of authentication and query operations.
      * This method creates an inner token, obtains a JWT, sends a query presentation request, and validates the response.
      *
-     * @param restTemplate        The TestRestTemplate used for making HTTP requests.
-     * @param keyService          The KeyService used for cryptographic operations.
-     * @param didDocumentService  The DidDocumentService used for DID-related operations.
-     * @param tokenService        The TokenService used for token-related operations.
-     * @param tokenSettings       The TokenSettings containing token configuration.
-     * @param consumerDid         The DID of the consumer.
-     * @param providerDid         The DID of the provider.
-     * @param consumerBpn         The Business Partner Number (BPN) of the consumer.
-     * @param readScope           The scope for read operations.
-     * @param typeList            A list of credential types to be included in the request.
-     * @return                    A String representing the first Verifiable Presentation in the response.
+     * @param restTemplate       The TestRestTemplate used for making HTTP requests.
+     * @param keyService         The KeyService used for cryptographic operations.
+     * @param didDocumentService The DidDocumentService used for DID-related operations.
+     * @param tokenService       The TokenService used for token-related operations.
+     * @param tokenSettings      The TokenSettings containing token configuration.
+     * @param consumerDid        The DID of the consumer.
+     * @param providerDid        The DID of the provider.
+     * @param consumerBpn        The Business Partner Number (BPN) of the consumer.
+     * @param readScope          The scope for read operations.
+     * @param typeList           A list of credential types to be included in the request.
+     * @return A String representing the first Verifiable Presentation in the response.
      * @throws URISyntaxException If there's an error in creating the URI for the query presentation request.
      */
     public String getVPToken(TestRestTemplate restTemplate, KeyService keyService, DidDocumentService didDocumentService,

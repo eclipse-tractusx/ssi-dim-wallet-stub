@@ -36,18 +36,18 @@ public class DidDocumentConverter implements AttributeConverter<DidDocument, Str
 
     @Override
     public String convertToDatabaseColumn(DidDocument didDocument) {
-        try{
+        try {
             return objectMapper.writeValueAsString(didDocument);
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new IllegalArgumentException("Error converting DidDocument to JSON", e);
         }
     }
 
     @Override
     public DidDocument convertToEntityAttribute(String json) {
-        try{
+        try {
             return objectMapper.readValue(json, DidDocument.class);
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new IllegalArgumentException("Error converting JSON to DidDocument", e);
         }
     }

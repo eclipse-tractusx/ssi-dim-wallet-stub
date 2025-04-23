@@ -61,8 +61,8 @@ public class InitialSetupConfig {
     @SneakyThrows
     @EventListener(ApplicationReadyEvent.class)
     public void setupBaseWallet() {
-        try{
-            if(storage.getDidDocument(walletStubSettings.baseWalletBPN()).isEmpty()){
+        try {
+            if (storage.getDidDocument(walletStubSettings.baseWalletBPN()).isEmpty()) {
                 SetupDimRequest request = new SetupDimRequest();
                 request.setBpn(walletStubSettings.baseWalletBPN());
                 request.setCompanyName("Eclipse Tractus-x Operating Company");
@@ -76,10 +76,10 @@ public class InitialSetupConfig {
 
                 //create wallets for the seeded BPNs specified in the configuration
                 int cont = 1;
-                for (String bpn: walletStubSettings.seedWalletsBPN()){
+                for (String bpn : walletStubSettings.seedWalletsBPN()) {
                     SetupDimRequest seedRequest = new SetupDimRequest();
                     seedRequest.setBpn(bpn);
-                    seedRequest.setCompanyName("Seed Wallet "+cont);
+                    seedRequest.setCompanyName("Seed Wallet " + cont);
                     seedRequest.setDidDocumentLocation(walletStubSettings.didHost());
                     portalStubService.setupDim(seedRequest);
                     statusListCredentialService.getStatusListCredential(bpn, walletStubSettings.statusListVcId());
@@ -87,12 +87,12 @@ public class InitialSetupConfig {
                 }
 
                 log.debug("Base wallet with bpn is {} created and status list VC is also created", walletStubSettings.baseWalletBPN());
-            }else {
+            } else {
                 log.debug("Wallet is using persistent data.");
             }
         } catch (InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }

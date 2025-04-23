@@ -29,7 +29,7 @@ import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
-@Table(name="holder_credential_as_jwt")
+@Table(name = "holder_credential_as_jwt")
 @Getter
 @Setter
 @NoArgsConstructor

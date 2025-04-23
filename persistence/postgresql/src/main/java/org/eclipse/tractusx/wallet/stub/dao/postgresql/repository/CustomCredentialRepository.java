@@ -30,7 +30,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CustomCredentialRepository extends JpaRepository<CustomCredentialEntity,Long> {
+public interface CustomCredentialRepository extends JpaRepository<CustomCredentialEntity, Long> {
 
     @Query("SELECT c FROM CustomCredentialEntity c WHERE c.vcId = :vcId")
     CustomCredentialEntity findByVcId(@Param("vcId") String vcId);

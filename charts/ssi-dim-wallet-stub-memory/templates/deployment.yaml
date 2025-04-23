@@ -20,8 +20,8 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: {{ .Values.wallet.appName }}
-  namespace: {{ .Values.wallet.nameSpace }}
+  name: { { .Values.wallet.appName } }
+  namespace: { { .Values.wallet.nameSpace } }
 spec:
   strategy:
     type: RollingUpdate
@@ -30,30 +30,30 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: {{ .Values.wallet.appName }}
-  replicas: {{ .Values.wallet.replicaCount }}
+      app: { { .Values.wallet.appName } }
+  replicas: { { .Values.wallet.replicaCount } }
   revisionHistoryLimit: 2
   template:
     metadata:
-      name: {{ .Values.wallet.appName }}
+      name: { { .Values.wallet.appName } }
       labels:
-        app: {{ .Values.wallet.appName }}
+        app: { { .Values.wallet.appName } }
     spec:
       containers:
-        - name: {{ .Values.wallet.appName }}
-          image: {{ .Values.wallet.image.repository }}:{{ default .Chart.AppVersion .Values.wallet.image.tag }}
+        - name: { { .Values.wallet.appName } }
+          image: { { .Values.wallet.image.repository } }:{{ default .Chart.AppVersion .Values.wallet.image.tag }}
           securityContext:
             allowPrivilegeEscalation: false
-          imagePullPolicy: {{ .Values.wallet.image.pullPolicy }}
+          imagePullPolicy: { { .Values.wallet.image.pullPolicy } }
           resources:
-            {{- toYaml .Values.wallet.resources | nindent 12 }}
+            { { - toYaml .Values.wallet.resources | nindent 12 } }
           envFrom:
             - secretRef:
-                name: {{ .Values.wallet.secretName }}
+                name: { { .Values.wallet.secretName } }
             - configMapRef:
-                name: {{ .Values.wallet.configName }}
-          {{- with .Values.wallet.livenessProbe }}
-          {{- if .enabled }}
+                name: { { .Values.wallet.configName } }
+          { { - with .Values.wallet.livenessProbe } }
+          { { - if .enabled } }
           ports:
             - name: http
               containerPort: 8080
@@ -63,24 +63,24 @@ spec:
               path: /actuator/health/liveness
               port: 8080
               scheme: HTTP
-            failureThreshold: {{ .failureThreshold }}
-            initialDelaySeconds: {{ .initialDelaySeconds }}
-            periodSeconds: {{ .periodSeconds }}
-            timeoutSeconds: {{ .timeoutSeconds }}
-          {{- end }}
-          {{- end }}
-          {{- with .Values.wallet.readinessProbe }}
-          {{- if .enabled }}
+            failureThreshold: { { .failureThreshold } }
+            initialDelaySeconds: { { .initialDelaySeconds } }
+            periodSeconds: { { .periodSeconds } }
+            timeoutSeconds: { { .timeoutSeconds } }
+          { { - end } }
+          { { - end } }
+          { { - with .Values.wallet.readinessProbe } }
+          { { - if .enabled } }
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8080
               scheme: HTTP
-            failureThreshold: {{ .failureThreshold }}
-            initialDelaySeconds: {{ .initialDelaySeconds }}
-            periodSeconds: {{ .periodSeconds }}
-            successThreshold: {{ .successThreshold }}
-            timeoutSeconds: {{ .timeoutSeconds }}
-          {{- end }}
-          {{- end }}
+            failureThreshold: { { .failureThreshold } }
+            initialDelaySeconds: { { .initialDelaySeconds } }
+            periodSeconds: { { .periodSeconds } }
+            successThreshold: { { .successThreshold } }
+            timeoutSeconds: { { .timeoutSeconds } }
+          { { - end } }
+          { { - end } }
 

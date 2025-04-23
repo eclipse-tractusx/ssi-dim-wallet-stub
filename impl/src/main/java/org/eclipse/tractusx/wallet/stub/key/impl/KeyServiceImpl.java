@@ -38,7 +38,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class KeyServiceImpl implements KeyService{
+public class KeyServiceImpl implements KeyService {
 
     private final Storage storage;
 
@@ -46,14 +46,14 @@ public class KeyServiceImpl implements KeyService{
 
     @Override
     public KeyPair getKeyPair(String bpn) {
-        try{
+        try {
             Optional<KeyPair> optionalKeyPair = storage.getKeyPair(bpn);
             return optionalKeyPair.orElseGet(() -> {
                 KeyPair keyPair = DeterministicECKeyPairGenerator.createKeyPair(bpn, walletStubSettings.env());
                 storage.saveKeyPair(bpn, keyPair);
                 return keyPair;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }

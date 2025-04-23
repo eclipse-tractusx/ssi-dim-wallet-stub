@@ -130,11 +130,11 @@ public class CommonUtils {
      */
     @SneakyThrows
     public static String getBpnFromToken(String token, TokenService tokenService) {
-        try{
+        try {
             SignedJWT signedJWT = SignedJWT.parse(cleanToken(token));
             JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(signedJWT.serialize());
             return jwtClaimsSet.getClaim(Constants.BPN).toString();
-        }catch (ParseException e){
+        } catch (ParseException e) {
             throw new ParseStubException(e.getMessage());
         }
     }

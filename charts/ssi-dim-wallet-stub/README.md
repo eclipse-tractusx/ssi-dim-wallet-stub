@@ -6,12 +6,13 @@
 
 ### Requirements
 
-| Repository | Name        | Version |
-|------------|-------------|---------|
-| https://charts.bitnami.com/bitnami | keycloak    | 22.1.0 |
-| https://charts.bitnami.com/bitnami | postgresql  | 16.4.8 |
+| Repository                         | Name       | Version |
+|------------------------------------|------------|---------|
+| https://charts.bitnami.com/bitnami | keycloak   | 22.1.0  |
+| https://charts.bitnami.com/bitnami | postgresql | 16.4.8  |
 
 ### Prerequisites
+
 - Kubernetes 1.19+
 - Helm 3.2.0+
 
@@ -26,7 +27,9 @@ helm install ssi-dim-wallet-stub tractusx-dev/ssi-dim-wallet-stub
 ### Install with local configuration
 
 Step:
-1. Create docker image locally with command `docker build -f runtimes/ssi-dim-wallet-stub/src/main/docker/Dockerfile -t ssi-dim-wallet-stub .`
+
+1. Create docker image locally with command
+   `docker build -f runtimes/ssi-dim-wallet-stub/src/main/docker/Dockerfile -t ssi-dim-wallet-stub .`
 2. Change docker image in values.yaml
 
 ```

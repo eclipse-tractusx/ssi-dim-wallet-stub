@@ -36,7 +36,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import java.sql.Types;
 
 @Entity
-@Table(name="key_pair")
+@Table(name = "key_pair")
 @Getter
 @Setter
 @NoArgsConstructor

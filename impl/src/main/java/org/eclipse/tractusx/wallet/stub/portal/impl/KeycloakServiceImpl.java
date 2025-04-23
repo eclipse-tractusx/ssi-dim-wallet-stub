@@ -50,7 +50,7 @@ public class KeycloakServiceImpl implements KeycloakService {
                 .build()) {
             AccessTokenResponse accessToken = keycloak.tokenManager().getAccessToken();
             return accessToken.getTokenType() + StringUtils.SPACE + accessToken.getToken();
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }

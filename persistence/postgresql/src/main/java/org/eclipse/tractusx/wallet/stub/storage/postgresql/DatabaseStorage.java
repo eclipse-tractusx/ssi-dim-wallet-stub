@@ -76,8 +76,8 @@ public class DatabaseStorage implements Storage {
     @Override
     public Map<String, DidDocument> getAllDidDocumentMap() {
         List<DidDocumentEntity> didDocumentEntityList = didDocumentRepository.findAll();
-        Map<String,DidDocument> allDidDocumentMap = new ConcurrentHashMap<>();
-        for(DidDocumentEntity didDocumentEntity: didDocumentEntityList){
+        Map<String, DidDocument> allDidDocumentMap = new ConcurrentHashMap<>();
+        for (DidDocumentEntity didDocumentEntity : didDocumentEntityList) {
             DidDocument didDocument = didDocumentEntity.getDidDocument();
             allDidDocumentMap.put(didDocumentEntity.getBpn(), didDocument);
         }
@@ -88,7 +88,7 @@ public class DatabaseStorage implements Storage {
     public void saveCredentialAsJwt(String vcId, String jwt, String holderBPn, String type) {
         String key = getMapKey(holderBPn, type);
         holderCredentialAsJWTRepository.save(new HolderCredentialAsJWTEntity(key, jwt));
-        if(jwtCredentialRepository.findByVcId(vcId) == null){
+        if (jwtCredentialRepository.findByVcId(vcId) == null) {
             jwtCredentialRepository.save(new JWTCredentialEntity(vcId, jwt));
         }
     }
@@ -96,7 +96,7 @@ public class DatabaseStorage implements Storage {
     @Override
     public Optional<String> getCredentialAsJwt(String vcId) {
         JWTCredentialEntity jwtCredentialEntity = jwtCredentialRepository.findByVcId(vcId);
-        if(jwtCredentialEntity == null){
+        if (jwtCredentialEntity == null) {
             return Optional.empty();
         }
         return Optional.ofNullable(jwtCredentialEntity.getJwt());
@@ -105,16 +105,16 @@ public class DatabaseStorage implements Storage {
     @Override
     public void saveCredentials(String vcId, CustomCredential credential, String holderBpn, String type) {
         String key = getMapKey(holderBpn, type);
-        holderCredentialRepository.save(new HolderCredentialEntity(key,credential));
-        if(customCredentialRepository.findByVcId(vcId) == null){
-            customCredentialRepository.save(new CustomCredentialEntity(vcId,credential));
+        holderCredentialRepository.save(new HolderCredentialEntity(key, credential));
+        if (customCredentialRepository.findByVcId(vcId) == null) {
+            customCredentialRepository.save(new CustomCredentialEntity(vcId, credential));
         }
     }
 
     @Override
     public Optional<CustomCredential> getCredentialsByHolderBpnAndType(String holderBpn, String type) {
         HolderCredentialEntity holderCredentialEntity = holderCredentialRepository.findByKey(getMapKey(holderBpn, type));
-        if(holderCredentialEntity == null){
+        if (holderCredentialEntity == null) {
             return Optional.empty();
         }
         return Optional.ofNullable(holderCredentialEntity.getCredential());
@@ -122,8 +122,8 @@ public class DatabaseStorage implements Storage {
 
     @Override
     public Optional<String> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type) {
-        HolderCredentialAsJWTEntity holderCredentialAsJWTEntity = holderCredentialAsJWTRepository.findByKey(getMapKey(holderBpn,type));
-        if(holderCredentialAsJWTEntity == null){
+        HolderCredentialAsJWTEntity holderCredentialAsJWTEntity = holderCredentialAsJWTRepository.findByKey(getMapKey(holderBpn, type));
+        if (holderCredentialAsJWTEntity == null) {
             return Optional.empty();
         }
         return Optional.ofNullable(holderCredentialAsJWTEntity.getJwt());
@@ -132,7 +132,7 @@ public class DatabaseStorage implements Storage {
     @Override
     public Optional<CustomCredential> getVerifiableCredentials(String vcId) {
         CustomCredentialEntity customCredentialEntity = customCredentialRepository.findByVcId(vcId);
-        if(customCredentialEntity == null){
+        if (customCredentialEntity == null) {
             return Optional.empty();
         }
         return Optional.ofNullable(customCredentialEntity.getCredential());
@@ -188,7 +188,7 @@ public class DatabaseStorage implements Storage {
     @Override
     public Optional<DidDocument> getDidDocument(String bpn) {
         DidDocumentEntity didDocumentEntity = didDocumentRepository.findByBpn(bpn);
-        if(didDocumentEntity == null){
+        if (didDocumentEntity == null) {
             return Optional.empty();
         }
         return Optional.ofNullable(didDocumentEntity.getDidDocument());

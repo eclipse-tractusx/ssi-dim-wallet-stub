@@ -86,9 +86,9 @@ class WalletTest {
 
     @Test
     @DisplayName("Seeded wallets should be created for the specified BPNs in the configuration")
-    void verifySeedWallet(){
+    void verifySeedWallet() {
 
-        for (String bpn: walletStubSettings.seedWalletsBPN()){
+        for (String bpn : walletStubSettings.seedWalletsBPN()) {
             //check keypair is generated
             Assertions.assertTrue(storage.getKeyPair(bpn).isPresent());
 
@@ -102,11 +102,11 @@ class WalletTest {
 
     @Test
     @DisplayName("Wallets should not be created for BPNs not included in BaseWallets or SeedWallets")
-    void verifyNoSeedWallet(){
+    void verifyNoSeedWallet() {
 
         // Generate a random BPN not included in BaseWallets or SeedWallets
         String bpnRand = TestUtils.getRandomBpmNumber();
-        while (bpnRand.equals(walletStubSettings.baseWalletBPN()) && walletStubSettings.seedWalletsBPN().contains(bpnRand)){
+        while (bpnRand.equals(walletStubSettings.baseWalletBPN()) && walletStubSettings.seedWalletsBPN().contains(bpnRand)) {
             bpnRand = TestUtils.getRandomBpmNumber();
         }
 

@@ -40,7 +40,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import java.sql.Types;
 
 @Entity
-@Table(name="did_document")
+@Table(name = "did_document")
 @Getter
 @Setter
 @NoArgsConstructor

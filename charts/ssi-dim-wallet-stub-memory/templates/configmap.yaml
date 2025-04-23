@@ -21,20 +21,20 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.wallet.configName }}
-  namespace: {{ .Values.wallet.nameSpace }}
+  name: { { .Values.wallet.configName } }
+  namespace: { { .Values.wallet.nameSpace } }
 data:
-  ENABLE_SWAGGER_UI: {{ .Values.wallet.swagger.ui.status | quote }}
-  ENABLE_API_DOC: {{ .Values.wallet.swagger.apiDoc.status | quote }}
-  APP_LOG_LEVEL: {{ .Values.wallet.logLevel | quote }}
-  STUB_ENV: {{ .Values.wallet.environment | quote }}
-  SEED_WALLETS_BPN: {{ .Values.wallet.seeding.bpnList | quote }}
-  BASE_WALLET_BPN: {{ .Values.wallet.baseWalletBpn | quote }}
-  DID_HOST: {{ .Values.wallet.didHost | quote }}
-  STUB_URL: {{ .Values.wallet.stubUrl | quote }}
-  STATUS_LIST_VC_ID: {{ .Values.wallet.statusListVcId | quote }}
-  TOKEN_EXPIRY_TIME: {{ .Values.wallet.tokenExpiryTime | quote }}
-  PORTAL_WAIT_TIME: {{ .Values.wallet.portal.waitTime | quote }}
-  PORTAL_HOST: {{ .Values.wallet.portal.host | quote }}
-  PORTAL_REALM: {{ .Values.wallet.keycloak.realm | quote }}
-  PORTAL_AUTH_SERVER_URL: {{ .Values.wallet.keycloak.authServerUrl | quote }}
+  ENABLE_SWAGGER_UI: { { .Values.wallet.swagger.ui.status | quote } }
+  ENABLE_API_DOC: { { .Values.wallet.swagger.apiDoc.status | quote } }
+  APP_LOG_LEVEL: { { .Values.wallet.logLevel | quote } }
+  STUB_ENV: { { .Values.wallet.environment | quote } }
+  SEED_WALLETS_BPN: { { .Values.wallet.seeding.bpnList | quote } }
+  BASE_WALLET_BPN: { { .Values.wallet.baseWalletBpn | quote } }
+  DID_HOST: { { .Values.wallet.didHost | quote } }
+  STUB_URL: { { .Values.wallet.stubUrl | quote } }
+  STATUS_LIST_VC_ID: { { .Values.wallet.statusListVcId | quote } }
+  TOKEN_EXPIRY_TIME: { { .Values.wallet.tokenExpiryTime | quote } }
+  PORTAL_WAIT_TIME: { { .Values.wallet.portal.waitTime | quote } }
+  PORTAL_HOST: { { .Values.wallet.portal.host | quote } }
+  PORTAL_REALM: { { .Values.wallet.keycloak.realm | quote } }
+  PORTAL_AUTH_SERVER_URL: { { .Values.wallet.keycloak.authServerUrl | quote } }

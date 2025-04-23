@@ -97,14 +97,14 @@ wallet:
       name: ""
     urlPrefix: /
     className: nginx
-    annotations: {}
+    annotations: { }
   swagger:
-      ui:
+    ui:
       # -- enable swagger API doc UI
-        status: true
-      apiDoc:
+      status: true
+    apiDoc:
       # -- enable Open API doc
-        status: true
+      status: true
   # -- Application log level
   logLevel: "debug"
   # -- Name of landing zone ie. dev, int, prod etc
@@ -156,7 +156,7 @@ wallet:
 
 # -- Keycloak configuration
 keycloak:
- enabled: false
+  enabled: false
 
 # -- PostgreSQL configuration
 postgresql:

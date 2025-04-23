@@ -166,7 +166,7 @@ class IssuerTest {
                        "issuanceDate": "2023-07-19T09:14:45Z",
                        "expirationDate": "2023-09-30T18:30:00Z",
                        "credentialSubject": {
-
+                
                        }
                     }
                 """;

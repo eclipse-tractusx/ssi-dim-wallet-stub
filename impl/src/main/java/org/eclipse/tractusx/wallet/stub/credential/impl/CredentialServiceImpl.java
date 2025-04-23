@@ -66,7 +66,7 @@ public class CredentialServiceImpl implements CredentialService {
     @SneakyThrows
     @Override
     public String getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type) {
-        try{
+        try {
             Optional<String> optionalVC = storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type);
             if (optionalVC.isPresent()) {
                 return optionalVC.get();
@@ -100,7 +100,7 @@ public class CredentialServiceImpl implements CredentialService {
             return vcAsJwt;
         } catch (IllegalArgumentException | InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -116,7 +116,7 @@ public class CredentialServiceImpl implements CredentialService {
      */
     @SneakyThrows
     private CustomCredential getVerifiableCredentialByHolderBpnAndType(String holderBpn, String type) {
-        try{
+        try {
             Optional<CustomCredential> verifiableCredentialOptional = storage.getCredentialsByHolderBpnAndType(holderBpn, type);
             if (verifiableCredentialOptional.isPresent()) {
                 return verifiableCredentialOptional.get();
@@ -138,7 +138,7 @@ public class CredentialServiceImpl implements CredentialService {
                     throw new IllegalArgumentException("vc type -> " + type + " is not supported");
                 }
             }
-        } catch (IllegalArgumentException | InternalErrorException e){
+        } catch (IllegalArgumentException | InternalErrorException e) {
             throw e;
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
@@ -147,7 +147,7 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     public CustomCredential issueStatusListCredential(String holderBpn, String vcId) {
-        try{
+        try {
             DidDocument issuerDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
 
             URI vcIdUri = URI.create(issuerDocument.getId() + Constants.HASH_SEPARATOR + vcId);
@@ -202,7 +202,7 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
     private CustomCredential issueDataExchangeGovernanceCredential(String holderBpn, DidDocument issuerDocument, DidDocument holderDocument, URI vcIdUri, String vcId) {
-        try{
+        try {
             Map<String, Object> subject = new HashMap<>();
             subject.put(Constants.ID, holderDocument.getId());
             subject.put(Constants.HOLDER_IDENTIFIER, holderBpn);

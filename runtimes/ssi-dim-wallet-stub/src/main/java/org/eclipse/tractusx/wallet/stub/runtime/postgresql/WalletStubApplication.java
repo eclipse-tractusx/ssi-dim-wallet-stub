@@ -36,7 +36,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * The type Wallet demo application.
  */
 @SpringBootApplication
-@Import({WalletStubImplConfig.class,
+@Import({ WalletStubImplConfig.class,
         WalletStubStoragePostgresqlConfig.class,
         OpenApiConfig.class,
         ApplicationConfig.class,

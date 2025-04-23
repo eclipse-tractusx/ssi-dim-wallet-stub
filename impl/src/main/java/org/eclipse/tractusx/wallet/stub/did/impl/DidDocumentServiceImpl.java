@@ -61,7 +61,7 @@ public class DidDocumentServiceImpl implements DidDocumentService {
     @SneakyThrows
     @Override
     public DidDocument getDidDocument(String issuerBpn) {
-        try{
+        try {
             Optional<DidDocument> optionalDidDocument = storage.getDidDocument(issuerBpn);
             if (optionalDidDocument.isPresent()) {
                 return optionalDidDocument.get();
@@ -103,7 +103,7 @@ public class DidDocumentServiceImpl implements DidDocumentService {
             return didDocument;
         } catch (InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -111,10 +111,10 @@ public class DidDocumentServiceImpl implements DidDocumentService {
     @SneakyThrows
     @Override
     public Optional<DidDocument> storeDidDocument(String bpn) {
-        try{
+        try {
             log.debug("Did document requested for bpn ->{}", bpn);
             return storage.getDidDocument(bpn);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }

@@ -81,17 +81,17 @@ public class TokenApiDoc {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                     @Content(examples = {
                             @ExampleObject(name = "Internal Error Exception", value = """
-                                    {
-                                      "type": "about:blank",
-                                      "title": "Internal Server Error",
-                                      "status": 500,
-                                      "detail": "InternalErrorException: Internal Error: **",
-                                      "instance": "/oauth/token",
-                                      "properties": {
-                                        "timestamp": 1743160775200
-                                      }
-                                    }
-                            """)
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Internal Server Error",
+                                              "status": 500,
+                                              "detail": "InternalErrorException: Internal Error: **",
+                                              "instance": "/oauth/token",
+                                              "properties": {
+                                                "timestamp": 1743160775200
+                                              }
+                                            }
+                                    """)
                     })
             })
     })

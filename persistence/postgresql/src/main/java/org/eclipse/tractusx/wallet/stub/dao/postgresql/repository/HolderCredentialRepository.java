@@ -30,7 +30,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface HolderCredentialRepository extends JpaRepository<HolderCredentialEntity,Long> {
+public interface HolderCredentialRepository extends JpaRepository<HolderCredentialEntity, Long> {
 
     @Query("SELECT h FROM HolderCredentialEntity h WHERE h.key = :key")
     HolderCredentialEntity findByKey(@Param("key") String key);

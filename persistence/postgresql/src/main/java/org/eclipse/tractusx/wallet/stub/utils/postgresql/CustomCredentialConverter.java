@@ -36,18 +36,18 @@ public class CustomCredentialConverter implements AttributeConverter<CustomCrede
 
     @Override
     public String convertToDatabaseColumn(CustomCredential customCredential) {
-        try{
+        try {
             return objectMapper.writeValueAsString(customCredential);
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new IllegalArgumentException("Error converting CustomCredential to JSON", e);
         }
     }
 
     @Override
     public CustomCredential convertToEntityAttribute(String json) {
-        try{
+        try {
             return objectMapper.readValue(json, CustomCredential.class);
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new IllegalArgumentException("Error converting JSON to CustomCredential", e);
         }
     }

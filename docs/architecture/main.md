@@ -191,7 +191,8 @@ requested. At the moment simulation of errors are partially covered.
 
 * It should be horizontally scalable
 
-* Data will be stored in-memory or in database storage. However, each time when a VP request is made, a VC is created as well. The
+* Data will be stored in-memory or in database storage. However, each time when a VP request is made, a VC is created as
+  well. The
   persistence of signing keys is achieved via creating the keys with seeds derived from the BPN or the issuer and
   holder.
 
@@ -291,7 +292,6 @@ EDCService --> EDCService : Catalog Request to other EDC
 
 </details>
 
-
 ## **Business Context**
 
 1. Portal <> Wallet Stub:
@@ -307,11 +307,11 @@ EDCService --> EDCService : Catalog Request to other EDC
 2. Issuer Component <> Wallet Stub:
 
     1. CX-Operator creates a new credential: We have below two options
-       - Create credential with signature, this will return credential ID and credential as JWT string
-       - Create credential without signature, this will return credential ID
-           - CX-Operator requests a signature for the credential ID, and the signed credential is returned.
+        - Create credential with signature, this will return credential ID and credential as JWT string
+        - Create credential without signature, this will return credential ID
+            - CX-Operator requests a signature for the credential ID, and the signed credential is returned.
 
-   2. CX-Operator requests storage of the signed credential in the corresponding wallet.
+    2. CX-Operator requests storage of the signed credential in the corresponding wallet.
 
 3. EDC <> Wallet Stub:
 
@@ -325,7 +325,6 @@ EDCService --> EDCService : Catalog Request to other EDC
     4. EDC / BDRS requests VC Status List from the issuer wallet.
 
     5. EDC Request for BPN Did mapping using directory API
-
 
 ## **Technical Context**
 
@@ -360,11 +359,13 @@ Contains the core public interfaces, data transfer objects (DTOs), exceptions, a
 
 ### impl
 
-Provides the concrete implementations of the interfaces defined in the `api` module. This is where the main business logic resides, orchestrating operations and applying business rules.
+Provides the concrete implementations of the interfaces defined in the `api` module. This is where the main business
+logic resides, orchestrating operations and applying business rules.
 
 ### persistence:persistence-api
 
-Defines the persistence layer interfaces responsible for abstracting data storage operations, ensuring independence from specific database technologies.
+Defines the persistence layer interfaces responsible for abstracting data storage operations, ensuring independence from
+specific database technologies.
 
 ### persistence:in-memory
 
@@ -372,23 +373,29 @@ An implementation of the `persistence:persistence-api` interfaces that stores da
 
 ### persistence:postgresql
 
-An implementation of the `persistence:persistence-api` interfaces using a PostgreSQL relational database for persistent data storage. This module contain database-specific logic, entity mappings, and repository implementations.
+An implementation of the `persistence:persistence-api` interfaces using a PostgreSQL relational database for persistent
+data storage. This module contain database-specific logic, entity mappings, and repository implementations.
 
 ### rest:rest-api
 
-Defines the contracts for the RESTful web services offered by the application. This includes API endpoint definitions, and API documentation specifications.
+Defines the contracts for the RESTful web services offered by the application. This includes API endpoint definitions,
+and API documentation specifications.
 
 ### rest:rest-service
 
-Contains the implementation of the REST API endpoints defined in `rest:rest-api`. These are controller classes that handle incoming HTTP requests, call the business logic layer (`api`), and format/return HTTP responses.
+Contains the implementation of the REST API endpoints defined in `rest:rest-api`. These are controller classes that
+handle incoming HTTP requests, call the business logic layer (`api`), and format/return HTTP responses.
 
 ### runtimes:ssi-dim-wallet-stub
 
-Provides the main runnable application entry point and configuration, assembling components from other modules into a deployable unit. This specific runtime is configured by default to use the `persistence:postgresql` module. It includes necessary setup for building a deployable artifact (Docker).
+Provides the main runnable application entry point and configuration, assembling components from other modules into a
+deployable unit. This specific runtime is configured by default to use the `persistence:postgresql` module. It includes
+necessary setup for building a deployable artifact (Docker).
 
 ### runtimes:ssi-dim-wallet-stub-memory
 
-Provides an alternative runnable application configuration, specifically wiring the application to use the `persistence:in-memory` module. Like the primary runtime, it includes setup for building a deployable artifact (Docker).
+Provides an alternative runnable application configuration, specifically wiring the application to use the
+`persistence:in-memory` module. Like the primary runtime, it includes setup for building a deployable artifact (Docker).
 
 ### testUtils
 
@@ -398,15 +405,24 @@ Contains shared testing utilities used across different test suites in other mod
 
 The project handles the following exceptions, mapping them to appropriate HTTP responses:
 
--   **`CredentialNotFoundException`**: Thrown when requested credentials cannot be found in the system. (Returns HTTP 404 NOT_FOUND)
--   **`InternalErrorException`**: Represents unexpected internal server errors during request processing. (Returns HTTP 500 INTERNAL_SERVER_ERROR)
--   **`MalformedCredentialsException`**: Thrown when provided credentials are syntactically incorrect or structurally invalid. (Returns HTTP 422 UNPROCESSABLE_ENTITY)
--   **`NoStatusListFoundException`**: Thrown when a requested status list (e.g., by BPN) cannot be found. (Returns HTTP 404 NOT_FOUND)
--   **`NoVCTypeFoundException`**: Signals that necessary 'type' information was missing or incorrectly formatted within a Verifiable Credential. (Returns HTTP 422 UNPROCESSABLE_ENTITY)
--   **`ParseStubException`**: Thrown when a string or data segment cannot be parsed into the expected format. (Returns HTTP 400 BAD_REQUEST)
--   **`VPValidationFailedException`**: Thrown when a verifiable presentation fails validation checks. (Returns HTTP 401 UNAUTHORIZED)
--   **`IllegalArgumentException`**: Thrown when a method receives an illegal or inappropriate argument. (Returns HTTP 400 BAD_REQUEST)
--   **`MissingRequestHeaderException`**: Thrown when a required HTTP request header is missing. (Returns HTTP 401 UNAUTHORIZED)
+- **`CredentialNotFoundException`**: Thrown when requested credentials cannot be found in the system. (Returns HTTP 404
+  NOT_FOUND)
+- **`InternalErrorException`**: Represents unexpected internal server errors during request processing. (Returns HTTP
+  500 INTERNAL_SERVER_ERROR)
+- **`MalformedCredentialsException`**: Thrown when provided credentials are syntactically incorrect or structurally
+  invalid. (Returns HTTP 422 UNPROCESSABLE_ENTITY)
+- **`NoStatusListFoundException`**: Thrown when a requested status list (e.g., by BPN) cannot be found. (Returns HTTP
+  404 NOT_FOUND)
+- **`NoVCTypeFoundException`**: Signals that necessary 'type' information was missing or incorrectly formatted within a
+  Verifiable Credential. (Returns HTTP 422 UNPROCESSABLE_ENTITY)
+- **`ParseStubException`**: Thrown when a string or data segment cannot be parsed into the expected format. (Returns
+  HTTP 400 BAD_REQUEST)
+- **`VPValidationFailedException`**: Thrown when a verifiable presentation fails validation checks. (Returns HTTP 401
+  UNAUTHORIZED)
+- **`IllegalArgumentException`**: Thrown when a method receives an illegal or inappropriate argument. (Returns HTTP 400
+  BAD_REQUEST)
+- **`MissingRequestHeaderException`**: Thrown when a required HTTP request header is missing. (Returns HTTP 401
+  UNAUTHORIZED)
 
 # **Interfaces**
 
@@ -555,12 +571,14 @@ Response Body:
 
 ![issue_cred.png](./images/issue_cred.png)
 
-Can be used for creating a credential without signing or with signing. If it is a signed credential, it is used to store the
+Can be used for creating a credential without signing or with signing. If it is a signed credential, it is used to store
+the
 credential in the corresponding wallet. The business logic depends on the request body.
 
 **Create New Credential**
 
-The following request body results in creating a credential and returns a `credentialID` or `credentialID` and VC JWT string as a response.
+The following request body results in creating a credential and returns a `credentialID` or `credentialID` and VC JWT
+string as a response.
 
 Request Body Option 1: Create credential without signature
 
@@ -855,7 +873,8 @@ Response Body:
 ![query.png](./images/query.png)
 
 This API is responsible for creating Verifiable Presentations based on the scope and tokens being passed. For the scope
-of the stub service, only `type:MembershipCredential`, `type:BpnCredential` and `type:DataExchangeGovernanceCredential` are supported.
+of the stub service, only `type:MembershipCredential`, `type:BpnCredential` and `type:DataExchangeGovernanceCredential`
+are supported.
 
 Request Body:
 
@@ -888,19 +907,20 @@ Response Body:
 }
 ```
 
-
 ### GET DPN Did mapping - EDC
 
 ![directory_api.png](./images/directory_api.png)
 
-This API will give BPN Did mapping of all wallets available in the application. ``bpn`` request param is optional, user can pass comma separated BPN number. In this case it will return only requested BPN Did mapping and wallet will be created runtime if not created.
+This API will give BPN Did mapping of all wallets available in the application. ``bpn`` request param is optional, user
+can pass comma separated BPN number. In this case it will return only requested BPN Did mapping and wallet will be
+created runtime if not created.
 
-We need to pass VP of membership VC in form of JWT in authorization header. This VP must be generated using wallet stub application using query presentation API else token validation will not work, and it will give http status 401.
+We need to pass VP of membership VC in form of JWT in authorization header. This VP must be generated using wallet stub
+application using query presentation API else token validation will not work, and it will give http status 401.
 
 Response Body:
 
 200 OK
-
 
 ```json
 {
@@ -910,7 +930,6 @@ Response Body:
   "BPNL000000000000": "did:web:localhost:BPNL000000000000"
 }
 ```
-
 
 ### GET Status List - General
 
@@ -1009,10 +1028,12 @@ Alternatively, persistence can be enabled to store the data in a database, ensur
 
 ### **Runtime Scenarios**
 
-* During the initialization of the Wallet Stub, a base wallet is automatically created by calling the REST API `api/dim/setup-dim`.
-Subsequently, seeded wallets are created based on the configuration.
-All the initial setup can be done via configuration file.
-*In case persistence is chosen, if the wallet already contains data, no wallets will be created during initialization.*
+* During the initialization of the Wallet Stub, a base wallet is automatically created by calling the REST API
+  `api/dim/setup-dim`.
+  Subsequently, seeded wallets are created based on the configuration.
+  All the initial setup can be done via configuration file.
+  *In case persistence is chosen, if the wallet already contains data, no wallets will be created during
+  initialization.*
 
 * The VCs are signed at runtime for test purposes
 
@@ -1031,7 +1052,8 @@ portalWaitTime: ${PORTAL_WAIT_TIME:1000}
 statusListVcId: ${STATUS_LIST_VC_ID:8a6c7486-1e1f-4555-bdd2-1a178182651e}
 ```
 
-* To refresh the memory storage the Wallet Stub service must be restarted. In case persistence is activated, the PVC must be removed to clear the stored data.
+* To refresh the memory storage the Wallet Stub service must be restarted. In case persistence is activated, the PVC
+  must be removed to clear the stored data.
 
 ### **Development Process**
 
@@ -1448,12 +1470,10 @@ client <-- statusListController: VerifiableCredential(http 200)
 | E2E      | End to End                        |
 | DIM      | Decentralized Identity Management |
 
-
-
 ## NOTICE
 
 This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 - SPDX-License-Identifier: Apache-2.0
-- SPDX-FileCopyrightText: 2024 Contributors to the Eclipse Foundation
+- SPDX-FileCopyrightText: 2025 Contributors to the Eclipse Foundation
 - Source URL: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub

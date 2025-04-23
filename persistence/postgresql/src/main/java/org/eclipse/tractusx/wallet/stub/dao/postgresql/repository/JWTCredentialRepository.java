@@ -30,7 +30,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface JWTCredentialRepository extends JpaRepository<JWTCredentialEntity,Long> {
+public interface JWTCredentialRepository extends JpaRepository<JWTCredentialEntity, Long> {
 
     @Query("SELECT jwt FROM JWTCredentialEntity jwt WHERE jwt.vcId = :vcId")
     JWTCredentialEntity findByVcId(@Param("vcId") String vcId);

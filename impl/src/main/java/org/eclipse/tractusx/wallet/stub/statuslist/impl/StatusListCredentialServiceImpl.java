@@ -55,14 +55,14 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
     @SneakyThrows
     @Override
     public CustomCredential getStatusListCredential(String bpn, String vcId) {
-        try{
+        try {
             DidDocument issuerDidDocument = didDocumentService.getDidDocument(bpn);
             URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + vcId);
             Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
             return verifiableCredentials.orElseGet(() -> credentialService.issueStatusListCredential(bpn, vcId));
         } catch (InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -70,7 +70,7 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
     @SneakyThrows
     @Override
     public CustomCredential getCustomCredential(String bpn, String vcId) {
-        try{
+        try {
             //currently we are returning one VC
             URI vcIdUri = URI.create(didDocumentService.getDidDocument(bpn).getId() + Constants.HASH_SEPARATOR + vcId);
             Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
@@ -79,9 +79,9 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
             } else {
                 throw new NoStatusListFoundException("No status list credential found for bpn -> " + bpn);
             }
-        } catch (NoStatusListFoundException | InternalErrorException e){
+        } catch (NoStatusListFoundException | InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }

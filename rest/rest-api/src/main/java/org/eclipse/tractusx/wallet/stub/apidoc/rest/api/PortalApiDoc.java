@@ -52,17 +52,17 @@ public class PortalApiDoc {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                     @Content(examples = {
                             @ExampleObject(name = "Internal Error Exception", value = """
-                                    {
-                                      "type": "about:blank",
-                                      "title": "Internal Server Error",
-                                      "status": 500,
-                                      "detail": "InternalErrorException: **",
-                                      "instance": "/api/dim/setup-dim",
-                                      "properties": {
-                                        "timestamp": 1743160775200
-                                      }
-                                    }
-                            """)
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Internal Server Error",
+                                              "status": 500,
+                                              "detail": "InternalErrorException: **",
+                                              "instance": "/api/dim/setup-dim",
+                                              "properties": {
+                                                "timestamp": 1743160775200
+                                              }
+                                            }
+                                    """)
                     })
             })
     })
@@ -83,17 +83,17 @@ public class PortalApiDoc {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                     @Content(examples = {
                             @ExampleObject(name = "Internal Error Exception", value = """
-                                    {
-                                      "type": "about:blank",
-                                      "title": "Internal Server Error",
-                                      "status": 500,
-                                      "detail": "InternalErrorException: Internal Error: **",
-                                      "instance": "/api/dim/technical-user/BPNL2313",
-                                      "properties": {
-                                        "timestamp": 1743160775200
-                                      }
-                                    }
-                            """)
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Internal Server Error",
+                                              "status": 500,
+                                              "detail": "InternalErrorException: Internal Error: **",
+                                              "instance": "/api/dim/technical-user/BPNL2313",
+                                              "properties": {
+                                                "timestamp": 1743160775200
+                                              }
+                                            }
+                                    """)
                     })
             })
     })

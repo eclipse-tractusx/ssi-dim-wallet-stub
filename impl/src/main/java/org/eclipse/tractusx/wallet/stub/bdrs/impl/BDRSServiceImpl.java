@@ -78,9 +78,10 @@ public class BDRSServiceImpl implements BDRSService {
                 return filteredResponse;
             }
             return response;
-        } catch (VPValidationFailedException | InternalErrorException | IllegalArgumentException | ParseStubException  e) {
+        } catch (VPValidationFailedException | InternalErrorException | IllegalArgumentException |
+                 ParseStubException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -100,7 +101,7 @@ public class BDRSServiceImpl implements BDRSService {
             JWTClaimsSet vcTokenClaim = tokenService.verifyTokenAndGetClaims(vcToken);
 
             List<String> vcTypes = (List<String>) vcTokenClaim.getJSONObjectClaim(Constants.VC).get(Constants.TYPE);
-            if (! vcTypes.contains(Constants.MEMBERSHIP_CREDENTIAL)) {
+            if (!vcTypes.contains(Constants.MEMBERSHIP_CREDENTIAL)) {
                 log.error("Invalid VC type, expected MembershipCredential but got -> {}", vcTypes);
             }
             Map<String, String> vcSubject = (Map<String, String>) vcTokenClaim.getJSONObjectClaim(Constants.VC).get(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE);
@@ -116,7 +117,7 @@ public class BDRSServiceImpl implements BDRSService {
     }
 
     private void createWallets(String bpnString) {
-        try{
+        try {
             if (StringUtils.isNoneBlank(bpnString)) {
                 //create wallet if not exists
                 String[] split = StringUtils.split(bpnString, ",");
@@ -126,7 +127,7 @@ public class BDRSServiceImpl implements BDRSService {
             }
         } catch (InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }

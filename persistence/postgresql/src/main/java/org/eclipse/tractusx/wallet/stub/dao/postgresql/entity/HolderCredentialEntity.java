@@ -40,7 +40,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import java.sql.Types;
 
 @Entity
-@Table(name="holder_credential")
+@Table(name = "holder_credential")
 @Getter
 @Setter
 @NoArgsConstructor

@@ -47,7 +47,7 @@ public class DidApiDoc {
     @Retention(RetentionPolicy.RUNTIME)
     @Operation(description = """
             Resolve the DID document for a given BPN
-
+            
             """, summary = "Resolve the DID document for a given BPN")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "DID document", content = {

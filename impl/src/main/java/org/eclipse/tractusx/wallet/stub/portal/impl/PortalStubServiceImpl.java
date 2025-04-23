@@ -60,7 +60,7 @@ public class PortalStubServiceImpl implements PortalStubService {
     @SneakyThrows
     @Override
     public void setupDim(SetupDimRequest request) {
-        try{
+        try {
             log.debug("Request to setup dim received for company name -> {}, bpn ->{} waiting for 60 sec", StringEscapeUtils.escapeJava(request.getCompanyName()), StringEscapeUtils.escapeJava(request.getBpn()));
 
             //wait for defined time before pushing data to the portal
@@ -93,7 +93,7 @@ public class PortalStubServiceImpl implements PortalStubService {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new InternalErrorException("Internal Error: " + e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -101,7 +101,7 @@ public class PortalStubServiceImpl implements PortalStubService {
     @SneakyThrows
     @Override
     public void createTechUser(CreateTechUserRequest request, String bpn) {
-        try{
+        try {
             log.debug("Request to create tech received for name -> {}, bpn ->{} waiting for 60 sec", StringEscapeUtils.escapeJava(request.getName()), StringEscapeUtils.escapeJava(bpn));
 
             //For this application, we do not have any external IDP(ie. keycloak)
@@ -128,7 +128,7 @@ public class PortalStubServiceImpl implements PortalStubService {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new InternalErrorException("Internal Error: " + e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }

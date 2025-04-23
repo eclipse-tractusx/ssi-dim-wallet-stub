@@ -73,9 +73,9 @@ public class TokenServiceImpl implements TokenService {
             } else {
                 throw new IllegalArgumentException("Invalid token -> " + token);
             }
-        } catch (IllegalArgumentException | InternalErrorException | ParseStubException e){
+        } catch (IllegalArgumentException | InternalErrorException | ParseStubException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -111,7 +111,7 @@ public class TokenServiceImpl implements TokenService {
             return new TokenResponse(token, Constants.TOKEN_TYPE_BEARER, tokenSettings.tokenExpiryTime() * 60L, 0, 0, "email profile");
         } catch (InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -119,7 +119,7 @@ public class TokenServiceImpl implements TokenService {
     @SneakyThrows
     @Override
     public void setClientInfo(TokenRequest request, String token) {
-        try{
+        try {
             if (StringUtils.isNoneBlank(token)) {
                 String[] split = token.split(StringUtils.SPACE);
                 if (split.length == 2 && split[0].equals(Constants.BASIC)) {
@@ -140,9 +140,9 @@ public class TokenServiceImpl implements TokenService {
                     throw new MalformedCredentialsException("Authorization header invalid");
                 }
             }
-        } catch (MalformedCredentialsException e){
+        } catch (MalformedCredentialsException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }

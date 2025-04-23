@@ -30,7 +30,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DidDocumentRepository extends JpaRepository<DidDocumentEntity,Long> {
+public interface DidDocumentRepository extends JpaRepository<DidDocumentEntity, Long> {
 
     @Query("SELECT d FROM DidDocumentEntity d WHERE d.bpn = :bpn")
     DidDocumentEntity findByBpn(@Param("bpn") String bpn);

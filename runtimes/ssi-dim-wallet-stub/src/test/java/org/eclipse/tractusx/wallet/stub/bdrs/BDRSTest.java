@@ -49,8 +49,8 @@ import java.util.Map;
 
 
 @SuppressWarnings("rawtypes")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = { WalletStubApplication.class})
-@ContextConfiguration(initializers = {TestContextInitializer.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = { WalletStubApplication.class })
+@ContextConfiguration(initializers = { TestContextInitializer.class })
 @ComponentScan(basePackages = "org.eclipse.tractusx.wallet.stub.bdrs")
 class BDRSTest {
 
@@ -121,7 +121,7 @@ class BDRSTest {
         Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
         body = response.getBody();
         Assertions.assertNotNull(body);
-        Assertions.assertEquals(walletStubSettings.seedWalletsBPN().size() +3, body.size());
+        Assertions.assertEquals(walletStubSettings.seedWalletsBPN().size() + 3, body.size());
         Assertions.assertTrue(body.containsKey(walletStubSettings.baseWalletBPN())); //it should contain base wallet BPN as well
     }
 }

@@ -48,7 +48,7 @@ public class InternalTokenValidationServiceImpl implements InternalTokenValidati
     @SneakyThrows
     @Override
     public boolean verifyToken(String token) {
-        try{
+        try {
             SignedJWT signedJWT = SignedJWT.parse(CommonUtils.cleanToken(token));
             String keyID = signedJWT.getHeader().getKeyID(); //this will be DID
             String bpn = CommonUtils.getBpnFromDid(keyID);
@@ -59,9 +59,9 @@ public class InternalTokenValidationServiceImpl implements InternalTokenValidati
             return signedJWT.verify(ecdsaVerifier);
         } catch (InternalErrorException e) {
             throw e;
-        } catch (ParseException e){
+        } catch (ParseException e) {
             throw new ParseStubException(e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }

@@ -22,27 +22,27 @@ The DIM Wallet is part of the Self-Sovereign Identity (SSI) Flow of Eclipse Trac
 
 1. Update env variables in [application.yaml](src%2Fmain%2Fresources%2Fapplication.yaml)
 
-| Name                                 | Description                                                                      | Default value                        |
-|--------------------------------------|----------------------------------------------------------------------------------|--------------------------------------|
-| APPLICATION_PORT                     | Application port                                                                 | 8080                                 |
-| STUB_ENV                             | Environment(LZ) in with application is running.                                  | local                                |
-| BASE_WALLET_BPN                      | Issuer BPN number                                                                | BPNL000000000000                     |
-| SEED_WALLETS_BPN                     | List of BPNs for which wallets will be seeded on application startup             | BPNL00000003AZQP,BPNL00000003AYRE    |
-| STUB_HOST                            | Wallet stub application host                                                     |                                      |
-| STATUS_LIST_VC_ID                    | VC id of status list credential of base wallet                                   | 8a6c7486-1e1f-4555-bdd2-1a178182651e |
-| TOKEN_EXPIRY_TIME                    | JWT(STS, VC and VP) expiry time in minutes                                       | 5                                    |
-| PORTAL_WAIT_TIME                     | Wait time before we push did document to portal after wallet creation in seconds | 60                                   |
-| PORTAL_HOST                          | Host of port backend application                                                 |                                      |
-| PORTAL_CLIENT_ID                     | Keycloak client_id to access portal API                                          |                                      |
-| PORTAL_CLIENT_SECRET                 | keycloak client_secret to access portal API                                      |                                      |
-| PORTAL_REALM                         | keycloak realm                                                                   |                                      |
-| PORTAL_AUTH_SERVER_URL               | Authentication server(keycloak)                                                  |                                      |
-| APP_LOG_LEVEL                        | Log level of application                                                         | DEBUG                                |
-| STORAGE_TYPE                         | The available storage options are: in-memory or database                         | database                             |
-| SPRING_DATASOURCE_URL                | The URL to connect to the database                                               | jdbc:h2:mem:testdb;MODE=PostgreSQL   |
-| SPRING_DATASOURCE_USERNAME           | The username to access the database                                              | sa                                   |
-| SPRING_DATASOURCE_PASSWORD           | The password to access the database                                              |                                      |
-| SPRING_DATASOURCE_DRIVER_CLASS_NAME  | The driver used for the database                                                 | org.h2.Driver                        |
+| Name                                | Description                                                                      | Default value                        |
+|-------------------------------------|----------------------------------------------------------------------------------|--------------------------------------|
+| APPLICATION_PORT                    | Application port                                                                 | 8080                                 |
+| STUB_ENV                            | Environment(LZ) in with application is running.                                  | local                                |
+| BASE_WALLET_BPN                     | Issuer BPN number                                                                | BPNL000000000000                     |
+| SEED_WALLETS_BPN                    | List of BPNs for which wallets will be seeded on application startup             | BPNL00000003AZQP,BPNL00000003AYRE    |
+| STUB_HOST                           | Wallet stub application host                                                     |                                      |
+| STATUS_LIST_VC_ID                   | VC id of status list credential of base wallet                                   | 8a6c7486-1e1f-4555-bdd2-1a178182651e |
+| TOKEN_EXPIRY_TIME                   | JWT(STS, VC and VP) expiry time in minutes                                       | 5                                    |
+| PORTAL_WAIT_TIME                    | Wait time before we push did document to portal after wallet creation in seconds | 60                                   |
+| PORTAL_HOST                         | Host of port backend application                                                 |                                      |
+| PORTAL_CLIENT_ID                    | Keycloak client_id to access portal API                                          |                                      |
+| PORTAL_CLIENT_SECRET                | keycloak client_secret to access portal API                                      |                                      |
+| PORTAL_REALM                        | keycloak realm                                                                   |                                      |
+| PORTAL_AUTH_SERVER_URL              | Authentication server(keycloak)                                                  |                                      |
+| APP_LOG_LEVEL                       | Log level of application                                                         | DEBUG                                |
+| STORAGE_TYPE                        | The available storage options are: in-memory or database                         | database                             |
+| SPRING_DATASOURCE_URL               | The URL to connect to the database                                               | jdbc:h2:mem:testdb;MODE=PostgreSQL   |
+| SPRING_DATASOURCE_USERNAME          | The username to access the database                                              | sa                                   |
+| SPRING_DATASOURCE_PASSWORD          | The password to access the database                                              |                                      |
+| SPRING_DATASOURCE_DRIVER_CLASS_NAME | The driver used for the database                                                 | org.h2.Driver                        |
 
 2. Run application using gradle
 
@@ -62,9 +62,10 @@ Detailed documentation can be found [here](docs%2FREADME.md)
 ### Important notes and limitation of application
 
 1. There are two possible options, each defined in separate Spring profiles: in-memory and database.
-   1. Simple Java ``Map`` is used to store keypair, VC and VP of wallet to avoid any further complexity. Please
-      refer [MemoryStorage.java](src%2Fmain%2Fjava%2Forg%2Feclipse%2Ftractusx%2Fwallet%2Fstub%2Fstorage%2FMemoryStorage.java)
-   2. Stored in the database: [DatabaseStorage.java](src%2Fmain%2Fjava%2Forg%2Feclipse%2Ftractusx%2Fwallet%2Fstub%2Fstorage%2FDatabaseStorage.java)
+    1. Simple Java ``Map`` is used to store keypair, VC and VP of wallet to avoid any further complexity. Please
+       refer [MemoryStorage.java](src%2Fmain%2Fjava%2Forg%2Feclipse%2Ftractusx%2Fwallet%2Fstub%2Fstorage%2FMemoryStorage.java)
+    2. Stored in the
+       database: [DatabaseStorage.java](src%2Fmain%2Fjava%2Forg%2Feclipse%2Ftractusx%2Fwallet%2Fstub%2Fstorage%2FDatabaseStorage.java)
 2. This application will create same key for given BPN on given environment. Please
    refer [DeterministicECKeyPairGenerator.java](src%2Fmain%2Fjava%2Forg%2Feclipse%2Ftractusx%2Fwallet%2Fstub%2Futils%2FDeterministicECKeyPairGenerator.java)
 3. If a wallet is not created at any point of request, application will create a new wallet at runtime
@@ -78,7 +79,6 @@ Detailed documentation can be found [here](docs%2FREADME.md)
 11. All stored credentials will be lost upon application restart unless persistence and the database are enabled.
 12. JWTs are printed with debug log level for debugging purposes
 
-
 ### Notice for Docker image
 
 This application provides container images for demonstration purposes.
@@ -86,7 +86,6 @@ This application provides container images for demonstration purposes.
 See Docker notice files for more information:
 
 - [SSI DIM Wallet stub Docker notice](DOCKER_NOTICE.md)
-
 
 ## License
 

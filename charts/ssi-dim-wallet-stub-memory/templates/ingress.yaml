@@ -1,4 +1,4 @@
-{{- if .Values.wallet.ingress.enabled }}
+{ { - if .Values.wallet.ingress.enabled } }
 
 ###############################################################
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
@@ -22,27 +22,27 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Values.wallet.ingressName }}
-  namespace: {{ .Values.wallet.nameSpace }}
+  name: { { .Values.wallet.ingressName } }
+  namespace: { { .Values.wallet.nameSpace } }
   annotations:
-{{ .Values.wallet.ingress.annotations | toYaml | indent 4 }}
+  { { .Values.wallet.ingress.annotations | toYaml | indent 4 } }
 spec:
-  ingressClassName: {{ .Values.wallet.ingress.className }}
-  {{- if .Values.wallet.ingress.tls.enabled }}
+  ingressClassName: { { .Values.wallet.ingress.className } }
+  { { - if .Values.wallet.ingress.tls.enabled } }
   tls:
     - hosts:
-        - {{ .Values.wallet.host }}
-      secretName: {{ .Values.wallet.ingress.tls.name }}
-  {{- end }}
+        - { { .Values.wallet.host } }
+      secretName: { { .Values.wallet.ingress.tls.name } }
+  { { - end } }
   rules:
-    - host: {{ .Values.wallet.host }}
+    - host: { { .Values.wallet.host } }
       http:
         paths:
-          - path: {{ .Values.wallet.ingress.urlPrefix }}
+          - path: { { .Values.wallet.ingress.urlPrefix } }
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.wallet.serviceName }}
+                name: { { .Values.wallet.serviceName } }
                 port:
-                  number: {{ .Values.wallet.service.port }}
-{{- end }}
+                  number: { { .Values.wallet.service.port } }
+  { { - end } }

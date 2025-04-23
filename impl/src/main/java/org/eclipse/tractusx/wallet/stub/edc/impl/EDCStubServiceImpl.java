@@ -83,7 +83,7 @@ public class EDCStubServiceImpl implements EDCStubService {
     private final CredentialService credentialService;
 
     private static @NotNull Set<String> validateRequestedVcAndScope(QueryPresentationRequest request, List<String> vcTypesFromSIToken, String scopeFromSiToken) {
-        try{
+        try {
             //Validate requested VC and scope with inner access token claim set
             List<Map<String, String>> requestedScopes = request.getScope().stream().map(s -> {
                 String vcType = s.split(":")[1];
@@ -108,15 +108,15 @@ public class EDCStubServiceImpl implements EDCStubService {
                 }
             }
             return requestedTypes;
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 
     private static String createSTSWithoutScope(CreateCredentialWithoutScopeRequest withAccessTokenRequest, DidDocument selfDidDocument, Date expiryTime, String selfBpn, KeyPair selfKeyPair, DidDocument partnerDidDocument) throws ParseException {
-        try{
+        try {
             String accessToken = CommonUtils.cleanToken(withAccessTokenRequest.getSignToken().getToken());
             JWT jwt = JWTParser.parse(accessToken);
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
@@ -132,15 +132,15 @@ public class EDCStubServiceImpl implements EDCStubService {
             String serialize = signedJWT.serialize();
             log.debug("Token created with access_token -> {}", serialize);
             return serialize;
-        } catch (ParseException e){
+        } catch (ParseException e) {
             throw new ParseStubException(e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 
     private static String createSTSWithScope(CreateCredentialWithScopeRequest withScopeRequest, DidDocument selfDidDocument, Date expiryTime, String selfBpn, KeyPair selfKeyPair, DidDocument partnerDidDocument, String partnerBpn) {
-        try{
+        try {
             String consumerDid = withScopeRequest.getGrantAccess().getConsumerDid();
             String providerDid = withScopeRequest.getGrantAccess().getProviderDid();
 
@@ -176,14 +176,14 @@ public class EDCStubServiceImpl implements EDCStubService {
             String serialize = signedJWT.serialize();
             log.debug("Token created  with scope -> {}", serialize);
             return serialize;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 
     @Override
     public String createStsToken(Map<String, Object> request, String token) {
-        try{
+        try {
             log.debug("Getting request to create STS with request -> {} and token ->{}", objectMapper.writeValueAsString(request), StringEscapeUtils.escapeJava(token));
             String selfBpn = CommonUtils.getBpnFromToken(token, tokenService);
             KeyPair selfKeyPair = keyService.getKeyPair(selfBpn);
@@ -217,9 +217,9 @@ public class EDCStubServiceImpl implements EDCStubService {
             } else {
                 return createSTSWithoutScope(withAccessTokenRequest, selfDidDocument, expiryTime, selfBpn, selfKeyPair, partnerDidDocument);
             }
-        } catch (ParseStubException | IllegalArgumentException | InternalErrorException e){
+        } catch (ParseStubException | IllegalArgumentException | InternalErrorException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
@@ -227,7 +227,7 @@ public class EDCStubServiceImpl implements EDCStubService {
     @SneakyThrows
     @Override
     public QueryPresentationResponse queryPresentations(QueryPresentationRequest request, String token) {
-        try{
+        try {
             log.debug("getting request for query credential with body-> {} token -> {}", objectMapper.writeValueAsString(request), StringEscapeUtils.escapeJava(token));
             JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(token);
             List<String> audience = jwtClaimsSet.getAudience();
@@ -294,9 +294,9 @@ public class EDCStubServiceImpl implements EDCStubService {
             response.setContexts(List.of("https://w3id.org/tractusx-trust/v0.8"));
             response.setType(Constants.PRESENTATION_RESPONSE_MESSAGE);
             return response;
-        } catch (IllegalArgumentException | InternalErrorException | ParseStubException e){
+        } catch (IllegalArgumentException | InternalErrorException | ParseStubException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
