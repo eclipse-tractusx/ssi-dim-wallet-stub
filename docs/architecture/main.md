@@ -624,36 +624,36 @@ Request Body Option 2: Create credential with signature
 
 ```json
 {
-  "application": "catena-x",
-  "payload": {
-    "issueWithSignature": {
-      "content": {
-        "@context": [
-          "https://www.w3.org/2018/credentials/v1",
-          "https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json",
-          "https://w3id.org/security/suites/jws-2020/v1"
-        ],
-        "id": "did:web:localhost:BPNL000000000000#a1f8ae36-9919-4ed8-8546-535280acc5bf",
-        "type": [
-          "VerifiableCredential",
-          "BpnCredential"
-        ],
-        "issuer": "did:web:localhost:BPNL000000000000",
-        "issuanceDate": "2023-07-19T09:14:45Z",
-        "expirationDate": "2023-09-30T18:30:00Z",
-        "credentialSubject": {
-          "bpn": "BPNL000000000001",
-          "id": "did:web:localhost:BPNL000000000001",
-          "type": "BpnCredential"
+    "application": "catena-x",
+    "payload": {
+        "issueWithSignature": {
+            "content": {
+                "@context": [
+                    "https://www.w3.org/2018/credentials/v1",
+                    "https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json",
+                    "https://w3id.org/security/suites/jws-2020/v1"
+                ],
+                "id": "did:web:localhost:BPNL000000000000#a1f8ae36-9919-4ed8-8546-535280acc5bf",
+                "type": [
+                    "VerifiableCredential",
+                    "BpnCredential"
+                ],
+                "issuer": "did:web:localhost:BPNL000000000000",
+                "issuanceDate": "2023-07-19T09:14:45Z",
+                "expirationDate": "2023-09-30T18:30:00Z",
+                "credentialSubject": {
+                    "bpn": "BPNL000000000001",
+                    "id": "did:web:localhost:BPNL000000000001",
+                    "type": "BpnCredential"
+                }
+            },
+            "signature": {
+                "proofMechanism": "external",
+                "proofType": "jwt",
+                "keyName": null
+            }
         }
-      },
-      "signature": {
-        "proofMechanism": "external",
-        "proofType": "jwt",
-        "keyName": null
-      }
     }
-  }
 }
 ```
 
@@ -924,10 +924,10 @@ Response Body:
 
 ```json
 {
-  "BPNL000000000003": "did:web:localhost:BPNL000000000003",
-  "BPNL000000000002": "did:web:localhost:BPNL000000000002",
-  "BPNL000000000001": "did:web:localhost:BPNL000000000001",
-  "BPNL000000000000": "did:web:localhost:BPNL000000000000"
+    "BPNL000000000003": "did:web:localhost:BPNL000000000003",
+    "BPNL000000000002": "did:web:localhost:BPNL000000000002",
+    "BPNL000000000001": "did:web:localhost:BPNL000000000001",
+    "BPNL000000000000": "did:web:localhost:BPNL000000000000"
 }
 ```
 
