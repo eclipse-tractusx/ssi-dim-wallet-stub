@@ -34,14 +34,12 @@ plugins {
     id "org.sonarqube" version "5.1.0.4882"
 }
 
-
 group = "${group}"
 version = "${version}"
 
 subprojects {
     apply {
         plugin 'java'
-        plugin 'org.springframework.boot'
         plugin 'io.spring.dependency-management'
         plugin 'project-report'
         plugin "jacoco"
@@ -62,13 +60,16 @@ subprojects {
         mavenCentral()
     }
 
-    dependencies {
-        // DEVELOPMENT
-        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+        }
+    }
 
+    dependencies {
         // LOMBOK
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
+        compileOnly "org.projectlombok:lombok"
+        annotationProcessor "org.projectlombok:lombok"
     }
 
     test {
@@ -126,6 +127,10 @@ subprojects {
     }
 
     task allDeps(type: DependencyReportTask) {}
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += '-parameters'
+    }
 }
 
 

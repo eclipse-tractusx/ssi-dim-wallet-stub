@@ -26,6 +26,10 @@ plugins {
 group = 'org.eclipse.tractusx.wallet.stub'
 version = '0.0.1'
 
+jar {
+    enabled = true
+}
+
 repositories {
     mavenCentral()
 }
