@@ -8,3 +8,4 @@ The following people have contributed to this repository:
 * Leandro Willians Cavalcante Farias, Cofinity-X GmbH, https://github.com/leandro-cavalcante
 * Nitin Vavdiya, Cofinity-X GmbH, https://github.com/nitin-vavdiya
 * Carlos Diez Rodriguez, LKS Next, https://github.com/CDiezRodriguez
+* Mikel Garcia Bartolome, LKS Next, https://github.com/mgarciaLKS

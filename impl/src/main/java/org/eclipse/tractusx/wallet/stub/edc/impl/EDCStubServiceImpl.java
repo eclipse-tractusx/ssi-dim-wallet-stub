@@ -255,7 +255,7 @@ public class EDCStubServiceImpl implements EDCStubService {
             log.debug("Requested VC -> types : {}, caller bpn ->{}", StringEscapeUtils.escapeJava(StringUtils.join(requestedTypes, ",")), StringEscapeUtils.escapeJava(callerBpn));
 
             //here we will create request VC if not already issued
-            //in read world scenario it will give error if requested VC not issued to holder
+            //in real world scenario it will give error if requested VC not issued to holder
             List<String> vsAsJwt = requestedTypes.stream().map(type -> credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(callerBpn, type)).toList();
 
             //create VP as JsonLD
