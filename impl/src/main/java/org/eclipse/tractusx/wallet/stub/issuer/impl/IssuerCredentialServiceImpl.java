@@ -107,7 +107,6 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
      * If the request includes "issue", only the "vcId" is returned.
      */
     @SuppressWarnings("unchecked")
-    @SneakyThrows
     private Map<String, String> issueCredential(IssueCredentialRequest request, String issuerBPN) {
         try {
             KeyPair issuerKeypair = keyService.getKeyPair(walletStubSettings.baseWalletBPN());
@@ -191,7 +190,6 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
         }
     }
 
-    @SneakyThrows
     private Optional<String> signCredential(String credentialId) {
         try {
             DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
@@ -204,7 +202,6 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
         }
     }
 
-    @SneakyThrows
     @Override
     public GetCredentialsResponse getCredential(String externalCredentialId) {
         try {
@@ -232,7 +229,6 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
         }
     }
 
-    @SneakyThrows
     private String storeCredential(IssueCredentialRequest request, String holderBpn) {
         try {
             return CommonUtils.getUuid(holderBpn, StringUtils.join(request.getCredentialPayload().getDerive(), ""));
@@ -241,7 +237,6 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
         }
     }
 
-    @SneakyThrows
     @Override
     public SignCredentialResponse getSignCredentialResponse(SignCredentialRequest request, String credentialId) {
         try {
@@ -262,7 +257,6 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
         }
     }
 
-    @SneakyThrows
     @Override
     public IssueCredentialResponse getIssueCredentialResponse(IssueCredentialRequest request, String token) {
         try {

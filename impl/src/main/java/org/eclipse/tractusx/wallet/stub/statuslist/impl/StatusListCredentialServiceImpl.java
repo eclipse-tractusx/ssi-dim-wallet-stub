@@ -52,7 +52,6 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
 
     private final CredentialService credentialService;
 
-    @SneakyThrows
     @Override
     public CustomCredential getStatusListCredential(String bpn, String vcId) {
         try {
@@ -67,7 +66,6 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
         }
     }
 
-    @SneakyThrows
     @Override
     public CustomCredential getCustomCredential(String bpn, String vcId) {
         try {

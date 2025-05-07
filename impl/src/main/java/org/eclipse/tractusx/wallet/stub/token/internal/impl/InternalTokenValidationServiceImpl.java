@@ -45,7 +45,6 @@ public class InternalTokenValidationServiceImpl implements InternalTokenValidati
 
     private final KeyService keyService;
 
-    @SneakyThrows
     @Override
     public boolean verifyToken(String token) {
         try {

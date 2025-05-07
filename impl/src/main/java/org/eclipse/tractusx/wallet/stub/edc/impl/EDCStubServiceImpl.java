@@ -224,7 +224,6 @@ public class EDCStubServiceImpl implements EDCStubService {
         }
     }
 
-    @SneakyThrows
     @Override
     public QueryPresentationResponse queryPresentations(QueryPresentationRequest request, String token) {
         try {

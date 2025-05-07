@@ -62,7 +62,6 @@ public class CredentialServiceImpl implements CredentialService {
     private final TokenSettings tokenSettings;
 
 
-    @SneakyThrows
     @Override
     public String getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type) {
         try {
@@ -113,7 +112,6 @@ public class CredentialServiceImpl implements CredentialService {
      * @param type      The type of the credential.
      * @return The verifiable credential for the specified holder's BPN and type.
      */
-    @SneakyThrows
     protected CustomCredential getVerifiableCredentialByHolderBpnAndType(String holderBpn, String type) {
         try {
             Optional<CustomCredential> verifiableCredentialOptional = storage.getCredentialsByHolderBpnAndType(holderBpn, type);

@@ -64,7 +64,6 @@ public class TokenServiceImpl implements TokenService {
     private final TokenSettings tokenSettings;
 
 
-    @SneakyThrows
     @Override
     public JWTClaimsSet verifyTokenAndGetClaims(String token) {
         try {
@@ -80,7 +79,6 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
-    @SneakyThrows
     @Override
     public TokenResponse createAccessTokenResponse(TokenRequest request) {
         try {
@@ -116,7 +114,6 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
-    @SneakyThrows
     @Override
     public void setClientInfo(TokenRequest request, String token) {
         try {

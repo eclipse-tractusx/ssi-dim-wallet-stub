@@ -128,7 +128,6 @@ public class CommonUtils {
      * @param tokenService The service used to verify and retrieve claims from the JWT.
      * @return The business partner number (BPN) extracted from the JWT.
      */
-    @SneakyThrows
     public static String getBpnFromToken(String token, TokenService tokenService) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(cleanToken(token));

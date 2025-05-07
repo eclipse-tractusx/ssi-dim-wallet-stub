@@ -57,7 +57,6 @@ public class PortalStubServiceImpl implements PortalStubService {
 
     private final KeycloakService keycloakService;
 
-    @SneakyThrows
     @Override
     public void setupDim(SetupDimRequest request) {
         try {
@@ -98,7 +97,6 @@ public class PortalStubServiceImpl implements PortalStubService {
         }
     }
 
-    @SneakyThrows
     @Override
     public void createTechUser(CreateTechUserRequest request, String bpn) {
         try {
