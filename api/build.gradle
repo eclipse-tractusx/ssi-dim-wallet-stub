@@ -42,11 +42,11 @@ repositories {
 dependencies {
 
     // SPRING DOC - SWAGGER
-    implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-common"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui"
 
     // EDC
-    implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
+    implementation "org.eclipse.edc:crypto-common-lib"
 }
 
 test {

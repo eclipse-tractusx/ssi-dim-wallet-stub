@@ -44,10 +44,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-test'
 
     // UTILS
-    implementation 'org.apache.commons:commons-lang3:3.15.0'
+    implementation 'org.apache.commons:commons-lang3'
 
     // EDC
-    implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
+    implementation "org.eclipse.edc:crypto-common-lib"
 }
 
 test {

@@ -44,7 +44,7 @@ dependencies {
     implementation project(':persistence:persistence-api')
 
     // SPRING DOC - SWAGGER
-    implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-common"
 }
 
 test {

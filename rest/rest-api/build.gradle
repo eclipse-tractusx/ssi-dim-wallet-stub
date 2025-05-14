@@ -47,7 +47,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // SPRING DOC - SWAGGER
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui"
 }
 
 test {
