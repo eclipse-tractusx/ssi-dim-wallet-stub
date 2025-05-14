@@ -42,6 +42,8 @@ repositories {
 }
 
 dependencies {
+    developmentOnly enforcedPlatform(project(":"))
+    testAnnotationProcessor enforcedPlatform(project(":"))
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     implementation project(':api')
