@@ -23,8 +23,8 @@ plugins {
     id 'java'
 }
 
-group = 'org.eclipse.tractusx.wallet.stub'
-version = '0.0.1'
+group = "${group}"
+version = "${version}"
 
 jar {
     enabled = true

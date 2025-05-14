@@ -26,15 +26,15 @@ plugins {
 
 build {
     archivesBaseName = "wallet-memory"
-    version = "latest"
+    version = "${version}"
 }
 
 springBoot {
     mainClass = 'org.eclipse.tractusx.wallet.stub.runtime.memory.WalletStubApplication'
 }
 
-group = 'org.eclipse.tractusx.wallet.stub'
-version = 'latest'
+group = "${group}"
+version = "${version}"
 
 repositories {
     mavenLocal()

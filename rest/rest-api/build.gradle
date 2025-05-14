@@ -23,12 +23,12 @@ plugins {
     id 'java'
 }
 
-group = 'org.eclipse.tractusx.wallet.stub'
-version = 'latest'
+group = "${group}"
+version = "${version}"
 
 build {
     archivesBaseName = "wallet-rest-api"
-    version = "latest"
+    version = "${version}"
 }
 
 jar {

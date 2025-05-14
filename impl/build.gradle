@@ -23,12 +23,12 @@ plugins {
     id 'java'
 }
 
-group = 'org.eclipse.tractusx.wallet.stub'
-version = 'latest'
+group = "${group}"
+version = "${version}"
 
 build {
     archivesBaseName = "wallet-impl"
-    version = "latest"
+    version = "${version}"
 }
 
 jar {
@@ -40,8 +40,7 @@ repositories {
 }
 
 dependencies {
-//    testAnnotationProcessor enforcedPlatform(project(":"))
-    testImplementation enforcedPlatform(project(":"))
+    testAnnotationProcessor enforcedPlatform(project(":"))
 
     implementation project(':api')
     implementation project(':persistence:persistence-api')
