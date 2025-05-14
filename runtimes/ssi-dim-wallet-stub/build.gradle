@@ -67,7 +67,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
-    testImplementation group: 'com.github.curious-odd-man', name: 'rgxgen', version: '2.0'
+    testImplementation "com.github.curious-odd-man:rgxgen"
     // added for test cases to support patch method
     testImplementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
 }

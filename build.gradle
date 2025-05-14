@@ -59,6 +59,8 @@ dependencies {
         api "org.keycloak:keycloak-admin-client:${keycloakClientVersion}"
 
         api "com.h2database:h2:${h2databaseVersion}"
+
+        api "com.github.curious-odd-man:rgxgen:${rgxgenVersion}"
     }
 }
 
