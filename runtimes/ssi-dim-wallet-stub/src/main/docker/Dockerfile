@@ -54,10 +54,10 @@ RUN addgroup -g 11111 -S wallet && adduser -u 11111 -S -s /bin/false -G wallet w
 
 USER wallet
 
-COPY --from=build /home/gradle/src/runtimes/ssi-dim-wallet-stub/build/libs/wallet-latest.jar /app/
+COPY --from=build /home/gradle/src/runtimes/ssi-dim-wallet-stub/build/libs/wallet.jar /app/
 
 WORKDIR /app
 
 HEALTHCHECK --start-period=30s CMD ["/bin/sh", "-c", "curl --fail http://localhost:8080/actuator/health/liveness || exit 1"]
 
-CMD ["java", "-jar", "wallet-latest.jar"]
+CMD ["java", "-jar", "wallet.jar"]
