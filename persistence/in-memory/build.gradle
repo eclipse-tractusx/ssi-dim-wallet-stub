@@ -23,12 +23,12 @@ plugins {
     id 'java'
 }
 
-group = 'org.eclipse.tractusx.wallet.stub'
-version = '0.0.1'
+group = "${group}"
+version = "${version}"
 
 build {
     archivesBaseName = "wallet-persistence-in-memory"
-    version = "latest"
+    version = "${version}"
 }
 
 jar {
@@ -44,7 +44,7 @@ dependencies {
     implementation project(':persistence:persistence-api')
 
     // SPRING DOC - SWAGGER
-    implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-common"
 }
 
 test {

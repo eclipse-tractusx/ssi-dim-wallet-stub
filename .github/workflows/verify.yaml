@@ -87,7 +87,7 @@ jobs:
       - name: Regenerate DEPENDENCIES
         run: |
           # dash returns a nonzero exit code if there are libs that need review. the "|| true" avoids that
-          ./gradlew allDeps | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq | java -jar dash.jar - -summary DEPENDENCIES-gen || true
+          ./gradlew allDeps | grep "(c)" | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq | java -jar dash.jar - -summary DEPENDENCIES-gen || true
 
           # error if DEPENDENCIES is empty
           grep -E 'maven' DEPENDENCIES-gen | if test $(wc -l) -lt 1; then
