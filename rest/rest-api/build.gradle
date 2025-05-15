@@ -28,7 +28,7 @@ version = "${version}"
 
 build {
     archivesBaseName = "wallet-rest-api"
-    version = "${version}"
+    version = "" // create foo.jar instead of foo-version.jar
 }
 
 jar {

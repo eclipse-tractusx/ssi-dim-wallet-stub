@@ -28,7 +28,7 @@ version = "${version}"
 
 build {
     archivesBaseName = "wallet-persistence-in-memory"
-    version = "${version}"
+    version = "" // create foo.jar instead of foo-version.jar
 }
 
 jar {
