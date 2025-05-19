@@ -9,3 +9,4 @@ The following people have contributed to this repository:
 * Nitin Vavdiya, Cofinity-X GmbH, https://github.com/nitin-vavdiya
 * Carlos Diez Rodriguez, LKS Next, https://github.com/CDiezRodriguez
 * Mikel Garcia Bartolome, LKS Next, https://github.com/mgarciaLKS
+* Angel Yao Zhan, LKS Next, https://github.com/AYaoZhan
