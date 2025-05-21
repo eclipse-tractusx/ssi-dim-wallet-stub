@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,6 +42,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.security.Key;
 import java.security.KeyPair;
 import java.util.Optional;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class KeyServiceImplTest {
@@ -66,7 +67,7 @@ public class KeyServiceImplTest {
         String baseWalletBpn = "BPNL000000000000";
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair(baseWalletBpn, "test");
 
-        Mockito.when(storage.getKeyPair(baseWalletBpn)).thenReturn(Optional.of(testKeyPair));
+        when(storage.getKeyPair(baseWalletBpn)).thenReturn(Optional.of(testKeyPair));
 
         KeyPair keyPair = keyService.getKeyPair(baseWalletBpn);
 
@@ -79,12 +80,12 @@ public class KeyServiceImplTest {
         String baseWalletBpn = "BPNL000000000000";
         String environment = "test";
 
-        Mockito.when(storage.getKeyPair(baseWalletBpn)).thenReturn(Optional.empty());
-        Mockito.when(walletStubSettings.env()).thenReturn(environment);
+        when(storage.getKeyPair(baseWalletBpn)).thenReturn(Optional.empty());
+        when(walletStubSettings.env()).thenReturn(environment);
 
         KeyPair keyPair = keyService.getKeyPair(baseWalletBpn);
 
-        Mockito.verify(storage).saveKeyPair(Mockito.anyString(),Mockito.any());
+        verify(storage, times(1)).saveKeyPair(anyString(),any());
         Assertions.assertNotNull(keyPair);
     }
 }
