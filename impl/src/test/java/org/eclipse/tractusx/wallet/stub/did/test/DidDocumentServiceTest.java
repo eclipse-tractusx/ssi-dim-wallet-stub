@@ -23,17 +23,15 @@ package org.eclipse.tractusx.wallet.stub.did.test;
 
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
-import org.eclipse.tractusx.wallet.stub.did.impl.DidDocumentServiceImpl;
+import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.security.KeyPair;
 import java.util.List;
@@ -41,25 +39,20 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-public class DidDocumentServiceImplTest {
+@SpringBootTest
+public class DidDocumentServiceTest {
 
-    @Mock
+    @MockitoBean
     private KeyService keyService;
 
-    @Mock
+    @MockitoBean
     private WalletStubSettings walletStubSettings;
 
-    @Mock
+    @MockitoBean
     private Storage storage;
 
-    @InjectMocks
-    private DidDocumentServiceImpl didDocumentService;
-
-    @BeforeEach
-    public void setUp(){
-        didDocumentService = new DidDocumentServiceImpl(keyService, walletStubSettings, storage);
-    }
+    @Autowired
+    private DidDocumentService didDocumentService;
 
     @Test
     public void storeDidDocumentTest_returnExistingDidDocument(){

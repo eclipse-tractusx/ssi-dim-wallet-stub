@@ -22,7 +22,6 @@
 package org.eclipse.tractusx.wallet.stub.key.test;
 
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
-import org.eclipse.tractusx.wallet.stub.credential.impl.CredentialServiceImpl;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.key.impl.KeyServiceImpl;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
@@ -37,30 +36,23 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.security.Key;
 import java.security.KeyPair;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-public class KeyServiceImplTest {
+@SpringBootTest
+public class KeyServiceTest {
 
-    @Mock
+    @MockitoBean
     private Storage storage;
 
-    @Mock
+    @MockitoBean
     private WalletStubSettings walletStubSettings;
 
-    @InjectMocks
-    private KeyServiceImpl keyService;
-
-    @BeforeEach
-    public void setUp(){
-        keyService = new KeyServiceImpl(storage, walletStubSettings);
-    }
+    @Autowired
+    private KeyService keyService;
 
     @Test
     public void getKeyPairTest() {
