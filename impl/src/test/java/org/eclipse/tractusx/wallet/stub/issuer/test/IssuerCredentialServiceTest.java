@@ -199,7 +199,7 @@ public class IssuerCredentialServiceTest {
         issueCredentialRequest.setCredentialPayload(null);
 
         assertThrows(IllegalArgumentException.class, () -> {
-            issuerCredentialService.getIssueCredentialResponse(null, "");
+            issuerCredentialService.getIssueCredentialResponse(issueCredentialRequest, "");
         });
     }
 

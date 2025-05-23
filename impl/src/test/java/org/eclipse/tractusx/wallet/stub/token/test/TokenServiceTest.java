@@ -29,6 +29,7 @@ import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.api.MalformedCredentialsException;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
+import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
@@ -70,13 +71,11 @@ public class TokenServiceTest {
     @MockitoBean
     private TokenSettings tokenSettings;
 
+    @MockitoBean
+    private Storage storage;
+
     @Autowired
     private TokenService tokenService;
-
-    @BeforeEach
-    public void setUp(){
-        tokenService = new TokenServiceImpl(keyService, internalTokenValidationService, didDocumentService, tokenSettings);
-    }
 
     @Test
     public void verifyTokenAndGetClaimsTest_throwIllegalArgumentException(){
