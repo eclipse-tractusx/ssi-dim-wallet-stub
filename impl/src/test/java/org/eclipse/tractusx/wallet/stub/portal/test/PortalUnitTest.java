@@ -19,7 +19,7 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.portal.impl;
+package org.eclipse.tractusx.wallet.stub.portal.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.iam.did.spi.document.Service;
@@ -32,6 +32,9 @@ import org.eclipse.tractusx.wallet.stub.portal.api.dto.AuthenticationDetails;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.CreateTechUserRequest;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.DidDocumentRequest;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.SetupDimRequest;
+import org.eclipse.tractusx.wallet.stub.portal.impl.PortalClient;
+import org.eclipse.tractusx.wallet.stub.portal.impl.PortalSettings;
+import org.eclipse.tractusx.wallet.stub.portal.impl.PortalStubServiceImpl;
 import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
