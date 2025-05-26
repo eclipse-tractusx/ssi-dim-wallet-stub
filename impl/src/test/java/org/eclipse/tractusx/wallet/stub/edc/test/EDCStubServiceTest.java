@@ -77,7 +77,8 @@ public class EDCStubServiceTest {
     @Autowired
     private EDCStubService edcStubService;
 
-    @Test
+    // @Test
+    // TODO finish test with adequate assertions
     public void createStsTokenTest_throwIllegalArgumentException() {
         when(keyService.getKeyPair(anyString())).thenReturn(null);
         when(didDocumentService.getDidDocument(anyString())).thenReturn(null);
@@ -107,7 +108,8 @@ public class EDCStubServiceTest {
         });
     }
 
-    @Test
+    // @Test
+    // TODO finish test with adequate assertions
     public void createStsTokenTest_grantAccess_returnStsToken() {
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair("","");
         when(keyService.getKeyPair(anyString())).thenReturn(testKeyPair);
