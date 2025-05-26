@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -81,7 +82,7 @@ public class TokenServiceTest {
     public void verifyTokenAndGetClaimsTest_throwIllegalArgumentException(){
         when(internalTokenValidationService.verifyToken(anyString())).thenReturn(false);
 
-        Assertions.assertThrows(IllegalArgumentException.class,() -> {
+        assertThrows(IllegalArgumentException.class,() -> {
             tokenService.verifyTokenAndGetClaims("");
         });
     }
@@ -130,7 +131,7 @@ public class TokenServiceTest {
         TokenRequest tokenRequest = new TokenRequest("client", "secret", "grant");
         TokenResponse tokenResponse = tokenService.createAccessTokenResponse(tokenRequest);
 
-        Assertions.assertEquals(tokenResponse.getAccessToken().split("\\.")[0],
+        assertEquals(tokenResponse.getAccessToken().split("\\.")[0],
                 token.split("\\.")[0]);
     }
 
@@ -145,7 +146,7 @@ public class TokenServiceTest {
         String token = "Basic " + encodedString;
 
         tokenService.setClientInfo(tokenRequest, token);
-        Assertions.assertEquals(testClient, tokenRequest.getClientId());
+        assertEquals(testClient, tokenRequest.getClientId());
     }
 
     @Test
@@ -158,7 +159,7 @@ public class TokenServiceTest {
         String encodedString = new String(encodedBytes, StandardCharsets.UTF_8);
         String token = "Basic " + encodedString;
 
-        Assertions.assertThrows(MalformedCredentialsException.class, () -> {
+        assertThrows(MalformedCredentialsException.class, () -> {
             tokenService.setClientInfo(tokenRequest, token);
         });
     }
@@ -173,7 +174,7 @@ public class TokenServiceTest {
         String encodedString = new String(encodedBytes, StandardCharsets.UTF_8);
         String token = "Basicfail " + encodedString;
 
-        Assertions.assertThrows(MalformedCredentialsException.class, () -> {
+        assertThrows(MalformedCredentialsException.class, () -> {
             tokenService.setClientInfo(tokenRequest, token);
         });
     }
