@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -68,7 +69,8 @@ public class StatusListCredentialServiceTest {
 
         CustomCredential customCredential = statusListCredentialService.getStatusListCredential("","");
 
-        Assertions.assertNotNull(customCredential);
+        assertNotNull(customCredential);
+        assertEquals(0, customCredential.size());
     }
 
     @Test
@@ -82,7 +84,8 @@ public class StatusListCredentialServiceTest {
 
         CustomCredential customCredential = statusListCredentialService.getCustomCredential("","");
 
-        Assertions.assertNotNull(customCredential);
+        assertNotNull(customCredential);
+        assertEquals(0, customCredential.size());
     }
 
     @Test
@@ -94,26 +97,8 @@ public class StatusListCredentialServiceTest {
         when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
         when(storage.getVerifiableCredentials(anyString())).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(NoStatusListFoundException.class, () -> {
+        assertThrows(NoStatusListFoundException.class, () -> {
             statusListCredentialService.getCustomCredential("","");
         });
-    }
-
-    private DidDocument createDidDocument(String issuerId) {
-        return DidDocument.Builder.newInstance()
-                .id(issuerId)
-                .verificationMethod(List.of(VerificationMethod.Builder.newInstance()
-                        .id(issuerId + "#key-1")
-                        .controller(issuerId)
-                        .type("JsonWebKey2020")
-                        .publicKeyJwk(Map.of(
-                                "kty", "EC",
-                                "crv", "secp256k1",
-                                "use", "sig",
-                                "kid", "key-1",
-                                "alg", "ES256K"
-                        ))
-                        .build()))
-                .build();
     }
 }
