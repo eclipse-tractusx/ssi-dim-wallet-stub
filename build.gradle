@@ -139,7 +139,8 @@ subprojects {
         afterEvaluate {
             classDirectories.setFrom(files(classDirectories.files.collect {
                 fileTree(dir: it, exclude: [
-                        "org/eclipse/tractusx/wallet/stub/apidoc/*"
+                        "org/eclipse/tractusx/wallet/stub/apidoc/*",
+                        "**/config/**",
                 ])
             }))
         }
