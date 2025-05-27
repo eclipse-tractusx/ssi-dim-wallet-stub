@@ -35,41 +35,60 @@ import org.eclipse.tractusx.wallet.stub.portal.api.dto.SetupDimRequest;
 import org.eclipse.tractusx.wallet.stub.portal.impl.PortalClient;
 import org.eclipse.tractusx.wallet.stub.portal.impl.PortalSettings;
 import org.eclipse.tractusx.wallet.stub.portal.impl.PortalStubServiceImpl;
+import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 
-class PortalUnitTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@SpringBootTest
+public class PortalUnitTest {
+
+    @MockitoBean
+    private Storage storage;
+
+    @MockitoBean
+    private WalletStubSettings walletStubSettings;
+
+    @MockitoBean
+    private PortalClient portalClient;
+
+    @MockitoBean
+    private KeycloakService keycloakService;
+
+    @MockitoBean
+    private DidDocumentService didDocumentService;
+
+    @MockitoBean
+    private ResponseEntity responseEntity;
+
+    @Autowired
+    private PortalStubService portalStubService;
 
     @Test
     @DisplayName("Test wallet creation and verify did document should be pushed on portal API")
     void testCreateWalletAndVerifyPortalApiCall() {
-
-        WalletStubSettings walletStubSettings = Mockito.mock(WalletStubSettings.class);
-        PortalClient portalClient = Mockito.mock(PortalClient.class);
-        KeycloakService keycloakService = Mockito.mock(KeycloakService.class);
-        PortalSettings portalSettings = Mockito.mock(PortalSettings.class);
-        DidDocumentService didDocumentService = Mockito.mock(DidDocumentService.class);
-
-        PortalStubService portalStubService = new PortalStubServiceImpl(portalClient, new ObjectMapper(), portalSettings, walletStubSettings, didDocumentService, keycloakService);
-
-
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("did:web:localhost:abc")
                 .service(List.of(new Service()))
                 .context(List.of("https://www.w3.org/ns/did/v1"))
                 .build();
 
-        Mockito.when(walletStubSettings.didHost()).thenReturn("localhost");
-        Mockito.when(walletStubSettings.seedWalletsBPN()).thenReturn(List.of());
+        when(walletStubSettings.didHost()).thenReturn("localhost");
+        when(walletStubSettings.seedWalletsBPN()).thenReturn(List.of());
 
-        Mockito.when(didDocumentService.getDidDocument(Mockito.anyString())).thenReturn(didDocument);
+        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
 
         String bpn = TestUtils.getRandomBpmNumber();
         SetupDimRequest request = new SetupDimRequest();
@@ -77,39 +96,27 @@ class PortalUnitTest {
         request.setCompanyName("some wallet");
         request.setDidDocumentLocation("localhost");
 
-        ResponseEntity responseEntity = Mockito.mock(ResponseEntity.class);
-        Mockito.when(responseEntity.getStatusCode()).thenReturn(HttpStatusCode.valueOf(200));
-        Mockito.when(portalClient.sendDidDocument(Mockito.anyString(), Mockito.any(DidDocumentRequest.class), Mockito.anyString())).thenReturn(responseEntity);
-        Mockito.when(keycloakService.createPortalAccessToken()).thenReturn("token");
-        Assertions.assertDoesNotThrow(() -> portalStubService.setupDim(request));
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatusCode.valueOf(200));
+        when(portalClient.sendDidDocument(anyString(), any(DidDocumentRequest.class), anyString())).thenReturn(responseEntity);
+        when(keycloakService.createPortalAccessToken()).thenReturn("token");
+        assertDoesNotThrow(() -> portalStubService.setupDim(request));
 
-        Mockito.verify(portalClient, Mockito.times(1)).sendDidDocument(Mockito.anyString(), Mockito.any(DidDocumentRequest.class), Mockito.anyString());
+        verify(portalClient, times(1)).sendDidDocument(anyString(), any(DidDocumentRequest.class), anyString());
     }
 
     @Test
     @DisplayName("Test tech user creation and verify tech user detail should be pushed on portal API")
     void testCreateTechUserAndVerifyPortalApiCall() {
-
-        WalletStubSettings walletStubSettings = Mockito.mock(WalletStubSettings.class);
-        PortalClient portalClient = Mockito.mock(PortalClient.class);
-        KeycloakService keycloakService = Mockito.mock(KeycloakService.class);
-        PortalSettings portalSettings = Mockito.mock(PortalSettings.class);
-        DidDocumentService didDocumentService = Mockito.mock(DidDocumentService.class);
-
-        PortalStubService portalStubService = new PortalStubServiceImpl(portalClient, new ObjectMapper(), portalSettings, walletStubSettings, didDocumentService, keycloakService);
-
-
         String bpn = TestUtils.getRandomBpmNumber();
         CreateTechUserRequest request = new CreateTechUserRequest();
         request.setExternalId(bpn);
         request.setName(bpn);
 
-        ResponseEntity responseEntity = Mockito.mock(ResponseEntity.class);
-        Mockito.when(responseEntity.getStatusCode()).thenReturn(HttpStatusCode.valueOf(200));
-        Mockito.when(portalClient.sendTechnicalUserDetails(Mockito.anyString(), Mockito.any(AuthenticationDetails.class), Mockito.anyString())).thenReturn(responseEntity);
-        Mockito.when(keycloakService.createPortalAccessToken()).thenReturn("token");
-        Assertions.assertDoesNotThrow(() -> portalStubService.createTechUser(request, bpn));
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatusCode.valueOf(200));
+        when(portalClient.sendTechnicalUserDetails(anyString(), any(AuthenticationDetails.class), anyString())).thenReturn(responseEntity);
+        when(keycloakService.createPortalAccessToken()).thenReturn("token");
+        assertDoesNotThrow(() -> portalStubService.createTechUser(request, bpn));
 
-        Mockito.verify(portalClient, Mockito.times(1)).sendTechnicalUserDetails(Mockito.anyString(), Mockito.any(AuthenticationDetails.class), Mockito.anyString());
+        verify(portalClient, times(1)).sendTechnicalUserDetails(anyString(), any(AuthenticationDetails.class), anyString());
     }
 }
