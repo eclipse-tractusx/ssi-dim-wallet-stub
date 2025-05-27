@@ -45,6 +45,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.security.KeyPair;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -77,8 +78,7 @@ public class EDCStubServiceTest {
     @Autowired
     private EDCStubService edcStubService;
 
-    // @Test
-    // TODO finish test with adequate assertions
+    @Test
     public void createStsTokenTest_throwIllegalArgumentException() {
         when(keyService.getKeyPair(anyString())).thenReturn(null);
         when(didDocumentService.getDidDocument(anyString())).thenReturn(null);
@@ -108,9 +108,8 @@ public class EDCStubServiceTest {
         });
     }
 
-    // @Test
-    // TODO finish test with adequate assertions
-    public void createStsTokenTest_grantAccess_returnStsToken() {
+    @Test
+    public void createStsTokenTest_grantAccess_returnStsToken() throws ParseException {
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair("","");
         when(keyService.getKeyPair(anyString())).thenReturn(testKeyPair);
 
@@ -161,5 +160,13 @@ public class EDCStubServiceTest {
 
         String stsToken = edcStubService.createStsToken(request, token);
         assertNotNull(stsToken);
+        assertFalse(stsToken.isEmpty());
+
+        SignedJWT parsedJwt = SignedJWT.parse(stsToken);
+        JWTClaimsSet claims = parsedJwt.getJWTClaimsSet();
+
+        assertEquals("1", claims.getIssuer());
+        assertEquals("1", claims.getSubject());
+        assertEquals("BPNa", claims.getClaim(Constants.BPN));
     }
 }
