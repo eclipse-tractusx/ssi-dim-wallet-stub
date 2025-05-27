@@ -19,9 +19,10 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.utils.impl;
+package org.eclipse.tractusx.wallet.stub.utils.test;
 
-import org.junit.jupiter.api.Assertions;
+import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
+import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

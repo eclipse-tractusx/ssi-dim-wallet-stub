@@ -19,7 +19,7 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.utils.impl;
+package org.eclipse.tractusx.wallet.stub.utils.test;
 
 import com.nimbusds.jose.crypto.ECDSAVerifier;
 import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
