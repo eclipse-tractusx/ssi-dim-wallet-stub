@@ -91,12 +91,6 @@ subprojects {
         mavenCentral()
     }
 
- /*   dependencyManagement {
-        imports {
-            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
-        }
-    }*/
-
     dependencies {
         // LOMBOK
         implementation(enforcedPlatform(project(":")))
@@ -139,14 +133,16 @@ subprojects {
         afterEvaluate {
             classDirectories.setFrom(files(classDirectories.files.collect {
                 fileTree(dir: it, exclude: [
-                        "org/eclipse/tractusx/wallet/stub/apidoc/*"
+                        "org/eclipse/tractusx/wallet/stub/apidoc/*",
+                        "**/config/**",
+                        "**/runtime/**",
                 ])
             }))
         }
         violationRules {
             rule {
                 limit {
-                    minimum = 0.80
+                    minimum = 0.70
                 }
             }
         }

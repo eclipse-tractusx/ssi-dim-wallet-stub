@@ -20,12 +20,12 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.config.impl;
+package org.eclipse.tractusx.wallet.stub.runtime.postgresql.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-
+import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.portal.api.PortalStubService;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.SetupDimRequest;

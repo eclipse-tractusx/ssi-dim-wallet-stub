@@ -19,17 +19,21 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.utils.impl;
+package org.eclipse.tractusx.wallet.stub.utils.test;
 
 import com.nimbusds.jose.crypto.ECDSAVerifier;
 import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.SneakyThrows;
+import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
-import org.junit.jupiter.api.Assertions;
+import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.security.KeyPair;
 import java.security.interfaces.ECPublicKey;
@@ -37,20 +41,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class CommonUtilsTest {
 
+    @MockitoBean
+    private Storage storage;
 
     @Test
     @DisplayName("Test same UUID generation for same BPN on same environment")
     void testGetUuid() {
         String uuid1 = CommonUtils.getUuid("bpn", "local");
         String uuid2 = CommonUtils.getUuid("bpn", "local");
-        Assertions.assertEquals(uuid2, uuid1);
+        assertEquals(uuid2, uuid1);
 
         uuid1 = CommonUtils.getUuid("bpn", "local");
         uuid2 = CommonUtils.getUuid("bpn", "dev");
-        Assertions.assertNotEquals(uuid2, uuid1);
+        assertNotEquals(uuid2, uuid1);
     }
 
     @SneakyThrows
@@ -62,13 +70,13 @@ class CommonUtilsTest {
                 .claim("bpn", "bpn")
                 .build();
         SignedJWT signedJWT = CommonUtils.signedJWT(claimsSet, keyPair, "keyId");
-        Assertions.assertNotNull(signedJWT);
+        assertNotNull(signedJWT);
 
         //verify
         ECPublicKey aPublic = (ECPublicKey) keyPair.getPublic();
         ECDSAVerifier ecdsaVerifier = new ECDSAVerifier(aPublic);
         ecdsaVerifier.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-        Assertions.assertTrue(signedJWT.verify(ecdsaVerifier));
+        assertTrue(signedJWT.verify(ecdsaVerifier));
 
     }
 
@@ -77,11 +85,11 @@ class CommonUtilsTest {
     void testCleanToken() {
         String token = "Bearer Token";
         String cleanedToken = CommonUtils.cleanToken(token);
-        Assertions.assertEquals("Token", cleanedToken);
+        assertEquals("Token", cleanedToken);
 
         String tokenWithoutBearer = "Token";
         cleanedToken = CommonUtils.cleanToken(tokenWithoutBearer);
-        Assertions.assertEquals(tokenWithoutBearer, cleanedToken);
+        assertEquals(tokenWithoutBearer, cleanedToken);
     }
 
     @Test
@@ -90,11 +98,11 @@ class CommonUtilsTest {
         String did = "did:web:example.com:BPN1234567890";
         String expectedBpn = "BPN1234567890";
         String actualBpn = CommonUtils.getBpnFromDid(did);
-        Assertions.assertEquals(expectedBpn, actualBpn);
+        assertEquals(expectedBpn, actualBpn);
 
         did = "did:web:example.com:BPN1234567890#key1";
         actualBpn = CommonUtils.getBpnFromDid(did);
-        Assertions.assertEquals(expectedBpn, actualBpn);
+        assertEquals(expectedBpn, actualBpn);
     }
 
     @Test
@@ -102,7 +110,7 @@ class CommonUtilsTest {
         String bpn = "bpn";
         String host = "example.com";
         CommonUtils.getDidWeb(bpn, host);
-        Assertions.assertEquals("did:web:example.com:bpn", CommonUtils.getDidWeb(host, bpn));
+        assertEquals("did:web:example.com:bpn", CommonUtils.getDidWeb(host, bpn));
     }
 
     @SuppressWarnings("unchecked")
@@ -118,16 +126,16 @@ class CommonUtilsTest {
 
         CustomCredential credential = CommonUtils.createCredential(issuerDid, vcId, type, expiryDate, subject);
 
-        Assertions.assertNotNull(credential);
-        Assertions.assertEquals(issuerDid, credential.get("issuer").toString());
-        Assertions.assertEquals(vcId, credential.get("id"));
-        Assertions.assertEquals(List.of("VerifiableCredential", type), credential.get("type"));
-        Assertions.assertEquals(subject, credential.get("credentialSubject"));
-        Assertions.assertTrue(credential.containsKey("issuanceDate"));
-        Assertions.assertTrue(credential.containsKey("expirationDate"));
+        assertNotNull(credential);
+        assertEquals(issuerDid, credential.get("issuer").toString());
+        assertEquals(vcId, credential.get("id"));
+        assertEquals(List.of("VerifiableCredential", type), credential.get("type"));
+        assertEquals(subject, credential.get("credentialSubject"));
+        assertTrue(credential.containsKey("issuanceDate"));
+        assertTrue(credential.containsKey("expirationDate"));
 
         Map<String, Object> map = (Map<String, Object>) credential.get("credentialSubject");
-        Assertions.assertEquals(name, map.get("name"));
-        Assertions.assertEquals(email, map.get("email"));
+        assertEquals(name, map.get("name"));
+        assertEquals(email, map.get("email"));
     }
 }

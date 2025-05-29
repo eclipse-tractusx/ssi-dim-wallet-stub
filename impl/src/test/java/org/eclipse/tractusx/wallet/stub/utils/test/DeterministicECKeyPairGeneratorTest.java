@@ -19,17 +19,25 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.utils.impl;
+package org.eclipse.tractusx.wallet.stub.utils.test;
 
-import org.junit.jupiter.api.Assertions;
+import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
+import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.security.KeyPair;
 import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
 class DeterministicECKeyPairGeneratorTest {
 
+    @MockitoBean
+    private Storage storage;
 
     @Test
     @DisplayName("Test same key pair should generated for same BPN on same environment")
@@ -38,12 +46,12 @@ class DeterministicECKeyPairGeneratorTest {
         String env = "local";
         KeyPair keyPair1 = DeterministicECKeyPairGenerator.createKeyPair(bpn, env);
         KeyPair keyPair2 = DeterministicECKeyPairGenerator.createKeyPair(bpn, env);
-        Assertions.assertArrayEquals(keyPair1.getPrivate().getEncoded(), keyPair2.getPrivate().getEncoded());
-        Assertions.assertArrayEquals(keyPair1.getPublic().getEncoded(), keyPair2.getPublic().getEncoded());
+        assertArrayEquals(keyPair1.getPrivate().getEncoded(), keyPair2.getPrivate().getEncoded());
+        assertArrayEquals(keyPair1.getPublic().getEncoded(), keyPair2.getPublic().getEncoded());
 
         keyPair1 = DeterministicECKeyPairGenerator.createKeyPair(bpn, env);
         keyPair2 = DeterministicECKeyPairGenerator.createKeyPair(bpn, "dev");
-        Assertions.assertFalse(Arrays.equals(keyPair1.getPrivate().getEncoded(), keyPair2.getPrivate().getEncoded()));
-        Assertions.assertFalse(Arrays.equals(keyPair1.getPublic().getEncoded(), keyPair2.getPublic().getEncoded()));
+        assertFalse(Arrays.equals(keyPair1.getPrivate().getEncoded(), keyPair2.getPrivate().getEncoded()));
+        assertFalse(Arrays.equals(keyPair1.getPublic().getEncoded(), keyPair2.getPublic().getEncoded()));
     }
 }

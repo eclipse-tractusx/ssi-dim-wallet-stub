@@ -20,41 +20,18 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.runtime.postgresql;
+package org.eclipse.tractusx.wallet.stub;
+
 
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubImplConfig;
-import org.eclipse.tractusx.wallet.stub.config.postgresql.WalletStubStoragePostgresqlConfig;
-import org.eclipse.tractusx.wallet.stub.config.rest.api.OpenApiConfig;
-import org.eclipse.tractusx.wallet.stub.config.rest.service.ApplicationConfig;
-import org.eclipse.tractusx.wallet.stub.config.rest.service.WalletStubRestServiceConfig;
-import org.eclipse.tractusx.wallet.stub.runtime.postgresql.config.ConfigMarker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.scheduling.annotation.EnableAsync;
 
-/**
- * The type Wallet demo application.
- */
 @SpringBootApplication
-@ComponentScan(basePackageClasses = { ConfigMarker.class })
-@Import({ WalletStubImplConfig.class,
-        WalletStubStoragePostgresqlConfig.class,
-        OpenApiConfig.class,
-        ApplicationConfig.class,
-        WalletStubRestServiceConfig.class
-})
-@EnableAsync
-public class WalletStubApplication {
-
-    /**
-     * The entry point of application.
-     *
-     * @param args the input arguments
-     */
+@Import({ WalletStubImplConfig.class })
+public class TestApplication {
     public static void main(String[] args) {
-        SpringApplication.run(WalletStubApplication.class, args);
+        SpringApplication.run(TestApplication.class, args);
     }
-
 }
