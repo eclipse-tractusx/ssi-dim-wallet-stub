@@ -57,7 +57,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TokenServiceImpl implements TokenService, InternalTokenValidationService {
+public class TokenServiceImpl implements TokenService {
 
     private final KeyService keyService;
 
@@ -146,8 +146,8 @@ public class TokenServiceImpl implements TokenService, InternalTokenValidationSe
         }
     }
 
-    @Override
-    public boolean verifyToken(String token) {
+    // @Override
+    private boolean verifyToken(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(CommonUtils.cleanToken(token));
             String keyID = signedJWT.getHeader().getKeyID(); //this will be DID
