@@ -19,15 +19,15 @@
 ###############################################################
 
 ---
-  { { - if .Values.wallet.postgresql.enabled } }
+  {{- if .Values.wallet.postgresql.enabled}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: { { .Values.postgresql.configmap.name } }
+  name: {{.Values.postgresql.configmap.name}}
 data:
   POSTGRES_SVC: {{quote .Values.postgresql.fullnameOverride }}
   POSTGRES_PORT: {{quote .Values.postgresql.databasePort }}
   POSTGRES_DB: {{quote .Values.postgresql.auth.database }}
   POSTGRES_USER: {{quote .Values.postgresql.auth.username }}
   POSTGRES_PASSWORD: {{quote .Values.postgresql.auth.password }}
-  { { - end } }
+  {{- end}}

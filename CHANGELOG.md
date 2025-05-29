@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-* feat: added UsagePurposeCredential in https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/pull/51 
+* feat: added UsagePurposeCredential in https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/pull/51
 
 ## [0.0.3](https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/compare/0.0.2...0.0.3) - 2024-11-20
 
