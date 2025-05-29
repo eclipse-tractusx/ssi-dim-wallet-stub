@@ -337,6 +337,39 @@ public class CredentialServiceTest {
     }
 
     /**
+     * Tests the creation of a USAGE_PURPOSE_CREDENTIAL credential.
+     * This test verifies that:
+     * 1. A new USAGE_PURPOSE_CREDENTIAL credential is created with correct issuer information
+     * 2. The credential subject contains all required BPN-specific fields
+     * 3. The credential is properly saved in storage
+     * 4. The credential follows the expected structure for BPN credentials
+     */
+    @Test
+    void getVerifiableCredentialByHolderBpnAndType_createsUsagePCredential() throws Exception {
+        // Given
+        String holderBpn = "BPNL000000000001";
+        String type = Constants.USAGE_PURPOSE_CREDENTIAL;
+        String baseWalletBpn = "BPNL000000000000";
+        String issuerId = "did:web:test-issuer";
+        String holderId = "did:web:test-holder";
+
+        setupCommonMocks(holderBpn, type, baseWalletBpn, issuerId, holderId);
+
+        // When
+        CustomCredential credential = internalCredentialService.getVerifiableCredentialByHolderBpnAndType(holderBpn, type);
+
+        // Then
+        assertNotNull(credential);
+        assertEquals(issuerId, credential.get("issuer"));
+        Map<String, Object> credentialSubject = (Map<String, Object>) credential.get("credentialSubject");
+        assertEquals(holderId, credentialSubject.get("id"));
+        assertEquals(holderBpn, credentialSubject.get("holderIdentifier"));
+
+        // Verify storage was called
+        verify(storage).saveCredentials(anyString(), any(CustomCredential.class), eq(holderBpn), eq(type));
+    }
+
+    /**
      * Tests the error handling for unsupported credential types.
      * This test verifies that when requesting a credential with an unsupported type,
      * the service throws an IllegalArgumentException with an appropriate error message.

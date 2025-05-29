@@ -22,6 +22,12 @@
 
 package org.eclipse.tractusx.wallet.stub.token.test;
 
+import com.nimbusds.jose.JOSEObjectType;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.apache.commons.lang3.time.DateUtils;
@@ -35,7 +41,6 @@ import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
-import org.eclipse.tractusx.wallet.stub.token.internal.api.InternalTokenValidationService;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
@@ -46,6 +51,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
+import java.security.interfaces.ECPrivateKey;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -63,8 +71,8 @@ public class TokenServiceTest {
     @MockitoBean
     private KeyService keyService;
 
-    @MockitoBean
-    private InternalTokenValidationService internalTokenValidationService;
+    // @Autowired
+    // private InternalTokenValidationService internalTokenValidationService;
 
     @MockitoBean
     private DidDocumentService didDocumentService;
@@ -79,11 +87,61 @@ public class TokenServiceTest {
     private TokenService tokenService;
 
     @Test
-    public void verifyTokenAndGetClaimsTest_throwIllegalArgumentException() {
-        when(internalTokenValidationService.verifyToken(anyString())).thenReturn(false);
+    public void verifyTokenAndGetClaimsTest_throwIllegalArgumentException() throws Exception {
+        // when(internalTokenValidationService.verifyToken(anyString())).thenReturn(false);
+        KeyPair keypairTest = DeterministicECKeyPairGenerator.createKeyPair("1","test");
 
+        when(keyService.getKeyPair(anyString())).thenReturn(keypairTest);
+        when(keyService.getKeyPair(null)).thenReturn(DeterministicECKeyPairGenerator.createKeyPair("12","test2"));
+
+        DidDocument didDocument = DidDocument.Builder.newInstance()
+                .id("1")
+                .verificationMethod(List.of(VerificationMethod.Builder.newInstance()
+                        .id("1" + "#key-1")
+                        .controller("1")
+                        .type("JsonWebKey2020")
+                        .publicKeyJwk(Map.of(
+                                "kty", "EC",
+                                "crv", "secp256k1",
+                                "use", "sig",
+                                "kid", "key-1",
+                                "alg", "ES256K"
+                        ))
+                        .build()))
+                .build();
+        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .issuer("consumerDid")
+                .audience("consumerDid")
+                .subject("consumerDid")
+                .issueTime(Date.from(Instant.now()))
+                .claim(Constants.CREDENTIAL_TYPES, new ArrayList<>())
+                .claim(Constants.SCOPE, "scope")
+                .claim(Constants.CONSUMER_DID, "consumerDid")
+                .claim(Constants.PROVIDER_DID, "providerDid")
+                .claim(Constants.BPN, "consumerBpn")
+                .build();
+        // Create a JWS header with the specified algorithm, type, and key ID
+        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256K)
+                .type(JOSEObjectType.JWT)
+                .keyID("1")
+                .build();
+
+        // Create a new signed JWT with the header and claims set
+        SignedJWT signedJWT = new SignedJWT(header, claimsSet);
+
+        // Create an ECDSASigner using the private key from the key pair
+        JWSSigner signer = new ECDSASigner((ECPrivateKey) keypairTest.getPrivate());
+
+        // Set the Bouncy Castle provider for the signer
+        signer.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+
+        // Sign the JWT using the signer
+        signedJWT.sign(signer);
+        String token = signedJWT.serialize();
         assertThrows(IllegalArgumentException.class, () -> {
-            tokenService.verifyTokenAndGetClaims("");
+            tokenService.verifyTokenAndGetClaims(token);
         });
     }
 
