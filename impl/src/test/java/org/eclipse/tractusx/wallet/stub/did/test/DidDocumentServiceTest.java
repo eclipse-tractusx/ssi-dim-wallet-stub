@@ -56,7 +56,7 @@ public class DidDocumentServiceTest {
     private DidDocumentService didDocumentService;
 
     @Test
-    public void storeDidDocumentTest_returnExistingDidDocument(){
+    public void storeDidDocumentTest_returnExistingDidDocument() {
         String baseWalletBpn = "BPNL000000000000";
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
@@ -70,7 +70,7 @@ public class DidDocumentServiceTest {
     }
 
     @Test
-    public void getDidDocument_fromStorageTest(){
+    public void getDidDocument_fromStorageTest() {
         String baseWalletBpn = "BPNL000000000000";
         DidDocument baseDidDocument = DidDocument.Builder.newInstance()
                 .id("1")
@@ -84,7 +84,7 @@ public class DidDocumentServiceTest {
     }
 
     @Test
-    public void getDidDocumentTest(){
+    public void getDidDocumentTest() {
         String baseWalletBpn = "BPNL000000000000";
         String env = "test";
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair(baseWalletBpn, env);

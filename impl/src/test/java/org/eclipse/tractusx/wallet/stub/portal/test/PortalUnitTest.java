@@ -21,7 +21,6 @@
 
 package org.eclipse.tractusx.wallet.stub.portal.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
@@ -33,14 +32,10 @@ import org.eclipse.tractusx.wallet.stub.portal.api.dto.CreateTechUserRequest;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.DidDocumentRequest;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.SetupDimRequest;
 import org.eclipse.tractusx.wallet.stub.portal.impl.PortalClient;
-import org.eclipse.tractusx.wallet.stub.portal.impl.PortalSettings;
-import org.eclipse.tractusx.wallet.stub.portal.impl.PortalStubServiceImpl;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatusCode;
@@ -49,8 +44,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class PortalUnitTest {

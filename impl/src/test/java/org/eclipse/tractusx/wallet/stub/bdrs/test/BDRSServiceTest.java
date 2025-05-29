@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,7 +61,7 @@ public class BDRSServiceTest {
     @Test
     public void getBpnDirectoryTest_throwIllegalArgumentException() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-           bdrsService.getBpnDirectory("","");
+            bdrsService.getBpnDirectory("", "");
         });
     }
 

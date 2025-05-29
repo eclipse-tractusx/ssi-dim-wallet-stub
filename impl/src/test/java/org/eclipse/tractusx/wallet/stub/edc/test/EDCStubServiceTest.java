@@ -39,7 +39,6 @@ import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,8 +51,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class EDCStubServiceTest {
@@ -104,14 +107,14 @@ public class EDCStubServiceTest {
         }
         String token = signedJWT.serialize();
 
-        assertThrows(IllegalArgumentException.class,() -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             edcStubService.createStsToken(new HashMap<>(), token);
         });
     }
 
     @Test
     public void createStsTokenTest_grantAccess_returnStsToken() throws ParseException {
-        KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair("","");
+        KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair("", "");
         when(keyService.getKeyPair(anyString())).thenReturn(testKeyPair);
 
         DidDocument didDocument = DidDocument.Builder.newInstance()
@@ -155,7 +158,7 @@ public class EDCStubServiceTest {
         Map<String, Object> access = new HashMap<>();
         request.put(Constants.GRANT_ACCESS, access);
         access.put(Constants.SCOPE, "");
-        access.put(Constants.CREDENTIAL_TYPES, new String[]{""});
+        access.put(Constants.CREDENTIAL_TYPES, new String[]{ "" });
         access.put(Constants.PROVIDER_DID, "BPNa");
         access.put(Constants.CONSUMER_DID, "");
 

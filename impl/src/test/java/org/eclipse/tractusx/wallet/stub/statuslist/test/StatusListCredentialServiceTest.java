@@ -22,7 +22,6 @@
 
 package org.eclipse.tractusx.wallet.stub.statuslist.test;
 
-import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
 import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
@@ -30,18 +29,19 @@ import org.eclipse.tractusx.wallet.stub.exception.api.NoStatusListFoundException
 import org.eclipse.tractusx.wallet.stub.statuslist.api.StatusListCredentialService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class StatusListCredentialServiceTest {
@@ -59,7 +59,7 @@ public class StatusListCredentialServiceTest {
     private StatusListCredentialService statusListCredentialService;
 
     @Test
-    public void getStatusListCredentialTest_emptyCredentials(){
+    public void getStatusListCredentialTest_emptyCredentials() {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
@@ -68,14 +68,14 @@ public class StatusListCredentialServiceTest {
         when(storage.getVerifiableCredentials(anyString())).thenReturn(Optional.empty());
         when(credentialService.issueStatusListCredential(anyString(), anyString())).thenReturn(new CustomCredential());
 
-        CustomCredential customCredential = statusListCredentialService.getStatusListCredential("","");
+        CustomCredential customCredential = statusListCredentialService.getStatusListCredential("", "");
 
         assertNotNull(customCredential);
         assertEquals(0, customCredential.size());
     }
 
     @Test
-    public void getCustomCredentialTest_returnCredentials(){
+    public void getCustomCredentialTest_returnCredentials() {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
@@ -83,14 +83,14 @@ public class StatusListCredentialServiceTest {
         when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
         when(storage.getVerifiableCredentials(anyString())).thenReturn(Optional.of(new CustomCredential()));
 
-        CustomCredential customCredential = statusListCredentialService.getCustomCredential("","");
+        CustomCredential customCredential = statusListCredentialService.getCustomCredential("", "");
 
         assertNotNull(customCredential);
         assertEquals(0, customCredential.size());
     }
 
     @Test
-    public void getCustomCredentialTest_throwNoStatusListFoundException(){
+    public void getCustomCredentialTest_throwNoStatusListFoundException() {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
@@ -99,7 +99,7 @@ public class StatusListCredentialServiceTest {
         when(storage.getVerifiableCredentials(anyString())).thenReturn(Optional.empty());
 
         assertThrows(NoStatusListFoundException.class, () -> {
-            statusListCredentialService.getCustomCredential("","");
+            statusListCredentialService.getCustomCredential("", "");
         });
     }
 }

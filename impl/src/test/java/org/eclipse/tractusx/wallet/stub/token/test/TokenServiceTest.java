@@ -34,14 +34,11 @@ import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
-import org.eclipse.tractusx.wallet.stub.token.impl.TokenServiceImpl;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.token.internal.api.InternalTokenValidationService;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,8 +52,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class TokenServiceTest {
@@ -80,31 +79,31 @@ public class TokenServiceTest {
     private TokenService tokenService;
 
     @Test
-    public void verifyTokenAndGetClaimsTest_throwIllegalArgumentException(){
+    public void verifyTokenAndGetClaimsTest_throwIllegalArgumentException() {
         when(internalTokenValidationService.verifyToken(anyString())).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class,() -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             tokenService.verifyTokenAndGetClaims("");
         });
     }
 
     @Test
-    public void createAccessTokenResponse_returnTokenResponse(){
+    public void createAccessTokenResponse_returnTokenResponse() {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
                 .verificationMethod(List.of(VerificationMethod.Builder.newInstance()
-                    .id("1" + "#key-1")
-                    .controller("1")
-                    .type("JsonWebKey2020")
-                    .publicKeyJwk(Map.of(
-                            "kty", "EC",
-                            "crv", "secp256k1",
-                            "use", "sig",
-                            "kid", "key-1",
-                            "alg", "ES256K"
-                    ))
-                    .build()))
+                        .id("1" + "#key-1")
+                        .controller("1")
+                        .type("JsonWebKey2020")
+                        .publicKeyJwk(Map.of(
+                                "kty", "EC",
+                                "crv", "secp256k1",
+                                "use", "sig",
+                                "kid", "key-1",
+                                "alg", "ES256K"
+                        ))
+                        .build()))
                 .build();
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair("testbpm", "testenv");
 
@@ -137,11 +136,11 @@ public class TokenServiceTest {
     }
 
     @Test
-    public void setClientInfoTest_setClientInfo(){
+    public void setClientInfoTest_setClientInfo() {
         String client = "client";
         String testClient = "testClient";
         TokenRequest tokenRequest = new TokenRequest(client, "secret", "grant");
-        String decodedString= testClient + ":testsecret";
+        String decodedString = testClient + ":testsecret";
         byte[] encodedBytes = Base64.getEncoder().encode(decodedString.getBytes());
         String encodedString = new String(encodedBytes, StandardCharsets.UTF_8);
         String token = "Basic " + encodedString;
@@ -151,11 +150,11 @@ public class TokenServiceTest {
     }
 
     @Test
-    public void setClientInfoTest_incorrectDecodedStringFormat_throwsMalformedCredentialsException(){
+    public void setClientInfoTest_incorrectDecodedStringFormat_throwsMalformedCredentialsException() {
         String client = "client";
         String testClient = "testClient";
         TokenRequest tokenRequest = new TokenRequest(client, "secret", "grant");
-        String decodedString= testClient + "testsecret";
+        String decodedString = testClient + "testsecret";
         byte[] encodedBytes = Base64.getEncoder().encode(decodedString.getBytes());
         String encodedString = new String(encodedBytes, StandardCharsets.UTF_8);
         String token = "Basic " + encodedString;
@@ -166,11 +165,11 @@ public class TokenServiceTest {
     }
 
     @Test
-    public void setClientInfoTest_incorrectHeaderFormat_throwsMalformedCredentialsException(){
+    public void setClientInfoTest_incorrectHeaderFormat_throwsMalformedCredentialsException() {
         String client = "client";
         String testClient = "testClient";
         TokenRequest tokenRequest = new TokenRequest(client, "secret", "grant");
-        String decodedString= testClient + "testsecret";
+        String decodedString = testClient + "testsecret";
         byte[] encodedBytes = Base64.getEncoder().encode(decodedString.getBytes());
         String encodedString = new String(encodedBytes, StandardCharsets.UTF_8);
         String token = "Basicfail " + encodedString;

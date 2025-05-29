@@ -50,7 +50,6 @@ import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,8 +63,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class IssuerCredentialServiceTest {
@@ -253,10 +258,11 @@ public class IssuerCredentialServiceTest {
         issuesWithSignature.put(Constants.CONTENT, "");
 
         Map<String, Object> credentialsMap = new HashMap<>();
-        credentialsMap.put(Constants.BPN,"");
+        credentialsMap.put(Constants.BPN, "");
         issuesWithSignature.put(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE, credentialsMap);
         ArrayList<String> typeList = new ArrayList<>();
-        typeList.add("");typeList.add("");
+        typeList.add("");
+        typeList.add("");
         issuesWithSignature.put(Constants.TYPE, typeList);
         credentialPayload.setIssueWithSignature(issuesWithSignature);
         credentialPayload.setIssue(issuesWithSignature);

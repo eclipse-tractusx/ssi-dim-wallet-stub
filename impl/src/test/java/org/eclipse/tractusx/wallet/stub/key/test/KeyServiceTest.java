@@ -24,16 +24,10 @@ package org.eclipse.tractusx.wallet.stub.key.test;
 
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
-import org.eclipse.tractusx.wallet.stub.key.impl.KeyServiceImpl;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -41,7 +35,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.security.KeyPair;
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class KeyServiceTest {
@@ -78,7 +76,7 @@ public class KeyServiceTest {
 
         KeyPair keyPair = keyService.getKeyPair(baseWalletBpn);
 
-        verify(storage, times(1)).saveKeyPair(anyString(),any());
+        verify(storage, times(1)).saveKeyPair(anyString(), any());
         Assertions.assertNotNull(keyPair);
     }
 }

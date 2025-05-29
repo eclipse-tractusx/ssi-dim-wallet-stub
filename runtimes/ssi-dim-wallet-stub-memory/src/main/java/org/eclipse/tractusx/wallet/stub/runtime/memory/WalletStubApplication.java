@@ -40,7 +40,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * The type Wallet demo application.
  */
 @SpringBootApplication
-@ComponentScan(basePackageClasses = { ConfigMarker.class})
+@ComponentScan(basePackageClasses = { ConfigMarker.class })
 @Import({ WalletStubImplConfig.class,
         WalletStubStorageInMemoryConfig.class,
         OpenApiConfig.class,
