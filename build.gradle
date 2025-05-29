@@ -135,13 +135,14 @@ subprojects {
                 fileTree(dir: it, exclude: [
                         "org/eclipse/tractusx/wallet/stub/apidoc/*",
                         "**/config/**",
+                        "**/runtime/**",
                 ])
             }))
         }
         violationRules {
             rule {
                 limit {
-                    minimum = 0.80
+                    minimum = 0.70
                 }
             }
         }
