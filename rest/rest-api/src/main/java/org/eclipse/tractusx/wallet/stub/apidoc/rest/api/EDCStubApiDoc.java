@@ -127,7 +127,8 @@ public class EDCStubApiDoc {
                                     "credentialTypes":
                                     [
                                         "MembershipCredential",
-                                        "DataExchangeGovernanceCredential"
+                                        "DataExchangeGovernanceCredential",
+                                        "UsagePurposeCredential"
                                     ],
                                     "consumerDid": "did:web:c464-203-129-213-107.ngrok-free.app:BPNL000000000000",
                                     "providerDid": "did:web:c464-203-129-213-107.ngrok-free.app:BPNL000000000000"
@@ -266,7 +267,23 @@ public class EDCStubApiDoc {
                                  ],
                                  "@type": "PresentationQueryMessage"
                              }
-                            """, description = "Create VP access token for Membership Credential and DataExchange Governance Credential", name = "Create VP access token for Membership Credential and DataExchange Governance Credential")
+                            """, description = "Create VP access token for Membership Credential and DataExchange Governance Credential", name = "Create VP access token for Membership Credential and DataExchange Governance Credential"),
+                    @ExampleObject(value = """
+                            {
+                                 "scope":
+                                 [
+                                     "org.eclipse.tractusx.vc.type:MembershipCredential:read",
+                                     "org.eclipse.tractusx.vc.type:DataExchangeGovernanceCredential:read",
+                                     "org.eclipse.tractusx.vc.type:UsagePurposeCredential:read"
+                                 ],
+                                 "@context":
+                                 [
+                                     "https://identity.foundation/presentation-exchange/submission/v1",
+                                     "https://w3id.org/tractusx-trust/v0.8"
+                                 ],
+                                 "@type": "PresentationQueryMessage"
+                             }
+                            """, description = "Create VP access token for Membership Credential, UsagePurposeCredential and DataExchange Governance Credential", name = "Create VP access token for Membership Credential, UsagePurposeCredential and DataExchange Governance Credential")
 
             })
     })

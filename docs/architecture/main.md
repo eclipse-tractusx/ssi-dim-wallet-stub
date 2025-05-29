@@ -85,7 +85,7 @@ interface or API documentation.
   minimum requirement to address is enabling the dependent microservices to deploy and pass the E2E tests. However, the
   business logic of multiple services outside of this scope might be too complex and error-prone for simulation. We have
   to define a minimum viable stub and continue delivering if there is any necessity or further requirement. Currently
-  only `type:MembershipCredential`, `type:BPNCredential` and `type:DataExchangeGovernanceCredential` are supported.
+  only `type:MembershipCredential`, `type:BPNCredential`, `UsagePurposeCredential` and `type:DataExchangeGovernanceCredential` are supported.
 
 * **Security:** Security features such as authentication, authorization, and data encryption must also be simulated with
   the stub service.

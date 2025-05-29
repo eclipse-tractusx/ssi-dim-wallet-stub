@@ -131,6 +131,8 @@ public class CredentialServiceImpl implements CredentialService {
                     return issueBpnCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
                 } else if (type.equals(Constants.DATA_EXCHANGE_CREDENTIAL)) {
                     return issueDataExchangeGovernanceCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
+                } else if (type.equals(Constants.USAGE_PURPOSE_CREDENTIAL)) {
+                    return issueUsagePurposeCredential(holderBpn, issuerDocument, holderDocument, vcIdUri, vcId);
                 } else {
                     throw new IllegalArgumentException("vc type -> " + type + " is not supported");
                 }
@@ -196,6 +198,22 @@ public class CredentialServiceImpl implements CredentialService {
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
+    }
+
+    private CustomCredential issueUsagePurposeCredential(String holderBpn, DidDocument issuerDocument, DidDocument holderDocument, URI vcIdUri, String vcId) {
+        Map<String, Object> subject = new HashMap<>();
+        subject.put(Constants.ID, holderDocument.getId());
+        subject.put(Constants.HOLDER_IDENTIFIER, holderBpn);
+        // here does this specification for group and UC come from?
+        // subject.put(StringPool.GROUP, "UseCaseFramework");
+        // subject.put(StringPool.USE_CASE, "DataExchangeGovernance");
+        // subject.put(StringPool.CONTRACT_TEMPLATE, "https://example.org/temp-1");
+        // subject.put(StringPool.CONTRACT_VERSION, "1.0");
+        CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
+                vcIdUri.toString(), Constants.USAGE_PURPOSE_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
+
+        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.USAGE_PURPOSE_CREDENTIAL);
+        return credentialWithoutProof;
     }
 
     private CustomCredential issueDataExchangeGovernanceCredential(String holderBpn, DidDocument issuerDocument, DidDocument holderDocument, URI vcIdUri, String vcId) {
