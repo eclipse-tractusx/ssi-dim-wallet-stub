@@ -112,8 +112,8 @@ public class CredentialServiceTest {
                 .id(holderId)
                 .build();
         
-        when(didDocumentService.getDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
-        when(didDocumentService.getDidDocument(holderBpn)).thenReturn(holderDidDoc);
+        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
+        when(didDocumentService.getOrCreateDidDocument(holderBpn)).thenReturn(holderDidDoc);
     }
 
     /**
@@ -192,8 +192,8 @@ public class CredentialServiceTest {
                 .id(holderId)
                 .build();
         
-        when(didDocumentService.getDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
-        when(didDocumentService.getDidDocument(holderBpn)).thenReturn(holderDidDoc);
+        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
+        when(didDocumentService.getOrCreateDidDocument(holderBpn)).thenReturn(holderDidDoc);
 
         // Mock TokenSettings
         when(tokenSettings.tokenExpiryTime()).thenReturn(60);
@@ -444,7 +444,7 @@ public class CredentialServiceTest {
         // Mock WalletStubSettings and DidDocumentService
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
         DidDocument issuerDidDoc = createDidDocument(issuerId);
-        when(didDocumentService.getDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
+        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
 
         // When
         CustomCredential result = credentialService.issueStatusListCredential(holderBpn, vcId);
@@ -479,7 +479,7 @@ public class CredentialServiceTest {
 
         // Mock to throw InternalErrorException directly
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
-        when(didDocumentService.getDidDocument(baseWalletBpn))
+        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn))
             .thenThrow(new InternalErrorException("Test error"));
 
         // When/Then
@@ -504,7 +504,7 @@ public class CredentialServiceTest {
 
         // Mock to throw a general exception that will be wrapped
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
-        when(didDocumentService.getDidDocument(baseWalletBpn))
+        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn))
             .thenThrow(new RuntimeException("Unexpected error"));
 
         // When/Then
@@ -531,7 +531,7 @@ public class CredentialServiceTest {
                 .thenReturn(Optional.empty());
 
         // Mock DidDocumentService to throw InternalErrorException
-        when(didDocumentService.getDidDocument(baseWalletBpn))
+        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn))
             .thenThrow(new InternalErrorException("Direct internal error"));
 
         // When/Then
@@ -558,7 +558,7 @@ public class CredentialServiceTest {
                 .thenReturn(Optional.empty());
 
         // Mock DidDocumentService to throw RuntimeException
-        when(didDocumentService.getDidDocument(baseWalletBpn))
+        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn))
             .thenThrow(new RuntimeException("Unexpected runtime error"));
 
         // When/Then

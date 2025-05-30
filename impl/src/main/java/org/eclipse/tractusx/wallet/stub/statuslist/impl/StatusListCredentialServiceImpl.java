@@ -24,7 +24,6 @@ package org.eclipse.tractusx.wallet.stub.statuslist.impl;
 
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
@@ -55,7 +54,7 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
     @Override
     public CustomCredential getStatusListCredential(String bpn, String vcId) {
         try {
-            DidDocument issuerDidDocument = didDocumentService.getDidDocument(bpn);
+            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(bpn);
             URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + vcId);
             Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
             return verifiableCredentials.orElseGet(() -> credentialService.issueStatusListCredential(bpn, vcId));
@@ -70,7 +69,7 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
     public CustomCredential getCustomCredential(String bpn, String vcId) {
         try {
             //currently we are returning one VC
-            URI vcIdUri = URI.create(didDocumentService.getDidDocument(bpn).getId() + Constants.HASH_SEPARATOR + vcId);
+            URI vcIdUri = URI.create(didDocumentService.getOrCreateDidDocument(bpn).getId() + Constants.HASH_SEPARATOR + vcId);
             Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
             if (verifiableCredentials.isPresent()) {
                 return verifiableCredentials.get();

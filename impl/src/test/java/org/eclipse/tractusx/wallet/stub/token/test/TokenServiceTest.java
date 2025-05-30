@@ -109,7 +109,7 @@ public class TokenServiceTest {
                         ))
                         .build()))
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .issuer("consumerDid")
@@ -166,7 +166,7 @@ public class TokenServiceTest {
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair("testbpm", "testenv");
 
         when(keyService.getKeyPair(anyString())).thenReturn(testKeyPair);
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
         when(tokenSettings.tokenExpiryTime()).thenReturn(60);
 
         //time config

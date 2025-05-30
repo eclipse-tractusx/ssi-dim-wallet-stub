@@ -25,7 +25,6 @@ package org.eclipse.tractusx.wallet.stub.credential.impl;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
@@ -73,8 +72,8 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
 
             CustomCredential verifiableCredential = getVerifiableCredentialByHolderBpnAndType(holderBpn, type);
             KeyPair issuerKeyPair = keyService.getKeyPair(walletStubSettings.baseWalletBPN());
-            DidDocument issuerDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
-            DidDocument holderDocument = didDocumentService.getDidDocument(holderBpn);
+            DidDocument issuerDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
+            DidDocument holderDocument = didDocumentService.getOrCreateDidDocument(holderBpn);
 
             //time config
             Date time = new Date();
@@ -121,8 +120,8 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
                 return verifiableCredentialOptional.get();
             } else {
                 //issue new VC of that type of
-                DidDocument issuerDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
-                DidDocument holderDocument = didDocumentService.getDidDocument(holderBpn);
+                DidDocument issuerDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
+                DidDocument holderDocument = didDocumentService.getOrCreateDidDocument(holderBpn);
                 //build VC without a proof
                 String vcId = CommonUtils.getUuid(holderBpn, type);
                 URI vcIdUri = URI.create(issuerDocument.getId() + Constants.HASH_SEPARATOR + vcId);
@@ -149,7 +148,7 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
     @Override
     public CustomCredential issueStatusListCredential(String holderBpn, String vcId) {
         try {
-            DidDocument issuerDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
+            DidDocument issuerDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
 
             URI vcIdUri = URI.create(issuerDocument.getId() + Constants.HASH_SEPARATOR + vcId);
 

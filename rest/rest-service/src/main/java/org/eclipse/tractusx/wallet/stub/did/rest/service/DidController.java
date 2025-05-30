@@ -43,7 +43,7 @@ public class DidController implements DidApi {
 
     @Override
     public ResponseEntity<DidDocument> getDocument(String bpn) {
-        Optional<DidDocument> didDocument = didDocumentService.storeDidDocument(bpn);
-        return didDocument.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok(didDocumentService.getDidDocument(bpn)));
+        Optional<DidDocument> didDocument = didDocumentService.getDidDocument(bpn);
+        return didDocument.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok(didDocumentService.getOrCreateDidDocument(bpn)));
     }
 }

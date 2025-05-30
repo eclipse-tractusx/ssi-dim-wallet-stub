@@ -32,7 +32,6 @@ import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -111,7 +110,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
         try {
             KeyPair issuerKeypair = keyService.getKeyPair(walletStubSettings.baseWalletBPN());
 
-            DidDocument issuerDidDocument = didDocumentService.getDidDocument(issuerBPN);
+            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(issuerBPN);
 
             CustomCredential verifiableCredential = new CustomCredential();
 
@@ -123,7 +122,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
             }
             String holderBpn = getHolderBpn(verifiableCredential);
 
-            DidDocument holderDidDocument = didDocumentService.getDidDocument(holderBpn);
+            DidDocument holderDidDocument = didDocumentService.getOrCreateDidDocument(holderBpn);
 
             String type;
             List<String> types = (List<String>) verifiableCredential.get(Constants.TYPE);
@@ -192,7 +191,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
 
     private Optional<String> signCredential(String credentialId) {
         try {
-            DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
+            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
             URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + credentialId);
             return storage.getCredentialAsJwt(vcIdUri.toString());
         } catch (InternalErrorException e) {
@@ -205,7 +204,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
     @Override
     public GetCredentialsResponse getCredential(String externalCredentialId) {
         try {
-            DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
+            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
             URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + externalCredentialId);
             Optional<String> jwtVc = storage.getCredentialAsJwt(vcIdUri.toString());
             if (jwtVc.isEmpty()) {

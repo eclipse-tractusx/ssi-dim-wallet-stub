@@ -84,7 +84,7 @@ public class TokenServiceImpl implements TokenService {
         try {
             //here clientId will be BPN
             KeyPair keyPair = keyService.getKeyPair(request.getClientId());
-            DidDocument didDocument = didDocumentService.getDidDocument(request.getClientId());
+            DidDocument didDocument = didDocumentService.getOrCreateDidDocument(request.getClientId());
 
             //time config
             Date time = new Date();

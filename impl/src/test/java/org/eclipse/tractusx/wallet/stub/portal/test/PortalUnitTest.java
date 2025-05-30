@@ -87,7 +87,7 @@ public class PortalUnitTest {
         when(walletStubSettings.didHost()).thenReturn("localhost");
         when(walletStubSettings.seedWalletsBPN()).thenReturn(List.of());
 
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
 
         String bpn = TestUtils.getRandomBpmNumber();
         SetupDimRequest request = new SetupDimRequest();

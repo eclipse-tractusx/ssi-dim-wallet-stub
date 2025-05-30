@@ -346,7 +346,7 @@ class EDCTest {
                 .claim(PROVIDER_DID, providerDid)
                 .claim(Constants.BPN, consumerBpn)
                 .build();
-        return CommonUtils.signedJWT(tokeJwtClaimsSet, keyService.getKeyPair(consumerBpn), didDocumentService.getDidDocument(consumerBpn).getVerificationMethod().getFirst().getId()).serialize();
+        return CommonUtils.signedJWT(tokeJwtClaimsSet, keyService.getKeyPair(consumerBpn), didDocumentService.getOrCreateDidDocument(consumerBpn).getVerificationMethod().getFirst().getId()).serialize();
     }
 
 

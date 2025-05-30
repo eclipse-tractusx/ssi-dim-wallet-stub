@@ -191,6 +191,6 @@ public class TestUtils {
                 .claim(Constants.PROVIDER_DID, providerDid)
                 .claim(Constants.BPN, consumerBpn)
                 .build();
-        return CommonUtils.signedJWT(tokeJwtClaimsSet, keyService.getKeyPair(consumerBpn), didDocumentService.getDidDocument(consumerBpn).getVerificationMethod().get(0).getId()).serialize();
+        return CommonUtils.signedJWT(tokeJwtClaimsSet, keyService.getKeyPair(consumerBpn), didDocumentService.getOrCreateDidDocument(consumerBpn).getVerificationMethod().get(0).getId()).serialize();
     }
 }

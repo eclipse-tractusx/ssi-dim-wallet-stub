@@ -114,7 +114,7 @@ class IssuerTest {
         Assertions.assertNotNull(responseBody);
         Assertions.assertNotNull(responseBody.getId());
         Assertions.assertNotNull(responseBody.getJwt());
-        DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
+        DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
         URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + responseBody.getId());
         Assertions.assertTrue(storage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
         Assertions.assertTrue(storage.getVerifiableCredentials(vcIdUri.toString()).isPresent());
@@ -135,7 +135,7 @@ class IssuerTest {
         IssueCredentialResponse responseBody = response.getBody();
         Assertions.assertNotNull(responseBody);
         Assertions.assertNotNull(responseBody.getId());
-        DidDocument issuerDidDocument = didDocumentService.getDidDocument(walletStubSettings.baseWalletBPN());
+        DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
         URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + responseBody.getId());
         Assertions.assertTrue(storage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
         Assertions.assertTrue(storage.getVerifiableCredentials(vcIdUri.toString()).isPresent());

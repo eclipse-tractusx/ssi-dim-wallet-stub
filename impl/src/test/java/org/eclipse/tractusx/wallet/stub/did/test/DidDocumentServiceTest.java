@@ -56,7 +56,7 @@ public class DidDocumentServiceTest {
     private DidDocumentService didDocumentService;
 
     @Test
-    public void storeDidDocumentTest_returnExistingDidDocument() {
+    public void getDidDocumentTest_returnExistingDidDocument() {
         String baseWalletBpn = "BPNL000000000000";
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
@@ -64,13 +64,13 @@ public class DidDocumentServiceTest {
                 .build();
 
         when(storage.getDidDocument(anyString())).thenReturn(Optional.of(didDocument));
-        Optional<DidDocument> optBaseWalletBpn = didDocumentService.storeDidDocument(baseWalletBpn);
+        Optional<DidDocument> optBaseWalletBpn = didDocumentService.getDidDocument(baseWalletBpn);
 
         Assertions.assertEquals(didDocument.getId(), optBaseWalletBpn.get().getId());
     }
 
     @Test
-    public void getDidDocument_fromStorageTest() {
+    public void getOrCreateDidDocument_fromStorageTest() {
         String baseWalletBpn = "BPNL000000000000";
         DidDocument baseDidDocument = DidDocument.Builder.newInstance()
                 .id("1")
@@ -78,13 +78,13 @@ public class DidDocumentServiceTest {
                 .build();
 
         when(storage.getDidDocument(anyString())).thenReturn(Optional.of(baseDidDocument));
-        DidDocument didDocument = didDocumentService.getDidDocument(baseWalletBpn);
+        DidDocument didDocument = didDocumentService.getOrCreateDidDocument(baseWalletBpn);
 
         Assertions.assertEquals(baseDidDocument.getId(), didDocument.getId());
     }
 
     @Test
-    public void getDidDocumentTest() {
+    public void getOrCreateDidDocumentTest() {
         String baseWalletBpn = "BPNL000000000000";
         String env = "test";
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair(baseWalletBpn, env);
@@ -95,7 +95,7 @@ public class DidDocumentServiceTest {
         when(walletStubSettings.stubUrl()).thenReturn("");
         when(keyService.getKeyPair(anyString())).thenReturn(testKeyPair);
 
-        DidDocument didDocument = didDocumentService.getDidDocument(baseWalletBpn);
+        DidDocument didDocument = didDocumentService.getOrCreateDidDocument(baseWalletBpn);
 
         verify(storage).saveDidDocument(anyString(), any());
         Assertions.assertNotNull(didDocument);
