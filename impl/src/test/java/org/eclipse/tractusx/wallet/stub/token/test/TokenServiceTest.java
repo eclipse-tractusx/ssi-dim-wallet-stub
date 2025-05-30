@@ -71,9 +71,6 @@ public class TokenServiceTest {
     @MockitoBean
     private KeyService keyService;
 
-    // @Autowired
-    // private InternalTokenValidationService internalTokenValidationService;
-
     @MockitoBean
     private DidDocumentService didDocumentService;
 
@@ -88,7 +85,6 @@ public class TokenServiceTest {
 
     @Test
     public void verifyTokenAndGetClaimsTest_throwIllegalArgumentException() throws Exception {
-        // when(internalTokenValidationService.verifyToken(anyString())).thenReturn(false);
         KeyPair keypairTest = DeterministicECKeyPairGenerator.createKeyPair("1","test");
 
         when(keyService.getKeyPair(anyString())).thenReturn(keypairTest);
