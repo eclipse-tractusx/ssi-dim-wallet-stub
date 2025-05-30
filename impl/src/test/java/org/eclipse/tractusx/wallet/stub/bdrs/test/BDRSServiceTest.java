@@ -84,7 +84,7 @@ public class BDRSServiceTest {
                 .claim(Constants.VC, vc)
                 .build();
         when(tokenService.verifyTokenAndGetClaims(anyString())).thenReturn(jwtClaimsSet);
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(null);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(null);
 
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
@@ -121,7 +121,7 @@ public class BDRSServiceTest {
                 .claim(Constants.VC, vc)
                 .build();
         when(tokenService.verifyTokenAndGetClaims(anyString())).thenReturn(jwtClaimsSet);
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(null);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(null);
 
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")

@@ -29,7 +29,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -187,7 +186,7 @@ public class EDCStubServiceImpl implements EDCStubService {
             log.debug("Getting request to create STS with request -> {} and token ->{}", objectMapper.writeValueAsString(request), StringEscapeUtils.escapeJava(token));
             String selfBpn = CommonUtils.getBpnFromToken(token, tokenService);
             KeyPair selfKeyPair = keyService.getKeyPair(selfBpn);
-            DidDocument selfDidDocument = didDocumentService.getDidDocument(selfBpn);
+            DidDocument selfDidDocument = didDocumentService.getOrCreateDidDocument(selfBpn);
             String partnerBpn;
             boolean withScope = false;
             CreateCredentialWithScopeRequest withScopeRequest = null;
@@ -206,7 +205,7 @@ public class EDCStubServiceImpl implements EDCStubService {
             }
             log.debug("self bpn ->{} and partner bpn ->{}", StringEscapeUtils.escapeJava(selfBpn), StringEscapeUtils.escapeJava(partnerBpn));
 
-            DidDocument partnerDidDocument = didDocumentService.getDidDocument(partnerBpn);
+            DidDocument partnerDidDocument = didDocumentService.getOrCreateDidDocument(partnerBpn);
 
             //time config
             Date time = new Date();
@@ -248,7 +247,7 @@ public class EDCStubServiceImpl implements EDCStubService {
             //get VC claim from inner token
             KeyPair issuerKeypair = keyService.getKeyPair(callerBpn);
 
-            DidDocument issuerDidDocument = didDocumentService.getDidDocument(callerBpn);
+            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(callerBpn);
 
 
             log.debug("Requested VC -> types : {}, caller bpn ->{}", StringEscapeUtils.escapeJava(StringUtils.join(requestedTypes, ",")), StringEscapeUtils.escapeJava(callerBpn));

@@ -59,7 +59,7 @@ public class DidDocumentServiceImpl implements DidDocumentService {
     private final Storage storage;
 
     @Override
-    public DidDocument getDidDocument(String issuerBpn) {
+    public DidDocument getOrCreateDidDocument(String issuerBpn) {
         try {
             Optional<DidDocument> optionalDidDocument = storage.getDidDocument(issuerBpn);
             if (optionalDidDocument.isPresent()) {
@@ -113,7 +113,7 @@ public class DidDocumentServiceImpl implements DidDocumentService {
     }
 
     @Override
-    public Optional<DidDocument> storeDidDocument(String bpn) {
+    public Optional<DidDocument> getDidDocument(String bpn) {
         try {
             log.debug("Did document requested for bpn ->{}", bpn);
             return storage.getDidDocument(bpn);

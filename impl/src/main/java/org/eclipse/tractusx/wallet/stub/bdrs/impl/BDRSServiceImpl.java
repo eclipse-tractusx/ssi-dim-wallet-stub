@@ -38,7 +38,6 @@ import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +107,7 @@ public class BDRSServiceImpl implements BDRSService {
             String holderBpn = vcSubject.get(Constants.HOLDER_IDENTIFIER);
 
             //create wallet if not created
-            didDocumentService.getDidDocument(holderBpn);
+            didDocumentService.getOrCreateDidDocument(holderBpn);
         } catch (IllegalArgumentException | InternalErrorException | ParseStubException e) {
             throw e;
         } catch (Exception e) {
@@ -122,7 +121,7 @@ public class BDRSServiceImpl implements BDRSService {
                 //create wallet if not exists
                 String[] split = StringUtils.split(bpnString, ",");
                 for (String bpn : split) {
-                    didDocumentService.getDidDocument(bpn.trim());
+                    didDocumentService.getOrCreateDidDocument(bpn.trim());
                 }
             }
         } catch (InternalErrorException e) {

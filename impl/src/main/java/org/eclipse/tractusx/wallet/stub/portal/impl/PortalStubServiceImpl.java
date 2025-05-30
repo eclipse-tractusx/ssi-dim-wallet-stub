@@ -24,7 +24,6 @@ package org.eclipse.tractusx.wallet.stub.portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
@@ -66,7 +65,7 @@ public class PortalStubServiceImpl implements PortalStubService {
             Thread.sleep(portalSettings.portalWaitTime() * 1000);
 
             //create did a document
-            DidDocument didDocument = didDocumentService.getDidDocument(request.getBpn());
+            DidDocument didDocument = didDocumentService.getOrCreateDidDocument(request.getBpn());
 
             DidDocumentRequest didDocumentRequest = DidDocumentRequest.builder()
                     .didDocument(didDocument)

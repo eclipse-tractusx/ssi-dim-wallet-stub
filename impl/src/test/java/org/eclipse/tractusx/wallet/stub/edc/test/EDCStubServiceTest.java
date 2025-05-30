@@ -85,7 +85,7 @@ public class EDCStubServiceTest {
     @Test
     public void createStsTokenTest_throwIllegalArgumentException() {
         when(keyService.getKeyPair(anyString())).thenReturn(null);
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(null);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(null);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject("1")
@@ -132,7 +132,7 @@ public class EDCStubServiceTest {
                         ))
                         .build()))
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject("1")

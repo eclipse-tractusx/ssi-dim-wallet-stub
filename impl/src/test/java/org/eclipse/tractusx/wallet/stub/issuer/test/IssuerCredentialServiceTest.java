@@ -103,7 +103,7 @@ public class IssuerCredentialServiceTest {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
         when(storage.getCredentialAsJwt(anyString())).thenReturn(Optional.empty());
 
         assertThrows(CredentialNotFoundException.class, () -> {
@@ -118,7 +118,7 @@ public class IssuerCredentialServiceTest {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
         when(storage.getCredentialAsJwt(anyString())).thenReturn(Optional.of("notEmpty"));
         when(storage.getVerifiableCredentials(anyString())).thenReturn(Optional.empty());
 
@@ -146,7 +146,7 @@ public class IssuerCredentialServiceTest {
                         ))
                         .build()))
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
         when(storage.getCredentialAsJwt(anyString())).thenReturn(Optional.of("test"));
         when(storage.getVerifiableCredentials(anyString())).thenReturn(Optional.of(new CustomCredential()));
 
@@ -173,7 +173,7 @@ public class IssuerCredentialServiceTest {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
         when(storage.getCredentialAsJwt(anyString())).thenReturn(Optional.of("1#key1"));
 
         SignCredentialResponse signCredentialResponse = issuerCredentialService.getSignCredentialResponse(request, "1");
@@ -191,7 +191,7 @@ public class IssuerCredentialServiceTest {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
         when(storage.getCredentialAsJwt(anyString())).thenReturn(Optional.empty());
 
         assertThrows(CredentialNotFoundException.class, () -> {
@@ -297,7 +297,7 @@ public class IssuerCredentialServiceTest {
                         ))
                         .build()))
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
         when(walletStubSettings.baseWalletBPN()).thenReturn("");
         when(walletStubSettings.didHost()).thenReturn("");
         when(walletStubSettings.baseWalletBPN()).thenReturn("");

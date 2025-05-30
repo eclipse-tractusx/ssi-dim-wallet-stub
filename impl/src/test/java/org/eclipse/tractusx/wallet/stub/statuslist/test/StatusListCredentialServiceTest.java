@@ -64,7 +64,7 @@ public class StatusListCredentialServiceTest {
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
         when(storage.getVerifiableCredentials(anyString())).thenReturn(Optional.empty());
         when(credentialService.issueStatusListCredential(anyString(), anyString())).thenReturn(new CustomCredential());
 
@@ -80,7 +80,7 @@ public class StatusListCredentialServiceTest {
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
         when(storage.getVerifiableCredentials(anyString())).thenReturn(Optional.of(new CustomCredential()));
 
         CustomCredential customCredential = statusListCredentialService.getCustomCredential("", "");
@@ -95,7 +95,7 @@ public class StatusListCredentialServiceTest {
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
                 .build();
-        when(didDocumentService.getDidDocument(anyString())).thenReturn(didDocument);
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
         when(storage.getVerifiableCredentials(anyString())).thenReturn(Optional.empty());
 
         assertThrows(NoStatusListFoundException.class, () -> {
