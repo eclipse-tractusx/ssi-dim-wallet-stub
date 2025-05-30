@@ -341,7 +341,7 @@ public class CredentialServiceTest {
      * Tests the creation of a Usage Purpose credential.
      * This test verifies that:
      * 1. A new Usage Purpose credential is created with correct issuer information
-     * 2. The credential subject contains all required Usage Purpose
+     * 2. The credential subject contains all required fields for Usage Purpose
      * 3. The credential is properly saved in storage
      * 4. The credential follows the expected structure for Usage Purpose credentials
      */
