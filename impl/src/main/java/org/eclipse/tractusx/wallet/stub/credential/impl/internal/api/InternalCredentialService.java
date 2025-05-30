@@ -19,9 +19,10 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.token.internal.api;
+package org.eclipse.tractusx.wallet.stub.credential.impl.internal.api;
 
-public interface InternalTokenValidationService {
+import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 
-    boolean verifyToken(String token);
+public interface InternalCredentialService {
+    CustomCredential getVerifiableCredentialByHolderBpnAndType(String holderBpn, String type);
 }

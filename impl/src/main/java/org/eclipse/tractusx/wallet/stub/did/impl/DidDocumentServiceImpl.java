@@ -66,45 +66,50 @@ public class DidDocumentServiceImpl implements DidDocumentService {
                 return optionalDidDocument.get();
             }
 
-            String did = CommonUtils.getDidWeb(walletStubSettings.didHost(), issuerBpn);
-
-            String keyId = CommonUtils.getUuid(issuerBpn, walletStubSettings.env());
-            KeyPair keyPair = keyService.getKeyPair(issuerBpn);
-
-            Map<String, Object> jsonObject = CryptoConverter.createJwk(keyPair).toJSONObject();
-            jsonObject.put(Constants.ID, keyId);
-
-            JWK jwk = CryptoConverter.create(jsonObject);
-
-            //create verification method
-            VerificationMethod verificationMethod = VerificationMethod.Builder.newInstance()
-                    .id(URI.create(did + Constants.HASH_SEPARATOR + keyId).toString())
-                    .controller(did)
-                    .type(Constants.JSON_WEB_KEY_2020)
-                    .publicKeyJwk(jwk.toPublicJWK().toJSONObject())
-                    .build();
-
-
-            //create service
-            org.eclipse.edc.iam.did.spi.document.Service service = new org.eclipse.edc.iam.did.spi.document.Service(walletStubSettings.stubUrl() + "#credential-service",
-                    Constants.CREDENTIAL_SERVICE, walletStubSettings.stubUrl() + "/api");
-
-
-            //create document
-            DidDocument didDocument = DidDocument.Builder.newInstance()
-                    .id(did)
-                    .service(List.of(service))
-                    .authentication(List.of(verificationMethod.getId()))
-                    .verificationMethod(List.of(verificationMethod))
-                    .context(List.of("https://www.w3.org/ns/did/v1"))
-                    .build();
-            storage.saveDidDocument(issuerBpn, didDocument);
+            DidDocument didDocument = createDidDocument(issuerBpn);
             return didDocument;
         } catch (InternalErrorException e) {
             throw e;
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
+    }
+
+    private DidDocument createDidDocument(String issuerBpn) {
+        String did = CommonUtils.getDidWeb(walletStubSettings.didHost(), issuerBpn);
+
+        String keyId = CommonUtils.getUuid(issuerBpn, walletStubSettings.env());
+        KeyPair keyPair = keyService.getKeyPair(issuerBpn);
+
+        Map<String, Object> jsonObject = CryptoConverter.createJwk(keyPair).toJSONObject();
+        jsonObject.put(Constants.ID, keyId);
+
+        JWK jwk = CryptoConverter.create(jsonObject);
+
+        //create verification method
+        VerificationMethod verificationMethod = VerificationMethod.Builder.newInstance()
+                .id(URI.create(did + Constants.HASH_SEPARATOR + keyId).toString())
+                .controller(did)
+                .type(Constants.JSON_WEB_KEY_2020)
+                .publicKeyJwk(jwk.toPublicJWK().toJSONObject())
+                .build();
+
+
+        //create service
+        org.eclipse.edc.iam.did.spi.document.Service service = new org.eclipse.edc.iam.did.spi.document.Service(walletStubSettings.stubUrl() + "#credential-service",
+                Constants.CREDENTIAL_SERVICE, walletStubSettings.stubUrl() + "/api");
+
+
+        //create document
+        DidDocument didDocument = DidDocument.Builder.newInstance()
+                .id(did)
+                .service(List.of(service))
+                .authentication(List.of(verificationMethod.getId()))
+                .verificationMethod(List.of(verificationMethod))
+                .context(List.of("https://www.w3.org/ns/did/v1"))
+                .build();
+        storage.saveDidDocument(issuerBpn, didDocument);
+        return didDocument;
     }
 
     @Override

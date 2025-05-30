@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
+import org.eclipse.tractusx.wallet.stub.credential.impl.internal.api.InternalCredentialService;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
@@ -48,7 +49,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CredentialServiceImpl implements CredentialService {
+public class CredentialServiceImpl implements CredentialService, InternalCredentialService {
 
 
     private final Storage storage;
@@ -112,7 +113,8 @@ public class CredentialServiceImpl implements CredentialService {
      * @param type      The type of the credential.
      * @return The verifiable credential for the specified holder's BPN and type.
      */
-    protected CustomCredential getVerifiableCredentialByHolderBpnAndType(String holderBpn, String type) {
+    @Override
+    public CustomCredential getVerifiableCredentialByHolderBpnAndType(String holderBpn, String type) {
         try {
             Optional<CustomCredential> verifiableCredentialOptional = storage.getCredentialsByHolderBpnAndType(holderBpn, type);
             if (verifiableCredentialOptional.isPresent()) {

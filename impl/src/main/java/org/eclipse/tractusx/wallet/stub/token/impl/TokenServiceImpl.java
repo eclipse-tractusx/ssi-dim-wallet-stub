@@ -22,10 +22,11 @@
 
 package org.eclipse.tractusx.wallet.stub.token.impl;
 
+import com.nimbusds.jose.crypto.ECDSAVerifier;
+import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -39,13 +40,14 @@ import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
-import org.eclipse.tractusx.wallet.stub.token.internal.api.InternalTokenValidationService;
 import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
+import java.security.interfaces.ECPublicKey;
+import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
@@ -57,8 +59,6 @@ public class TokenServiceImpl implements TokenService {
 
     private final KeyService keyService;
 
-    private final InternalTokenValidationService internalTokenValidationService;
-
     private final DidDocumentService didDocumentService;
 
     private final TokenSettings tokenSettings;
@@ -67,7 +67,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public JWTClaimsSet verifyTokenAndGetClaims(String token) {
         try {
-            if (internalTokenValidationService.verifyToken(token)) {
+            if (verifyToken(token)) {
                 return SignedJWT.parse(CommonUtils.cleanToken(token)).getJWTClaimsSet();
             } else {
                 throw new IllegalArgumentException("Invalid token -> " + token);
@@ -139,6 +139,26 @@ public class TokenServiceImpl implements TokenService {
             }
         } catch (MalformedCredentialsException e) {
             throw e;
+        } catch (Exception e) {
+            throw new InternalErrorException("Internal Error: " + e.getMessage());
+        }
+    }
+
+    // @Override
+    private boolean verifyToken(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(CommonUtils.cleanToken(token));
+            String keyID = signedJWT.getHeader().getKeyID(); //this will be DID
+            String bpn = CommonUtils.getBpnFromDid(keyID);
+            KeyPair keyPair = keyService.getKeyPair(bpn);
+            ECPublicKey aPublic = (ECPublicKey) keyPair.getPublic();
+            ECDSAVerifier ecdsaVerifier = new ECDSAVerifier(aPublic);
+            ecdsaVerifier.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+            return signedJWT.verify(ecdsaVerifier);
+        } catch (InternalErrorException e) {
+            throw e;
+        } catch (ParseException e) {
+            throw new ParseStubException(e.getMessage());
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
