@@ -54,7 +54,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
-public class CredentialServiceTest {
+class CredentialServiceTest {
 
     @MockitoBean
     private Storage storage;

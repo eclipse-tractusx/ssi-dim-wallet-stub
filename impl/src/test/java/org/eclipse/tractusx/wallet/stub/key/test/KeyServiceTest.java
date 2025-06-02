@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class KeyServiceTest {
+class KeyServiceTest {
 
     @MockitoBean
     private Storage storage;
@@ -54,7 +54,7 @@ public class KeyServiceTest {
     private KeyService keyService;
 
     @Test
-    public void getKeyPairTest() {
+    void getKeyPairTest() {
         String baseWalletBpn = "BPNL000000000000";
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair(baseWalletBpn, "test");
 
@@ -67,7 +67,7 @@ public class KeyServiceTest {
     }
 
     @Test
-    public void createAndGetKeyPairTest() {
+    void createAndGetKeyPairTest() {
         String baseWalletBpn = "BPNL000000000000";
         String environment = "test";
 

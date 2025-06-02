@@ -59,7 +59,7 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class EDCStubServiceTest {
+class EDCStubServiceTest {
 
     @MockitoBean
     private Storage storage;
@@ -83,7 +83,7 @@ public class EDCStubServiceTest {
     private EDCStubService edcStubService;
 
     @Test
-    public void createStsTokenTest_throwIllegalArgumentException() {
+    void createStsTokenTest_throwIllegalArgumentException() {
         when(keyService.getKeyPair(anyString())).thenReturn(null);
         when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(null);
 
@@ -113,7 +113,7 @@ public class EDCStubServiceTest {
     }
 
     @Test
-    public void createStsTokenTest_grantAccess_returnStsToken() throws ParseException {
+    void createStsTokenTest_grantAccess_returnStsToken() throws ParseException {
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair("", "");
         when(keyService.getKeyPair(anyString())).thenReturn(testKeyPair);
 

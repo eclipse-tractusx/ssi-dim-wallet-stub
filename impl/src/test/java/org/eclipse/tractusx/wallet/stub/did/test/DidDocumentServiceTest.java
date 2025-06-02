@@ -41,7 +41,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class DidDocumentServiceTest {
+class DidDocumentServiceTest {
 
     @MockitoBean
     private KeyService keyService;
@@ -56,7 +56,7 @@ public class DidDocumentServiceTest {
     private DidDocumentService didDocumentService;
 
     @Test
-    public void getDidDocumentTest_returnExistingDidDocument() {
+    void getDidDocumentTest_returnExistingDidDocument() {
         String baseWalletBpn = "BPNL000000000000";
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
@@ -70,7 +70,7 @@ public class DidDocumentServiceTest {
     }
 
     @Test
-    public void getOrCreateDidDocument_fromStorageTest() {
+    void getOrCreateDidDocument_fromStorageTest() {
         String baseWalletBpn = "BPNL000000000000";
         DidDocument baseDidDocument = DidDocument.Builder.newInstance()
                 .id("1")
@@ -84,7 +84,7 @@ public class DidDocumentServiceTest {
     }
 
     @Test
-    public void getOrCreateDidDocumentTest() {
+    void getOrCreateDidDocumentTest() {
         String baseWalletBpn = "BPNL000000000000";
         String env = "test";
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair(baseWalletBpn, env);

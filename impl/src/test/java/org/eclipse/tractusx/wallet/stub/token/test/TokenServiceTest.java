@@ -66,7 +66,7 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class TokenServiceTest {
+class TokenServiceTest {
 
     @MockitoBean
     private KeyService keyService;
@@ -84,7 +84,7 @@ public class TokenServiceTest {
     private TokenService tokenService;
 
     @Test
-    public void verifyTokenAndGetClaimsTest_throwIllegalArgumentException() throws Exception {
+    void verifyTokenAndGetClaimsTest_throwIllegalArgumentException() throws Exception {
         KeyPair keypairTest = DeterministicECKeyPairGenerator.createKeyPair("1","test");
 
         when(keyService.getKeyPair(anyString())).thenReturn(keypairTest);
@@ -142,7 +142,7 @@ public class TokenServiceTest {
     }
 
     @Test
-    public void createAccessTokenResponse_returnTokenResponse() {
+    void createAccessTokenResponse_returnTokenResponse() {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
@@ -190,7 +190,7 @@ public class TokenServiceTest {
     }
 
     @Test
-    public void setClientInfoTest_setClientInfo() {
+    void setClientInfoTest_setClientInfo() {
         String client = "client";
         String testClient = "testClient";
         TokenRequest tokenRequest = new TokenRequest(client, "secret", "grant");
@@ -204,7 +204,7 @@ public class TokenServiceTest {
     }
 
     @Test
-    public void setClientInfoTest_incorrectDecodedStringFormat_throwsMalformedCredentialsException() {
+    void setClientInfoTest_incorrectDecodedStringFormat_throwsMalformedCredentialsException() {
         String client = "client";
         String testClient = "testClient";
         TokenRequest tokenRequest = new TokenRequest(client, "secret", "grant");
@@ -219,7 +219,7 @@ public class TokenServiceTest {
     }
 
     @Test
-    public void setClientInfoTest_incorrectHeaderFormat_throwsMalformedCredentialsException() {
+    void setClientInfoTest_incorrectHeaderFormat_throwsMalformedCredentialsException() {
         String client = "client";
         String testClient = "testClient";
         TokenRequest tokenRequest = new TokenRequest(client, "secret", "grant");

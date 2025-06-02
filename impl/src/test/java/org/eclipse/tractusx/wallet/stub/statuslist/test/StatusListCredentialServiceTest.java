@@ -44,7 +44,7 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class StatusListCredentialServiceTest {
+class StatusListCredentialServiceTest {
 
     @MockitoBean
     private Storage storage;
@@ -59,7 +59,7 @@ public class StatusListCredentialServiceTest {
     private StatusListCredentialService statusListCredentialService;
 
     @Test
-    public void getStatusListCredentialTest_emptyCredentials() {
+    void getStatusListCredentialTest_emptyCredentials() {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
@@ -75,7 +75,7 @@ public class StatusListCredentialServiceTest {
     }
 
     @Test
-    public void getCustomCredentialTest_returnCredentials() {
+    void getCustomCredentialTest_returnCredentials() {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
@@ -90,7 +90,7 @@ public class StatusListCredentialServiceTest {
     }
 
     @Test
-    public void getCustomCredentialTest_throwNoStatusListFoundException() {
+    void getCustomCredentialTest_throwNoStatusListFoundException() {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
