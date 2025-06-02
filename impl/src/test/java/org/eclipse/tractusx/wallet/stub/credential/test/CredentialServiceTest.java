@@ -77,8 +77,6 @@ class CredentialServiceTest {
     @Autowired
     private InternalCredentialService internalCredentialService;
 
-    private KeyPair testKeyPair;
-
     private DidDocument createDidDocument(String issuerId) {
         return DidDocument.Builder.newInstance()
                 .id(issuerId)
