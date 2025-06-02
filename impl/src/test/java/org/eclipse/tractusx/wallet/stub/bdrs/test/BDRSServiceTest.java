@@ -44,7 +44,7 @@ import java.util.Map;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class BDRSServiceTest {
+class BDRSServiceTest {
 
     @MockitoBean
     private Storage storage;
@@ -59,14 +59,14 @@ public class BDRSServiceTest {
     private BDRSServiceImpl bdrsService;
 
     @Test
-    public void getBpnDirectoryTest_throwIllegalArgumentException() {
+    void getBpnDirectoryTest_throwIllegalArgumentException() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             bdrsService.getBpnDirectory("", "");
         });
     }
 
     @Test
-    public void getBpnDirectoryTest_returnFilteredResponse() {
+    void getBpnDirectoryTest_returnFilteredResponse() {
         Map<String, Object> vp = new HashMap<>();
         Map<String, Object> vc = new HashMap<>();
         Map<String, String> holder = new HashMap<>();
@@ -88,9 +88,6 @@ public class BDRSServiceTest {
 
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
-                .build();
-        DidDocument didDocument2 = DidDocument.Builder.newInstance()
-                .id("2")
                 .build();
         Map<String, DidDocument> didDocumentMap = new HashMap<>();
         didDocumentMap.put("a", didDocument);
@@ -103,7 +100,7 @@ public class BDRSServiceTest {
     }
 
     @Test
-    public void getBpnDirectoryTest_returnResponse() {
+    void getBpnDirectoryTest_returnResponse() {
         Map<String, Object> vp = new HashMap<>();
         Map<String, Object> vc = new HashMap<>();
         Map<String, String> holder = new HashMap<>();
@@ -125,9 +122,6 @@ public class BDRSServiceTest {
 
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
-                .build();
-        DidDocument didDocument2 = DidDocument.Builder.newInstance()
-                .id("2")
                 .build();
         Map<String, DidDocument> didDocumentMap = new HashMap<>();
         didDocumentMap.put("a", didDocument);

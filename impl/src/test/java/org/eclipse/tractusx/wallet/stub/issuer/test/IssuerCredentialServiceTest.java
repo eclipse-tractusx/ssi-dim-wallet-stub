@@ -73,7 +73,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class IssuerCredentialServiceTest {
+class IssuerCredentialServiceTest {
 
     @MockitoBean
     private WalletStubSettings walletStubSettings;
@@ -97,7 +97,7 @@ public class IssuerCredentialServiceTest {
     private IssuerCredentialService issuerCredentialService;
 
     @Test
-    public void getCredentialTest_emptyJwtVc_throwCredentialNotFoundException() {
+    void getCredentialTest_emptyJwtVc_throwCredentialNotFoundException() {
         when(walletStubSettings.baseWalletBPN()).thenReturn("");
 
         DidDocument didDocument = DidDocument.Builder.newInstance()
@@ -112,7 +112,7 @@ public class IssuerCredentialServiceTest {
     }
 
     @Test
-    public void getCredentialTest_emptyCustomCredential_throwCredentialNotFoundException() {
+    void getCredentialTest_emptyCustomCredential_throwCredentialNotFoundException() {
         when(walletStubSettings.baseWalletBPN()).thenReturn("");
 
         DidDocument didDocument = DidDocument.Builder.newInstance()
@@ -128,7 +128,7 @@ public class IssuerCredentialServiceTest {
     }
 
     @Test
-    public void getCredentialTest_returnCredentialsResponse() {
+    void getCredentialTest_returnCredentialsResponse() {
         when(walletStubSettings.baseWalletBPN()).thenReturn("");
 
         DidDocument didDocument = DidDocument.Builder.newInstance()
@@ -156,7 +156,7 @@ public class IssuerCredentialServiceTest {
     }
 
     @Test
-    public void getSignCredentialResponseTest_returnNull() {
+    void getSignCredentialResponseTest_returnNull() {
         SignCredentialRequest request = new SignCredentialRequest();
         request.setPayload(new SignCredentialRequest.Payload(true));
         SignCredentialResponse signCredentialResponse = issuerCredentialService.getSignCredentialResponse(request, "");
@@ -164,7 +164,7 @@ public class IssuerCredentialServiceTest {
     }
 
     @Test
-    public void getSignCredentialResponseTest_returnSignCredentialResponse() {
+    void getSignCredentialResponseTest_returnSignCredentialResponse() {
         SignCredentialRequest request = new SignCredentialRequest();
         request.setPayload(new SignCredentialRequest.Payload(false));
 
@@ -182,7 +182,7 @@ public class IssuerCredentialServiceTest {
     }
 
     @Test
-    public void getSignCredentialResponseTest_throwsCredentialNotFoundException() {
+    void getSignCredentialResponseTest_throwsCredentialNotFoundException() {
         SignCredentialRequest request = new SignCredentialRequest();
         request.setPayload(new SignCredentialRequest.Payload(false));
 
@@ -195,12 +195,12 @@ public class IssuerCredentialServiceTest {
         when(storage.getCredentialAsJwt(anyString())).thenReturn(Optional.empty());
 
         assertThrows(CredentialNotFoundException.class, () -> {
-            SignCredentialResponse signCredentialResponse = issuerCredentialService.getSignCredentialResponse(request, "");
+            issuerCredentialService.getSignCredentialResponse(request, "");
         });
     }
 
     @Test
-    public void getIssueCredentialResponse_throwsIllegalArgumentException() {
+    void getIssueCredentialResponse_throwsIllegalArgumentException() {
         IssueCredentialRequest issueCredentialRequest = new IssueCredentialRequest();
         issueCredentialRequest.setCredentialPayload(null);
 
@@ -210,7 +210,7 @@ public class IssuerCredentialServiceTest {
     }
 
     @Test
-    public void getIssueCredentialResponse_storeCredential_returnIssueCredentialResponse() {
+    void getIssueCredentialResponse_storeCredential_returnIssueCredentialResponse() {
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject("1")
                 .issuer("")
@@ -242,7 +242,7 @@ public class IssuerCredentialServiceTest {
     }
 
     @Test
-    public void getIssueCredentialResponse_issueCredential_returnIssueCredentialResponse() {
+    void getIssueCredentialResponse_issueCredential_returnIssueCredentialResponse() {
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject("1")
                 .issuer("")

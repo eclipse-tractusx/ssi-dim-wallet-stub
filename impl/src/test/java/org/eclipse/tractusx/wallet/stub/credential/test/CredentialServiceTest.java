@@ -54,7 +54,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
-public class CredentialServiceTest {
+class CredentialServiceTest {
 
     @MockitoBean
     private Storage storage;
@@ -76,8 +76,6 @@ public class CredentialServiceTest {
 
     @Autowired
     private InternalCredentialService internalCredentialService;
-
-    private KeyPair testKeyPair;
 
     private DidDocument createDidDocument(String issuerId) {
         return DidDocument.Builder.newInstance()
@@ -522,7 +520,6 @@ public class CredentialServiceTest {
     void issueDataExchangeGovernanceCredential_propagatesInternalErrorException() {
         // Given
         String holderBpn = "BPNL000000000001";
-        String vcId = "test-vc-id";
         String baseWalletBpn = "BPNL000000000000";
 
         // Mock base setup
@@ -549,7 +546,6 @@ public class CredentialServiceTest {
     void issueDataExchangeGovernanceCredential_wrapsUnexpectedException() {
         // Given
         String holderBpn = "BPNL000000000001";
-        String vcId = "test-vc-id";
         String baseWalletBpn = "BPNL000000000000";
 
         // Mock base setup
