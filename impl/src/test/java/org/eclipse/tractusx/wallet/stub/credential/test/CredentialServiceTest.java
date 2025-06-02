@@ -522,7 +522,6 @@ class CredentialServiceTest {
     void issueDataExchangeGovernanceCredential_propagatesInternalErrorException() {
         // Given
         String holderBpn = "BPNL000000000001";
-        String vcId = "test-vc-id";
         String baseWalletBpn = "BPNL000000000000";
 
         // Mock base setup
@@ -549,7 +548,6 @@ class CredentialServiceTest {
     void issueDataExchangeGovernanceCredential_wrapsUnexpectedException() {
         // Given
         String holderBpn = "BPNL000000000001";
-        String vcId = "test-vc-id";
         String baseWalletBpn = "BPNL000000000000";
 
         // Mock base setup

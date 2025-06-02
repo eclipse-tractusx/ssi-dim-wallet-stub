@@ -89,9 +89,6 @@ class BDRSServiceTest {
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .build();
-        DidDocument didDocument2 = DidDocument.Builder.newInstance()
-                .id("2")
-                .build();
         Map<String, DidDocument> didDocumentMap = new HashMap<>();
         didDocumentMap.put("a", didDocument);
         didDocumentMap.put("b", didDocument);
@@ -125,9 +122,6 @@ class BDRSServiceTest {
 
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
-                .build();
-        DidDocument didDocument2 = DidDocument.Builder.newInstance()
-                .id("2")
                 .build();
         Map<String, DidDocument> didDocumentMap = new HashMap<>();
         didDocumentMap.put("a", didDocument);
