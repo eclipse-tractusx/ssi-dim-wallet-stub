@@ -21,6 +21,7 @@
  */
 package org.eclipse.tractusx.wallet.stub.credential.test;
 
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.crypto.ECDSAVerifier;
 import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -41,6 +42,7 @@ import org.junit.jupiter.api.Test;
 
 import java.security.KeyPair;
 import java.security.interfaces.ECPublicKey;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -145,7 +147,7 @@ class CredentialServiceTest {
      * 4. The signature can be verified
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndTypeAsJwt_createsNewJwt() throws Exception {
+    void getVerifiableCredentialByHolderBpnAndTypeAsJwt_createsNewJwt() throws ParseException, JOSEException {
         // Given
         String holderBpn = "BPNL000000000001";
         String type = "MembershipCredential";
@@ -273,7 +275,7 @@ class CredentialServiceTest {
      * 4. The credential follows the expected structure for BPN credentials
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndType_createsBpnCredential() throws Exception {
+    void getVerifiableCredentialByHolderBpnAndType_createsBpnCredential() {
         // Given
         String holderBpn = "BPNL000000000001";
         String type = Constants.BPN_CREDENTIAL;
@@ -307,7 +309,7 @@ class CredentialServiceTest {
      * 4. The credential is properly saved in storage
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndType_createsDataExchangeCredential() throws Exception {
+    void getVerifiableCredentialByHolderBpnAndType_createsDataExchangeCredential() {
         // Given
         String holderBpn = "BPNL000000000001";
         String type = Constants.DATA_EXCHANGE_CREDENTIAL;
@@ -344,7 +346,7 @@ class CredentialServiceTest {
      * 4. The credential follows the expected structure for Usage Purpose credentials
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndType_createsUsagePCredential() throws Exception {
+    void getVerifiableCredentialByHolderBpnAndType_createsUsagePCredential() {
         // Given
         String holderBpn = "BPNL000000000001";
         String type = Constants.USAGE_PURPOSE_CREDENTIAL;
