@@ -66,8 +66,7 @@ public class DidDocumentServiceImpl implements DidDocumentService {
                 return optionalDidDocument.get();
             }
 
-            DidDocument didDocument = createDidDocument(issuerBpn);
-            return didDocument;
+            return createDidDocument(issuerBpn);
         } catch (InternalErrorException e) {
             throw e;
         } catch (Exception e) {
