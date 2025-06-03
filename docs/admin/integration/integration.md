@@ -51,13 +51,13 @@ Set the following environment variables for the `edc` to integrate with the wall
 - For any additional configuration or troubleshooting, refer to the respective service documentation.
 - Ensure that wallets are created in SSI dim wallet stub application for both BPNs which are configured in both EDCs
 - In configuration, ``localhost`` means wallet stub URL.
-- If wallet stub is running other than 80 port then we need to use port forwarding or tunnel(i.e. https://tunnelmole.com/) as EDC will not resole DID document with the port.
-
+- If wallet stub is running other than 80 port then we need to use port forwarding or tunnel(
+  i.e. https://tunnelmole.com/) as EDC will not resole DID document with the port.
 
 ## NOTICE
 
 This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 - SPDX-License-Identifier: Apache-2.0
-- SPDX-FileCopyrightText: 2024 Contributors to the Eclipse Foundation
+- SPDX-FileCopyrightText: 2025 Contributors to the Eclipse Foundation
 - Source URL: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub

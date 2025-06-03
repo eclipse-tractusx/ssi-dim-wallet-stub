@@ -19,6 +19,9 @@
   ],
   "security" : [
     {
+      "Authenticate using VP for BDRS directory API" : []
+    },
+    {
       "Authenticate using access_token" : []
     }
   ],
@@ -42,6 +45,28 @@
           "required" : true
         },
         "responses" : {
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: Internal Error: **",
+                      "instance" : "/oauth/token",
+                      "properties" : {
+                        "timestamp" : 1743160775200
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "200" : {
             "description" : "JWT presentation",
             "content" : {
@@ -56,6 +81,28 @@
                       "refresh_expires_in" : 0,
                       "not-before-policy" : 0,
                       "scope" : "email profile"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "Authorization header invalid",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "Error: response status is 422" : {
+                    "description" : "Error: response status is 422",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Unprocessable Entity: Authorization header invalid",
+                      "status" : 422,
+                      "detail" : "MalformedCredentialsException: Authorization header invalid",
+                      "instance" : "/oauth/token",
+                      "properties" : {
+                        "timestamp" : 1743066806253
+                      }
                     }
                   }
                 }
@@ -80,6 +127,41 @@
                 "$ref" : "#/components/schemas/IssueCredentialRequest"
               },
               "examples" : {
+                "Create a new credential with signature" : {
+                  "description" : "Create a new credential with signature",
+                  "value" : {
+                    "application" : "catena-x",
+                    "payload" : {
+                      "issueWithSignature" : {
+                        "content" : {
+                          "@context" : [
+                            "https://www.w3.org/2018/credentials/v1",
+                            "https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json",
+                            "https://w3id.org/security/suites/jws-2020/v1"
+                          ],
+                          "id" : "did:web:localhost:BPNL000000000000#a1f8ae36-9919-4ed8-8546-535280acc5bf",
+                          "type" : [
+                            "VerifiableCredential",
+                            "BpnCredential"
+                          ],
+                          "issuer" : "did:web:localhost:BPNL000000000000",
+                          "issuanceDate" : "2023-07-19T09:14:45Z",
+                          "expirationDate" : "2023-09-30T18:30:00Z",
+                          "credentialSubject" : {
+                            "bpn" : "BPNL000000000001",
+                            "id" : "did:web:localhost:BPNL000000000001",
+                            "type" : "BpnCredential"
+                          }
+                        },
+                        "signature" : {
+                          "proofMechanism" : "external",
+                          "proofType" : "jwt",
+                          "keyName" : null
+                        }
+                      }
+                    }
+                  }
+                },
                 "Create a new credential" : {
                   "description" : "Create a new credential",
                   "value" : {
@@ -125,7 +207,86 @@
           "required" : true
         },
         "responses" : {
-          "200" : {
+          "422" : {
+            "description" : "Unprocessable Entity",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "No VC Type Found Exception" : {
+                    "description" : "No VC Type Found Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Unprocessable Entity: No type found in VC",
+                      "status" : 422,
+                      "detail" : "NoVCTypeFoundException: No type found in VC",
+                      "instance" : "/api/v2.0.0/credentials",
+                      "properties" : {
+                        "timestamp" : 1743157807618
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Illegal Argument Exception" : {
+                    "description" : "Illegal Argument Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Bad request: Invalid token -\u003E token",
+                      "status" : 400,
+                      "detail" : "IllegalArgumentException: Invalid token -\u003E token",
+                      "instance" : "/api/v2.0.0/credentials",
+                      "properties" : {
+                        "timestamp" : 1743154190590
+                      }
+                    }
+                  },
+                  "Parse Stub Exception" : {
+                    "description" : "Parse Stub Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                      "status" : 400,
+                      "detail" : "ParseStubException: Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                      "instance" : "/api/v2.0.0/credentials",
+                      "properties" : {
+                        "timestamp" : 1743156805552
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: ...",
+                      "instance" : "/api/v2.0.0/credentials",
+                      "properties" : {
+                        "timestamp" : 1743062000750
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201" : {
             "description" : "JWT presentation",
             "content" : {
               "*/*" : {
@@ -136,10 +297,39 @@
                       "id" : "1f36af58-0fc0-4b24-9b1c-e37d59668089"
                     }
                   },
+                  "Create a new credential with signature" : {
+                    "description" : "Create a new credential with signature",
+                    "value" : {
+                      "id" : "1f36af58-0fc0-4b24-9b1c-e37d59668089",
+                      "jwt" : "eyJraWQiOiJkaWQ6d2ViOnNvbWUtaXNzdWVyI2tleS0xIiwiYWxnIjoiRVMyNTYifQ.eyJzdWIiOiJkZWdyZWVTdWIiLCJhdWQiOiJkaWQ6d2ViOmJkcnMtY2xpZW50IiwibmJmIjoxNzE4MzQzOTAzLCJpc3MiOiJkaWQ6d2ViOnNvbWUtaXNzdWVyIiwiZXhwIjoxNzE4MzQzOTYzLCJpYXQiOjE3MTgzNDM5MDMsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93M2lkLm9yZy9jYXRlbmF4L2NyZWRlbnRpYWxzL3YxLjAuMCJdLCJpZCI6IjFmMzZhZjU4LTBmYzAtNGIyNC05YjFjLWUzN2Q1OTY2ODA4OSIsInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJNZW1iZXJzaGlwQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOiJkaWQ6d2ViOmNvbS5leGFtcGxlLmlzc3VlciIsImlzc3VhbmNlRGF0ZSI6IjIwMjEtMDYtMTZUMTg6NTY6NTlaIiwiZXhwaXJhdGlvbkRhdGUiOiIyMDk5LTA2LTE2VDE4OjU2OjU5WiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOndlYjpiZHJzLWNsaWVudCIsImhvbGRlcklkZW50aWZpZXIiOiJCUE5MMDAwMDAwMDAxIn19LCJqdGkiOiJlZDlhNjhkMS0yZjFkLTQxZjgtYWUwOS1hNDBhMTA2OTUwMTUifQ.tdLmrcQpGH-SGBpRpRmFX4AXQJx99uUhDOwuGtSejWkkQ2N_yNtEsoP93xDuBod_AY7zVqY4P_Ofdz-H4zE6nw"
+                    }
+                  },
                   "Store credential for a holder" : {
                     "description" : "Store credential for a holder",
                     "value" : {
                       "id" : "1f36af58-0fc0-4b24-9b1c-e37d59668089"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Missing Request Header Exception" : {
+                    "description" : "Missing Request Header Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Please provide the required header: Authorization",
+                      "status" : 401,
+                      "detail" : "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                      "instance" : "/api/v2.0.0/credentials",
+                      "properties" : {
+                        "timestamp" : 1743085396772
+                      }
                     }
                   }
                 }
@@ -198,6 +388,50 @@
           "required" : true
         },
         "responses" : {
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: Internal Error: Index 1 out of bounds for length 1",
+                      "instance" : "/api/sts",
+                      "properties" : {
+                        "timestamp" : 1743158954960
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "Missing Request Header Exception" : {
+                    "description" : "Missing Request Header Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Please provide the required header: Authorization",
+                      "status" : 401,
+                      "detail" : "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                      "instance" : "/api/sts",
+                      "properties" : {
+                        "timestamp" : 1743158852368
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "200" : {
             "description" : "JWT token created",
             "content" : {
@@ -207,6 +441,41 @@
                     "description" : "Created jwt token",
                     "value" : {
                       "jwt" : "token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "Illegal Argument Exception" : {
+                    "description" : "Illegal Argument Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Bad request: Invalid token request",
+                      "status" : 400,
+                      "detail" : "IllegalArgumentException: Invalid token request",
+                      "instance" : "/api/sts",
+                      "properties" : {
+                        "timestamp" : 1743159060052
+                      }
+                    }
+                  },
+                  "Parse Stub Exception" : {
+                    "description" : "Parse Stub Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                      "status" : 400,
+                      "detail" : "ParseStubException: Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                      "instance" : "/api/sts",
+                      "properties" : {
+                        "timestamp" : 1743159332157
+                      }
                     }
                   }
                 }
@@ -264,6 +533,85 @@
           "required" : true
         },
         "responses" : {
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Illegal Argument Exception" : {
+                    "description" : "Illegal Argument Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Bad request: Invalid VC types in scope , vcTypesFromSIToken -\u003E [MembershipCredential, DataExchangeGovernanceCredential] , requestedTypes-\u003E[MembershipCredentia]",
+                      "status" : 400,
+                      "detail" : "IllegalArgumentException: Invalid VC types in scope , vcTypesFromSIToken -\u003E [MembershipCredential, DataExchangeGovernanceCredential] , requestedTypes-\u003E[MembershipCredentia]",
+                      "instance" : "/api/presentations/query",
+                      "properties" : {
+                        "timestamp" : 1743161743131
+                      }
+                    }
+                  },
+                  "Parse Stub Exception" : {
+                    "description" : "Parse Stub Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                      "status" : 400,
+                      "detail" : "ParseStubException: Invalid serialized unsecured/JWS/JWE object: Missing second delimiter",
+                      "instance" : "/api/presentations/query",
+                      "properties" : {
+                        "timestamp" : 1743160676038
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Missing Request Header Exception" : {
+                    "description" : "Missing Request Header Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Please provide the required header: Authorization",
+                      "status" : 401,
+                      "detail" : "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                      "instance" : "/api/presentations/query",
+                      "properties" : {
+                        "timestamp" : 1743161769113
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: Internal Error: Cannot invoke \"Object.toString()\" because the return value of \"com.nimbusds.jwt.JWTClaimsSet.getClaim(String)\" is null",
+                      "instance" : "/api/presentations/query",
+                      "properties" : {
+                        "timestamp" : 1743160775200
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "200" : {
             "description" : "JWT presentation",
             "content" : {
@@ -319,6 +667,28 @@
         "responses" : {
           "200" : {
             "description" : "Ok"
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: Internal Error: **",
+                      "instance" : "/api/dim/technical-user/BPNL2313",
+                      "properties" : {
+                        "timestamp" : 1743160775200
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -360,6 +730,28 @@
         "responses" : {
           "201" : {
             "description" : "Created"
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: **",
+                      "instance" : "/api/dim/setup-dim",
+                      "properties" : {
+                        "timestamp" : 1743160775200
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -425,7 +817,52 @@
                   },
                   "Revoke credential " : {
                     "description" : "Revoke credential ",
-                    "value" : {}
+                    "value" : {
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: ...",
+                      "instance" : "/api/v2.0.0/credentials/a",
+                      "properties" : {
+                        "timestamp" : 1743062000750
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Credential Not Found Exception" : {
+                    "description" : "Credential Not Found Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Not Found: No credential found for credentialId -\u003E S",
+                      "status" : 404,
+                      "detail" : "CredentialNotFoundException: No credential found for credentialId -\u003E S",
+                      "instance" : "/api/v2.0.0/credentials/a",
+                      "properties" : {
+                        "timestamp" : 1743154020889
+                      }
+                    }
                   }
                 }
               }
@@ -453,6 +890,28 @@
           }
         ],
         "responses" : {
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: ...",
+                      "instance" : "/BPNL12121221/did.json",
+                      "properties" : {
+                        "timestamp" : 1743062000750
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "200" : {
             "description" : "DID document",
             "content" : {
@@ -555,6 +1014,188 @@
                 }
               }
             }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: ...",
+                      "instance" : "/api/v2.0.0/credentials/a",
+                      "properties" : {
+                        "timestamp" : 1743062000750
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Credential Not Found Exception" : {
+                    "description" : "Credential Not Found Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Not Found: No credential found for credentialId -\u003E s",
+                      "status" : 404,
+                      "detail" : "CredentialNotFoundException: No credential found for credentialId -\u003E s",
+                      "instance" : "/api/v2.0.0/credentials/a",
+                      "properties" : {
+                        "timestamp" : 1743154132008
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/directory/bpn-directory" : {
+      "get" : {
+        "tags" : [
+          " BPN Did Resolution Service (BDRS) directory API"
+        ],
+        "summary" : "Get BPN Did entries",
+        "description" : "Get BPN Did entries\n",
+        "operationId" : "getBpnDirectory",
+        "parameters" : [
+          {
+            "name" : "bpn",
+            "in" : "query",
+            "required" : false,
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        ],
+        "responses" : {
+          "400" : {
+            "description" : "Illegal Argument",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "Illegal Argument Exception" : {
+                    "description" : "Illegal Argument Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Bad request: Invalid token -\u003E Bearer token",
+                      "status" : 400,
+                      "detail" : "IllegalArgumentException: Invalid token -\u003E Bearer token",
+                      "instance" : "/api/v1/directory/bpn-directory",
+                      "properties" : {
+                        "timestamp" : 1743084920633
+                      }
+                    }
+                  },
+                  "Parse Stub Exception" : {
+                    "description" : "Parse Stub Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Invalid serialized unsecured/JWS/JWE object: Missing part delimiters",
+                      "status" : 400,
+                      "detail" : "ParseStubException: Invalid serialized unsecured/JWS/JWE object: Missing part delimiters",
+                      "instance" : "/api/v1/directory/bpn-directory",
+                      "properties" : {
+                        "timestamp" : 1743084809964
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "VP Validation Failed",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "VP Validation Failed Exception" : {
+                    "description" : "VP Validation Failed Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Invalid Verifiable Presentation",
+                      "status" : 422,
+                      "detail" : "VPValidationFailedException: Invalid VP token: e...",
+                      "instance" : "/api/v1/directory/bpn-directory",
+                      "properties" : {
+                        "timestamp" : 1743062000750
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "200" : {
+            "description" : "BPN DID mapping",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "DID document" : {
+                    "description" : "DID document",
+                    "value" : {
+                      "BPNL000000000000" : "did:web:some.host.name:BPNL000000000000"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: ...",
+                      "instance" : "/api/v1/directory/bpn-directory",
+                      "properties" : {
+                        "timestamp" : 1743062000750
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "examples" : {
+                  "Missing Request Header Exception" : {
+                    "description" : "Missing Request Header Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Please provide the required header: Authorization",
+                      "status" : 401,
+                      "detail" : "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                      "instance" : "/api/v1/directory/bpn-directory",
+                      "properties" : {
+                        "timestamp" : 1743062000750
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -586,6 +1227,28 @@
           }
         ],
         "responses" : {
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "Internal Error Exception" : {
+                    "description" : "Internal Error Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Internal Server Error",
+                      "status" : 500,
+                      "detail" : "InternalErrorException: Internal Error: **",
+                      "instance" : "/api/dim/status-list/a/a",
+                      "properties" : {
+                        "timestamp" : 1743160775200
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "200" : {
             "description" : "Status List VC document",
             "content" : {
@@ -611,6 +1274,28 @@
                       ],
                       "issuer" : "did:web:localhost:BPNL000000000000",
                       "expirationDate" : "2025-07-01T05:03:16Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "*/*" : {
+                "examples" : {
+                  "No Status List Found Exception" : {
+                    "description" : "No Status List Found Exception",
+                    "value" : {
+                      "type" : "about:blank",
+                      "title" : "Not Found: No status list credential found for bpn -\u003E sda",
+                      "status" : 404,
+                      "detail" : "NoStatusListFoundException: No status list credential found for bpn -\u003E sda",
+                      "instance" : "/api/dim/status-list/a/a",
+                      "properties" : {
+                        "timestamp" : 1743161965833
+                      }
                     }
                   }
                 }
@@ -648,6 +1333,12 @@
           },
           "derive" : {
             "$ref" : "#/components/schemas/StoreRequestDerive"
+          },
+          "issueWithSignature" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "object"
+            }
           }
         }
       },
@@ -656,6 +1347,9 @@
         "properties" : {
           "application" : {
             "type" : "string"
+          },
+          "valid" : {
+            "type" : "boolean"
           },
           "payload" : {
             "$ref" : "#/components/schemas/CredentialPayload"
@@ -737,6 +1431,12 @@
       "Authenticate using access_token" : {
         "type" : "apiKey",
         "description" : "**Bearer (apiKey)**\nJWT Authorization header using the Bearer scheme.\nEnter **Bearer** [space] and then your token in the text input below.\nExample: Bearer access_token\n",
+        "name" : "Authorization",
+        "in" : "header"
+      },
+      "Authenticate using VP for BDRS directory API" : {
+        "type" : "apiKey",
+        "description" : "**Bearer Token**\nVP of membership VC fo access BDRS directory API. This VP must be generated using this application using query credential API\nExample: Bearer 12345abcdef\n",
         "name" : "Authorization",
         "in" : "header"
       }
