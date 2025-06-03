@@ -61,7 +61,7 @@ dependencies {
     //Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.3.0'
 
     //swagger
     implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
@@ -69,13 +69,22 @@ dependencies {
 
     //utils
     implementation 'org.apache.commons:commons-lang3:3.17.0'
-    implementation("org.apache.commons:commons-text:1.13.0")
+    implementation("org.apache.commons:commons-text:1.13.1")
 
 
     //Edc
     implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
-    implementation "org.eclipse.edc:identity-trust-sts-api:${edcLibVersion}"
+    implementation ("org.eclipse.edc:identity-trust-sts-api:${edcLibVersion}"){
+        exclude group: 'com.google.protobuf', module: 'protobuf-java'
+    }
     implementation "org.eclipse.edc:verifiable-credentials-api:${edcLibVersion}"
+
+
+    //Added to mitigate CVE-2024-7254
+    implementation("com.google.protobuf:protobuf-java:3.25.5")
+
+    //Added to mitigateCVE-2024-47554
+    implementation("commons-io:commons-io:2.14.0")
 
     //keycloak
     implementation 'org.keycloak:keycloak-admin-client:26.0.4'
