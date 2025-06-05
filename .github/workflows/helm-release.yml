@@ -27,6 +27,7 @@ on:
 
 jobs:
   release:
+    if: github.repository_owner == 'eclipse-tractusx' # prevent running on forks
     permissions:
       contents: write
     runs-on: ubuntu-latest
