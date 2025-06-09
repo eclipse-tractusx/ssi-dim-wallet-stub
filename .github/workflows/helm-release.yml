@@ -51,6 +51,7 @@ jobs:
       - name: Update helm SSI-DIM-WALLET-STUB-DATABASE dependencies
         run: |
           cd charts/ssi-dim-wallet-stub
+          helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add tractusx-dev https://eclipse-tractusx.github.io/charts/dev
           helm dependency update
 
