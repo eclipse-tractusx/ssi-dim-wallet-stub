@@ -220,3 +220,10 @@ tasks.register('dashLicenseCheck', JavaExec) { dashLicenseCheck ->
         file('deps.txt').delete()
     }
 }
+
+
+sonarqube {
+    properties {
+        property "sonar.coverage.jacoco.xmlReportPaths", "impl/build/reports/jacoco/test/jacocoTestReport.xml"
+    }
+}
