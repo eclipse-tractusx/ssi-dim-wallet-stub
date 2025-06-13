@@ -1,5 +1,5 @@
 ###############################################################
-# Copyright (c) 2024 Contributors to the Eclipse Foundation
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -97,14 +97,14 @@ wallet:
       name: ""
     urlPrefix: /
     className: nginx
-    annotations: {}
+    annotations: { }
   swagger:
-      ui:
+    ui:
       # -- enable swagger API doc UI
-        status: true
-      apiDoc:
+      status: true
+    apiDoc:
       # -- enable Open API doc
-        status: true
+      status: true
   # -- Application log level
   logLevel: "debug"
   # -- Name of landing zone ie. dev, int, prod etc
@@ -136,6 +136,16 @@ wallet:
     realm: "CX-Central"
     # -- keycloak host
     authServerUrl: "http://localhost:28080/auth"
+  # --- PostgreSQL storage
+  postgresql:
+    # --- Enable PostgraSQL driver, otherwise H2 will be use instead
+    enabled: true
+    # --- The URL to connect to the database
+    url: jdbc:postgresql://wallet-postgres:5432/postgres
+    # --- The username to access the database
+    username: postgres
+    # --- The password to access the database
+    password: postgrespassword
   # --- Service configuration
   service:
     type: ClusterIP
@@ -144,4 +154,22 @@ wallet:
 
 # -- Keycloak configuration
 keycloak:
- enabled: false
+  enabled: false
+
+# -- PostgreSQL configuration
+postgresql:
+  fullnameOverride: wallet-postgres
+  # -- Enable to deploy Postgresql
+  enabled: true
+  image:
+    tag: "15-debian-11"
+  configmap:
+    name: wallet-postgres-configmap
+  auth:
+    password: postgrespassword
+    username: postgres
+  primary:
+    persistence:
+      enabled: false
+      size: 10Gi
+      storageClass: standard

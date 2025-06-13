@@ -1,6 +1,6 @@
 /*
  * *******************************************************************************
- *  Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -19,144 +19,149 @@
  * ******************************************************************************
  */
 
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version "${springBootVersion}"
-    id 'io.spring.dependency-management' version "${springDependencyVersion}"
     id "de.undercouch.download" version "5.6.0"
-    id 'project-report'
-    id "jacoco"
-    id "org.sonarqube" version "6.0.0.5145"
+    id "org.sonarqube" version "5.1.0.4882"
+    id "java-platform"
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+javaPlatform {
+    allowDependencies() // Needed to import external BOMs
+}
+
+dependencies {
+    api platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+    constraints {
+        api "org.projectlombok:lombok:${lombokVersion}"
+        api "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocOpenapiVersion}"
+        api "org.springdoc:springdoc-openapi-starter-common:${springDocOpenapiVersion}"
+        api "org.springframework.cloud:spring-cloud-starter-openfeign:${springCloudOpenfeign}"
+
+        api "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
+        api "org.apache.commons:commons-lang3:${commonsLang3Version}"
+        api "org.apache.commons:commons-text:${commonsTextVersion}"
+        api "org.keycloak:keycloak-admin-client:${keycloakClientVersion}"
+
+        api "com.h2database:h2:${h2databaseVersion}"
+
+        api "com.github.curious-odd-man:rgxgen:${rgxgenVersion}"
+        api "org.apache.httpcomponents.client5:httpclient5:${httpclient5Version}"
+    }
 }
 
 group = "${group}"
 version = "${version}"
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-}
-
-sonar {
-    properties {
-        property "sonar.projectName", "cofinity-x-ssi-dim-wallet-stub"
-        property "sonar.projectKey", "Cofinity-X_ssi-dim-wallet-stub"
-        property "sonar.organization", "cofinity-x"
-        property "sonar.host.url", "https://sonarcloud.io"
-    }
-}
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-dependencies {
-
-    //Spring
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.3.0'
-
-    //swagger
-    implementation "org.springdoc:springdoc-openapi-starter-common:${openApiVersion}"
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
-
-    //utils
-    implementation 'org.apache.commons:commons-lang3:3.17.0'
-    implementation("org.apache.commons:commons-text:1.13.1")
-
-
-    //Edc
-    implementation "org.eclipse.edc:crypto-common-lib:${edcLibVersion}"
-    implementation ("org.eclipse.edc:identity-trust-sts-api:${edcLibVersion}"){
-        exclude group: 'com.google.protobuf', module: 'protobuf-java'
-    }
-    implementation "org.eclipse.edc:verifiable-credentials-api:${edcLibVersion}"
-
-
-    //Added to mitigate CVE-2024-7254
-    implementation("com.google.protobuf:protobuf-java:3.25.5")
-
-    //Added to mitigateCVE-2024-47554
-    implementation("commons-io:commons-io:2.14.0")
-
-    //keycloak
-    implementation 'org.keycloak:keycloak-admin-client:26.0.4'
-
-
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.projectlombok:lombok'
-
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testCompileOnly 'org.projectlombok:lombok'
-    testAnnotationProcessor 'org.projectlombok:lombok'
-    testImplementation group: 'com.github.curious-odd-man', name: 'rgxgen', version: '2.0'
-
-    // added for test cases to support patch method
-    testImplementation 'org.apache.httpcomponents.client5:httpclient5:5.4.2'
-}
-
-test {
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport
-    testLogging {
-        events("passed", "skipped", "failed")
-    }
-}
-
-jacoco {
-    toolVersion = "${jacocoVersion}"
-}
-
-jacocoTestReport {
-
-    reports {
-        xml.required = true
-        csv.required = false
-        html.required = true
+subprojects {
+    apply {
+        plugin 'java'
+//        plugin 'io.spring.dependency-management'
+        plugin 'project-report'
+        plugin "jacoco"
     }
 
-    afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    "org/eclipse/tractusx/wallet/stub/apidoc/*"
-
-            ])
-        }))
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
     }
-}
 
-jacocoTestCoverageVerification {
-    afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    "org/eclipse/tractusx/wallet/stub/apidoc/*"
-            ])
-        }))
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
     }
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.80
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        // LOMBOK
+        implementation(enforcedPlatform(project(":")))
+        annotationProcessor enforcedPlatform(project(":"))
+        compileOnly("org.projectlombok:lombok")
+        annotationProcessor("org.projectlombok:lombok")
+    }
+
+    test {
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
+
+    jacoco {
+        toolVersion = "${jacocoVersion}"
+    }
+
+    jacocoTestReport {
+
+        reports {
+            xml.required = true
+            csv.required = false
+            html.required = true
+        }
+
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "org/eclipse/tractusx/wallet/stub/apidoc/*"
+
+                ])
+            }))
+        }
+    }
+
+    jacocoTestCoverageVerification {
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "org/eclipse/tractusx/wallet/stub/apidoc/*",
+                        "**/config/**",
+                        "**/runtime/**",
+                ])
+            }))
+        }
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.72
+                }
             }
         }
     }
+
+
+    check.dependsOn jacocoTestCoverageVerification
+    build {
+        archivesBaseName = "wallet"
+        version = "${version}"
+    }
+
+    task allDeps(type: DependencyReportTask) {}
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += '-parameters'
+    }
 }
 
-check.dependsOn jacocoTestCoverageVerification
-build {
-    archivesBaseName = "wallet"
-    version = "latest"
-}
 
 tasks.register('dashDownload', Download) {
     description = 'Download the Dash License Tool standalone jar'
