@@ -226,5 +226,6 @@ sonarqube {
     properties {
         property "sonar.coverage.jacoco.xmlReportPaths", "impl/build/reports/jacoco/test/jacocoTestReport.xml"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.organization", "Cofinity-X_ssi-dim-wallet-stub"
     }
 }
