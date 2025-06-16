@@ -246,6 +246,7 @@ tasks.register('jacocoRootReport', JacocoReport) {
         }
         xml {
             required = true
+            outputLocation.set(file("${buildDir}/reports/jacoco/test/jacocoRootReport.xml"))
         }
         csv.required = false
     }
