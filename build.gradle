@@ -33,6 +33,7 @@ plugins {
     id "de.undercouch.download" version "5.6.0"
     id "org.sonarqube" version "5.1.0.4882"
     id "java-platform"
+    id "jacoco"
 }
 
 allprojects {
@@ -222,10 +223,35 @@ tasks.register('dashLicenseCheck', JavaExec) { dashLicenseCheck ->
 }
 
 
-sonarqube {
-    properties {
-        property "sonar.coverage.jacoco.xmlReportPaths", "impl/build/reports/jacoco/test/jacocoTestReport.xml"
-        property "sonar.host.url", "https://sonarcloud.io"
-        property "sonar.organization", "Cofinity-X_ssi-dim-wallet-stub"
+// Add task to combine all JaCoCo reports
+tasks.register('jacocoRootReport', JacocoReport) {
+    description = 'Generates an aggregate report from all subprojects'
+    group = 'verification'
+    
+    // Depend on all test tasks
+    dependsOn(subprojects.test)
+    
+    // Get all JaCoCo execution data
+    executionData {
+        files(subprojects.jacocoTestReport.executionData)
+    }
+    
+    // Define source files
+    sourceDirectories.from = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories.from = files(subprojects.sourceSets.main.output)
+    
+    reports {
+        html {
+            required = true
+            outputLocation.set(file("${buildDir}/reports/jacoco/jacocoRootReport/html"))
+        }
+        xml {
+            required = true
+            outputLocation.set(file("${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"))
+        }
+        csv.required = false
     }
 }
+
+// Make the root project's check task depend on the combined report
+check.dependsOn jacocoRootReport
