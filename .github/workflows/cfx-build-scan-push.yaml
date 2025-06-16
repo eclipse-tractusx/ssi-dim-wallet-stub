@@ -57,7 +57,7 @@ jobs:
       team_name: core-services
       repository_name: ssi-dim-wallet-stub
       service_name: wallet-stub
-      dockerfile_path: "Dockerfile"
+      dockerfile_path: "runtimes/ssi-dim-wallet-stub-memory/src/main/docker/Dockerfile"
       environment: "lower-env-acr"
       push: ${{ github.event_name != 'pull_request' }}
     secrets:
