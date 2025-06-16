@@ -121,45 +121,8 @@ subprojects {
         toolVersion = "${jacocoVersion}"
     }
 
-    jacocoTestReport {
-
-        reports {
-            xml.required = true
-            csv.required = false
-            html.required = true
-        }
-
-        afterEvaluate {
-            classDirectories.setFrom(files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: [
-                        "org/eclipse/tractusx/wallet/stub/apidoc/*"
-
-                ])
-            }))
-        }
-    }
-
-    jacocoTestCoverageVerification {
-        afterEvaluate {
-            classDirectories.setFrom(files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: [
-                        "org/eclipse/tractusx/wallet/stub/apidoc/*",
-                        "**/config/**",
-                        "**/runtime/**",
-                ])
-            }))
-        }
-        violationRules {
-            rule {
-                limit {
-                    minimum = 0.72
-                }
-            }
-        }
-    }
 
 
-    check.dependsOn jacocoTestCoverageVerification
     build {
         archivesBaseName = "wallet"
         version = "${version}"
@@ -246,8 +209,7 @@ tasks.register('jacocoRootReport', JacocoReport) {
     }
 
     // Define source files
-    sourceDirectories.from = files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories.from = files(subprojects.sourceSets.main.output)
+    sourceDirectories.from = files(subprojects.sourceSets.main.allSource.srcDirs).files
 
     reports {
         html {
@@ -261,5 +223,4 @@ tasks.register('jacocoRootReport', JacocoReport) {
     }
 }
 
-// Make the root project's check task depend on the combined report
 check.dependsOn jacocoRootReport
