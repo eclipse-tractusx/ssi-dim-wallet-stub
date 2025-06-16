@@ -227,27 +227,25 @@ tasks.register('dashLicenseCheck', JavaExec) { dashLicenseCheck ->
 tasks.register('jacocoRootReport', JacocoReport) {
     description = 'Generates an aggregate report from all subprojects'
     group = 'verification'
-    
+
     // Depend on all test tasks
     dependsOn(subprojects.test)
-    
+
     // Get all JaCoCo execution data
     executionData {
         files(subprojects.jacocoTestReport.executionData)
     }
-    
+
     // Define source files
     sourceDirectories.from = files(subprojects.sourceSets.main.allSource.srcDirs)
     classDirectories.from = files(subprojects.sourceSets.main.output)
-    
+
     reports {
         html {
             required = true
-            outputLocation.set(file("${buildDir}/reports/jacoco/jacocoRootReport/html"))
         }
         xml {
             required = true
-            outputLocation.set(file("${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"))
         }
         csv.required = false
     }
