@@ -38,6 +38,7 @@ jobs:
       java-version: 21
       project-directory: "./"
       sonar-scan-enabled: true
+      gradle-args: jacocoRootReport
     secrets:
       sonar-token: ${{ secrets.SONAR_TOKEN }}
       github-token: ${{ secrets.GITHUB_TOKEN }}
