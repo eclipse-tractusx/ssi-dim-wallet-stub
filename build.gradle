@@ -233,11 +233,43 @@ tasks.register('jacocoRootReport', JacocoReport) {
     }
 }
 
+// Add coverage verification task
+tasks.register('jacocoCoverageVerification', JacocoCoverageVerification) {
+    description = 'Verifies code coverage thresholds'
+    group = 'verification'
+
+    // Depend on all test tasks
+    dependsOn(subprojects.test)
+
+    // Get all JaCoCo execution data
+    executionData {
+        files(subprojects.jacocoTestReport.executionData)
+    }
+
+    // Define source files
+    sourceDirectories.from = files(subprojects.sourceSets.main.allSource.srcDirs).files
+
+    // Define class files
+    classDirectories.from = files(subprojects.sourceSets.main.output).files
+
+    // Add coverage threshold rules
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80 // 80% minimum coverage
+            }
+        }
+    }
+}
+
 // Make sure the root report runs after all subproject reports
 subprojects {
     jacocoTestReport {
         finalizedBy rootProject.tasks.named('jacocoRootReport')
     }
 }
+
+// Make sure coverage verification runs after the report
+jacocoRootReport.finalizedBy jacocoCoverageVerification
 
 check.dependsOn jacocoRootReport
