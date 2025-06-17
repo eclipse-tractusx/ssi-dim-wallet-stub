@@ -48,6 +48,12 @@ sonar {
         property "sonar.projectKey", "Cofinity-X_ssi-dim-wallet-stub"
         property "sonar.organization", "cofinity-x"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.dynamicAnalysis", "reuseReports"
+        property "sonar.hotspot.enabled", "false"
+        property "sonar.java.source", "21"
+        property "sonar.java.target", "21"
     }
 }
 
@@ -211,15 +217,26 @@ tasks.register('jacocoRootReport', JacocoReport) {
     // Define source files
     sourceDirectories.from = files(subprojects.sourceSets.main.allSource.srcDirs).files
 
+    // Define class files
+    classDirectories.from = files(subprojects.sourceSets.main.output).files
+
     reports {
         html {
             required = true
+            outputLocation.set(file("${buildDir}/reports/jacoco/test/html"))
         }
         xml {
             required = true
             outputLocation.set(file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml"))
         }
         csv.required = false
+    }
+}
+
+// Make sure the root report runs after all subproject reports
+subprojects {
+    jacocoTestReport {
+        finalizedBy rootProject.tasks.named('jacocoRootReport')
     }
 }
 
