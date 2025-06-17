@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2024 Contributors to the Eclipse Foundation
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -21,10 +21,10 @@ name: "TruffleHog"
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: ["main"]
+    branches: [ "main" ]
   schedule:
     - cron: "0 0 * * *" # Once a day
   workflow_dispatch:
