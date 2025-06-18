@@ -33,11 +33,23 @@ plugins {
     id "de.undercouch.download" version "5.6.0"
     id "org.sonarqube" version "5.1.0.4882"
     id "java-platform"
+    id "jacoco"
 }
 
 allprojects {
     repositories {
         mavenCentral()
+    }
+}
+
+sonar {
+    properties {
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.dynamicAnalysis", "reuseReports"
+        property "sonar.hotspot.enabled", "false"
+        property "sonar.java.source", "21"
+        property "sonar.java.target", "21"
     }
 }
 
@@ -111,45 +123,8 @@ subprojects {
         toolVersion = "${jacocoVersion}"
     }
 
-    jacocoTestReport {
-
-        reports {
-            xml.required = true
-            csv.required = false
-            html.required = true
-        }
-
-        afterEvaluate {
-            classDirectories.setFrom(files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: [
-                        "org/eclipse/tractusx/wallet/stub/apidoc/*"
-
-                ])
-            }))
-        }
-    }
-
-    jacocoTestCoverageVerification {
-        afterEvaluate {
-            classDirectories.setFrom(files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: [
-                        "org/eclipse/tractusx/wallet/stub/apidoc/*",
-                        "**/config/**",
-                        "**/runtime/**",
-                ])
-            }))
-        }
-        violationRules {
-            rule {
-                limit {
-                    minimum = 0.72
-                }
-            }
-        }
-    }
 
 
-    check.dependsOn jacocoTestCoverageVerification
     build {
         archivesBaseName = "wallet"
         version = "${version}"
@@ -220,3 +195,77 @@ tasks.register('dashLicenseCheck', JavaExec) { dashLicenseCheck ->
         file('deps.txt').delete()
     }
 }
+
+
+// Add task to combine all JaCoCo reports
+tasks.register('jacocoRootReport', JacocoReport) {
+    description = 'Generates an aggregate report from all subprojects'
+    group = 'verification'
+
+    // Depend on all test tasks
+    dependsOn(subprojects.test)
+
+    // Get all JaCoCo execution data
+    executionData {
+        files(subprojects.jacocoTestReport.executionData)
+    }
+
+    // Define source files
+    sourceDirectories.from = files(subprojects.sourceSets.main.allSource.srcDirs).files
+
+    // Define class files
+    classDirectories.from = files(subprojects.sourceSets.main.output).files
+
+    reports {
+        html {
+            required = true
+            outputLocation.set(file("${buildDir}/reports/jacoco/test/html"))
+        }
+        xml {
+            required = true
+            outputLocation.set(file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml"))
+        }
+        csv.required = false
+    }
+}
+
+// Add coverage verification task
+tasks.register('jacocoCoverageVerification', JacocoCoverageVerification) {
+    description = 'Verifies code coverage thresholds'
+    group = 'verification'
+
+    // Depend on all test tasks
+    dependsOn(subprojects.test)
+
+    // Get all JaCoCo execution data
+    executionData {
+        files(subprojects.jacocoTestReport.executionData)
+    }
+
+    // Define source files
+    sourceDirectories.from = files(subprojects.sourceSets.main.allSource.srcDirs).files
+
+    // Define class files
+    classDirectories.from = files(subprojects.sourceSets.main.output).files
+
+    // Add coverage threshold rules
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80 // 80% minimum coverage
+            }
+        }
+    }
+}
+
+// Make sure the root report runs after all subproject reports
+subprojects {
+    jacocoTestReport {
+        finalizedBy rootProject.tasks.named('jacocoRootReport')
+    }
+}
+
+// Make sure coverage verification runs after the report
+jacocoRootReport.finalizedBy jacocoCoverageVerification
+
+check.dependsOn jacocoRootReport
