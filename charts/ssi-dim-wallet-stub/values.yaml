@@ -67,11 +67,11 @@ wallet:
     # -- When a probe fails, Kubernetes will try failureThreshold times before giving up. Giving up in case of liveness probe means restarting the container.
     failureThreshold: 3
     # -- Number of seconds after the container has started before readiness probes are initiated.
-    initialDelaySeconds: 20
+    initialDelaySeconds: 50
     # -- Number of seconds after which the probe times out.
-    timeoutSeconds: 15
+    timeoutSeconds: 60
     # -- How often (in seconds) to perform the probe
-    periodSeconds: 5
+    periodSeconds: 15
 
   # -- Kubernetes [readiness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
   readinessProbe:
@@ -80,13 +80,13 @@ wallet:
     # -- When a probe fails, Kubernetes will try failureThreshold times before giving up. In case of readiness probe the Pod will be marked Unready.
     failureThreshold: 3
     # -- Number of seconds after the container has started before readiness probe are initiated.
-    initialDelaySeconds: 30
+    initialDelaySeconds: 50
     # -- How often (in seconds) to perform the probe
-    periodSeconds: 5
+    periodSeconds: 15
     # -- Minimum consecutive successes for the probe to be considered successful after having failed.
     successThreshold: 1
     # -- Number of seconds after which the probe times out.
-    timeoutSeconds: 5
+    timeoutSeconds: 60
 
   # -- ingress configuration
   ingress:
