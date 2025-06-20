@@ -24,7 +24,7 @@ on:
   workflow_dispatch:
   pull_request:
     types: [ opened, synchronize, reopened ]
-    branches: [ main, feat/CS-3205-Catena-compliant-wallet-stub ]
+    branches: [ main ]
     paths:
       - 'src/**'
       - ".github/**"
@@ -32,7 +32,7 @@ on:
       - 'build.gradle'
       - 'settings.gradle'
   push:
-    branches: [ main, feat/CS-3205-Catena-compliant-wallet-stub ]
+    branches: [ main ]
     paths:
       - 'src/**'
       - ".github/**"
