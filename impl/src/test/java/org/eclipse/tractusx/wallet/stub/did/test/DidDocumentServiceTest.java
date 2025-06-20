@@ -22,6 +22,7 @@
 
 package org.eclipse.tractusx.wallet.stub.did.test;
 
+import lombok.SneakyThrows;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.net.URL;
 import java.security.KeyPair;
 import java.util.List;
 import java.util.Optional;
@@ -83,6 +85,7 @@ class DidDocumentServiceTest {
         Assertions.assertEquals(baseDidDocument.getId(), didDocument.getId());
     }
 
+    @SneakyThrows
     @Test
     void getOrCreateDidDocumentTest() {
         String baseWalletBpn = "BPNL000000000000";
@@ -92,6 +95,7 @@ class DidDocumentServiceTest {
         when(storage.getDidDocument(anyString())).thenReturn(Optional.empty());
         when(walletStubSettings.didHost()).thenReturn("");
         when(walletStubSettings.env()).thenReturn(env);
+        when(walletStubSettings.didDocumentContextUrls()).thenReturn(List.of(new URL("https://www.w3.org/ns/did/v1")));
         when(walletStubSettings.stubUrl()).thenReturn("");
         when(keyService.getKeyPair(anyString())).thenReturn(testKeyPair);
 
@@ -99,5 +103,10 @@ class DidDocumentServiceTest {
 
         verify(storage).saveDidDocument(anyString(), any());
         Assertions.assertNotNull(didDocument);
+
+        didDocument.getContext().forEach(context ->
+            Assertions.assertTrue(walletStubSettings.didDocumentContextUrls().stream()
+                .anyMatch(url -> url.toString().equals(context)),
+                "Did Document context should contain: " + context));
     }
 }

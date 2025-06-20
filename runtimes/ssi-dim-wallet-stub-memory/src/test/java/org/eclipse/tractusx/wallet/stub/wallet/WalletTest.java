@@ -82,6 +82,11 @@ class WalletTest {
 
         //check did document is created
         Assertions.assertTrue(storage.getDidDocument(bpn).isPresent());
+
+        //verify did document context
+        walletStubSettings.didDocumentContextUrls().forEach(context ->
+            Assertions.assertTrue(responseEntity.getBody().getContext().contains(context.toString()),
+                "Did Document context should contain: " + context));
     }
 
     @Test

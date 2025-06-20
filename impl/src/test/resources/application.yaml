@@ -70,6 +70,7 @@ stub:
   didHost: ${DID_HOST:localhost}
   stubUrl: ${STUB_URL:https://localhost} #Stub application host
   statusListVcId: ${STATUS_LIST_VC_ID:8a6c7486-1e1f-4555-bdd2-1a178182651e}
+  didDocumentContextUrls: ${DID_DOCUMENT_CONTEXT_URLS:https://www.w3.org/ns/did/v1, https://w3id.org/security/suites/jws-2020/v1, https://w3id.org/dspace-dcp/v1.0/dcp.jsonld, https://w3id.org/dspace/2025/1/context.jsonld}
   token:
     tokenExpiryTime: ${TOKEN_EXPIRY_TIME:5} #in minutes
   portal:

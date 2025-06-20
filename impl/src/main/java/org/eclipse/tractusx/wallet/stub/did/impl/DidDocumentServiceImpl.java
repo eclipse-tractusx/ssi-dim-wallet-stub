@@ -42,6 +42,7 @@ import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.net.URL;
 import java.security.KeyPair;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +106,7 @@ public class DidDocumentServiceImpl implements DidDocumentService {
                 .service(List.of(service))
                 .authentication(List.of(verificationMethod.getId()))
                 .verificationMethod(List.of(verificationMethod))
-                .context(List.of("https://www.w3.org/ns/did/v1"))
+                .context(walletStubSettings.didDocumentContextUrls().stream().map(URL::toString).toList())
                 .build();
         storage.saveDidDocument(issuerBpn, didDocument);
         return didDocument;

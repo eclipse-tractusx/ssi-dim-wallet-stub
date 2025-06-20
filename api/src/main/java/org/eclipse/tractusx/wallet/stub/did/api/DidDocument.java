@@ -42,7 +42,7 @@ public class DidDocument {
 
     private final List<Service> service = new ArrayList<>();
     @JsonProperty("@context")
-    private final List<Object> context = new ArrayList<>();
+    private final List<String> context = new ArrayList<>();
     private final List<VerificationMethod> verificationMethod = new ArrayList<>();
     private final List<String> authentication = new ArrayList<>();
     private String id;
@@ -71,7 +71,7 @@ public class DidDocument {
         }
 
         @JsonProperty("@context")
-        public DidDocument.Builder context(List<Object> context) {
+        public DidDocument.Builder context(List<String> context) {
             document.context.addAll(context);
             return this;
         }
