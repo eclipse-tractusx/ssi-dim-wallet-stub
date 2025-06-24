@@ -44,6 +44,10 @@ allprojects {
 
 sonar {
     properties {
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.projectKey", "eclipse-tractusx_ssi-dim-wallet-stub"
+        property "sonar.organization", "eclipse-tractusx"
+        property "sonar.qualitygate.wait", "true"
         property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
         property "sonar.java.coveragePlugin", "jacoco"
         property "sonar.dynamicAnalysis", "reuseReports"
@@ -159,21 +163,27 @@ tasks.register('dashClean') {
 }
 
 tasks.register('dashDependencies') { dashDependencies ->
-    description = "Output all project dependencies as a flat list and save an intermediate file 'deps.txt'."
+    description = "Output all project dependencies from all subprojects as a flat list and save to 'deps.txt'."
     group = 'License'
     dashDependencies.dependsOn('dashDownload')
     doLast {
         def deps = []
-        project.configurations.each { conf ->
-            if (conf.canBeResolved && conf.getName() != 'archives' && conf.getName() != 'default') {
+        allprojects.each { proj ->
+            proj.configurations.findAll { it.canBeResolved && it.name != 'archives' && it.name != 'default' }.each { conf ->
                 deps.addAll(conf.incoming.resolutionResult.allDependencies
-                        .findAll({ it instanceof ResolvedDependencyResult })
-                        .collect { ResolvedDependencyResult dep ->
-                            "${dep.selected}"
-                        })
+                        .findAll { it instanceof ResolvedDependencyResult }
+                        .findAll { dep -> 
+                            // Filter out internal project dependencies (those starting with ':')
+                            // and only include external dependencies
+                            def id = dep.selected.id
+                            return !id.toString().startsWith(':') && 
+                                   !id.toString().startsWith('project :') &&
+                                   id.toString().contains(':')  // External dependencies have group:name:version format
+                        }
+                        .collect { dep -> "${dep.selected}" }
+                )
             }
         }
-
         def uniqueSorted = deps.unique().sort()
         uniqueSorted.each { logger.quiet("{}", it) }
         file("deps.txt").write(uniqueSorted.join('\n'))
