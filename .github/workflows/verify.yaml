@@ -128,4 +128,5 @@ jobs:
       - name: Run Unit tests and sonar scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: ./gradlew build jacocoRootReport sonar --continue
