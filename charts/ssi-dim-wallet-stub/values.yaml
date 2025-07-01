@@ -53,12 +53,12 @@ wallet:
       # -- CPU resource requests
       cpu: 250m
       # -- Memory resource requests
-      memory: 512Mi
+      memory: 1Gi
     limits:
       # -- CPU resource limits
-      cpu: 500m
+      cpu: 1
       # -- Memory resource limits
-      memory: 1Gi
+      memory: 2Gi
 
   # -- Kubernetes [liveness-probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
   livenessProbe:
