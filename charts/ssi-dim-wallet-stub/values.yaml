@@ -51,7 +51,7 @@ wallet:
   resources:
     requests:
       # -- CPU resource requests
-      cpu: 250m
+      cpu: 500m
       # -- Memory resource requests
       memory: 1Gi
     limits:
