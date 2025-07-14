@@ -23,11 +23,14 @@
 package org.eclipse.tractusx.wallet.stub.did.test;
 
 import lombok.SneakyThrows;
+import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
+import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
+import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -108,5 +111,25 @@ class DidDocumentServiceTest {
             Assertions.assertTrue(walletStubSettings.didDocumentContextUrls().stream()
                 .anyMatch(url -> url.toString().equals(context)),
                 "Did Document context should contain: " + context));
+
+        //verify that the didDocument contains the expected services
+        Service credentialService = didDocument.getService().stream()
+                .filter(service -> service.getType().equals(Constants.CREDENTIAL_SERVICE)).findFirst().orElse(null);
+        Assertions.assertNotNull(credentialService, "Credential Service should be present in the Did Document");
+        Assertions.assertEquals(credentialService.getId(), didDocument.getId()+"#"+Constants.CREDENTIAL_SERVICE);
+        Assertions.assertEquals(credentialService.getServiceEndpoint(), CommonUtils.getCredentialServiceUrl(walletStubSettings.stubUrl()));
+
+
+        //verify that the didDocument contains the expected issuer service
+        Service issuerService = didDocument.getService().stream()
+                .filter(service -> service.getType().equals(Constants.ISSUER_SERVICE)).findFirst().orElse(null);
+        Assertions.assertNotNull(issuerService, "Credential Service should be present in the Did Document");
+        Assertions.assertEquals(issuerService.getId(), didDocument.getId()+"#"+Constants.ISSUER_SERVICE);
+        Assertions.assertEquals(issuerService.getServiceEndpoint(), CommonUtils.getIssuerServiceUrl(walletStubSettings.stubUrl(), baseWalletBpn));
+
+        //verify keyAgreement and capabilityInvocation are empty
+        Assertions.assertTrue(didDocument.getKeyAgreement().isEmpty(), "Key Agreement should be empty");
+        Assertions.assertTrue(didDocument.getCapabilityInvocation().isEmpty(), "Capability Invocation should be empty");
+
     }
 }
