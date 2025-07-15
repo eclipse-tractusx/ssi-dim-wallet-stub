@@ -2,7 +2,6 @@
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *  Copyright (c) 2025 Cofinity-X
- *  Copyright (c) 2025 LKS Next
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -21,29 +20,30 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.issuer.api;
+package org.eclipse.tractusx.wallet.stub.issuer.rest.api;
 
-
-import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
-import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
-import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.eclipse.tractusx.wallet.stub.apidoc.rest.api.IssuerMetadataApiDoc;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
-import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
-import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
+import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-public interface IssuerCredentialService {
 
-    GetCredentialsResponse getCredential(String externalCredentialId);
-
-    SignCredentialResponse getSignCredentialResponse(SignCredentialRequest request, String credentialId);
-
-    IssueCredentialResponse getIssueCredentialResponse(IssueCredentialRequest request, String token);
+@RequestMapping("/api/v1.0.0/dcp")
+@Tag(name = "APIs consumed by SSI Issuer component for DCP flow")
+public interface DCPIssuerStubApi {
 
     /**
      * Retrieves metadata for a specific issuer.
      *
-     * @param issuerId The ID of the issuer whose metadata is to be retrieved.
+     * @param walletIdentifier The identifier of the wallet, typically the BPN (Business Partner Number).
      * @return The metadata response containing details about the issuer.
      */
-    IssuerMetadataResponse getIssuerMetadata(String issuerId);
+    @IssuerMetadataApiDoc.IssuerMetadata
+    @GetMapping(path = "/{walletIdentifier}/metadata", produces = MediaType.APPLICATION_JSON_VALUE)
+    IssuerMetadataResponse getIssuerMetadata(@Parameter(description = "Wallet identifier, this will be a BPN") @PathVariable(name = Constants.WALLET_IDENTIFIER) String walletIdentifier);
 }

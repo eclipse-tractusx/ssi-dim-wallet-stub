@@ -2,6 +2,7 @@
 # /********************************************************************************
 #  Copyright (c) 2025 Contributors to the Eclipse Foundation
 #  Copyright (c) 2025 LKS Next
+#  Copyright (c) 2025 Cofinity-X
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -87,6 +88,7 @@ stub:
   stubUrl: ${STUB_URL:https://localhost} #Stub application host
   statusListVcId: ${STATUS_LIST_VC_ID:8a6c7486-1e1f-4555-bdd2-1a178182651e}
   didDocumentContextUrls: ${DID_DOCUMENT_CONTEXT_URLS:https://www.w3.org/ns/did/v1, https://w3id.org/security/suites/jws-2020/v1, https://w3id.org/dspace-dcp/v1.0/dcp.jsonld, https://w3id.org/dspace/2025/1/context.jsonld}
+  issuerMetadataContextUrls: ${ISSUER_METADATA_CONTEXT_URLS:https://w3id.org/dspace-dcp/v1.0/dcp.jsonld, https://www.w3.org/2018/credentials/v1, https://w3id.org/catenax/credentials/v1.0.0}
   token:
     tokenExpiryTime: ${TOKEN_EXPIRY_TIME:5} #in minutes
   portal:

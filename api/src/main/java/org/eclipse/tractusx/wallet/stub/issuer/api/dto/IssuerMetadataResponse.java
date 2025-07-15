@@ -2,6 +2,7 @@
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *  Copyright (c) 2025 Cofinity-X
+ *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
  *
@@ -19,21 +20,32 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.config.impl;
+package org.eclipse.tractusx.wallet.stub.issuer.api.dto;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.net.URL;
 import java.util.List;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
+public class IssuerMetadataResponse {
 
-/**
- * This class represents the configuration settings for the Wallet Stub application.
- * The settings are defined using Spring Boot's {@code @ConfigurationProperties} annotation,
- * allowing them to be configured via application properties files.
- */
-@ConfigurationProperties(prefix = "stub")
-public record WalletStubSettings(String env, String didHost, String stubUrl,
-                                 List<String> seedWalletsBPN,
-                                 String baseWalletBPN, String statusListVcId, List<URL> didDocumentContextUrls, List<URL> issuerMetadataContextUrls) {
+
+    @JsonProperty("@context")
+    private List<URL> context;
+
+    private String type;
+
+    private String credentialIssuer;
+
+    private List<CredentialsSupported> credentialsSupported;
 }

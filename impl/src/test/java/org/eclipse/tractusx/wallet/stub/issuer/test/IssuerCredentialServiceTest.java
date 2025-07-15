@@ -2,6 +2,7 @@
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *  Copyright (c) 2025 LKS Next
+ *  Copyright (c) 2025 Cofinity-X
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -28,6 +29,7 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
@@ -39,6 +41,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.CredentialPayload;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.StoreRequestDerive;
@@ -50,11 +53,13 @@ import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
+import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.net.URL;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,6 +72,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -309,5 +315,22 @@ class IssuerCredentialServiceTest {
 
         String vcId = CommonUtils.getUuid("", "");
         assertEquals(vcId, issueCredentialResponse.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    void getIssuerMedataTest(){
+        String bpn = "BPNL000000000000";
+
+        DidDocument didDocument = DidDocument.Builder.newInstance()
+                .id("did:web:localhost:" + bpn)
+                .build();
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
+        when(walletStubSettings.issuerMetadataContextUrls()).thenReturn(List.of(new URL("https://www.w3.org/2018/credentials/examples/v1")));
+        //Act
+        IssuerMetadataResponse issuerMetadata = issuerCredentialService.getIssuerMetadata(bpn);
+
+        TestUtils.validateIssuerMetadataResponse(issuerMetadata, didDocument, walletStubSettings);
+
     }
 }

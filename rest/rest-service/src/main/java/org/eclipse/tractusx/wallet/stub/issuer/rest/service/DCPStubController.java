@@ -2,6 +2,7 @@
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
  *  Copyright (c) 2025 Cofinity-X
+ *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
  *
@@ -19,21 +20,22 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.config.impl;
+package org.eclipse.tractusx.wallet.stub.issuer.rest.service;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.RequiredArgsConstructor;
+import org.eclipse.tractusx.wallet.stub.issuer.api.IssuerCredentialService;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.rest.api.DCPIssuerStubApi;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URL;
-import java.util.List;
+@RestController
+@RequiredArgsConstructor
+public class DCPStubController implements DCPIssuerStubApi {
 
+    private final IssuerCredentialService issuerCredentialService;
 
-/**
- * This class represents the configuration settings for the Wallet Stub application.
- * The settings are defined using Spring Boot's {@code @ConfigurationProperties} annotation,
- * allowing them to be configured via application properties files.
- */
-@ConfigurationProperties(prefix = "stub")
-public record WalletStubSettings(String env, String didHost, String stubUrl,
-                                 List<String> seedWalletsBPN,
-                                 String baseWalletBPN, String statusListVcId, List<URL> didDocumentContextUrls, List<URL> issuerMetadataContextUrls) {
+    @Override
+    public IssuerMetadataResponse getIssuerMetadata(String walletIdentifier) {
+        return issuerCredentialService.getIssuerMetadata(walletIdentifier);
+    }
 }

@@ -32,6 +32,7 @@ import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -44,9 +45,11 @@ import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.exception.api.NoVCTypeFoundException;
 import org.eclipse.tractusx.wallet.stub.exception.api.ParseStubException;
 import org.eclipse.tractusx.wallet.stub.issuer.api.IssuerCredentialService;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.CredentialsSupported;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
@@ -60,6 +63,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyPair;
 import java.security.interfaces.ECPrivateKey;
 import java.util.*;
@@ -279,5 +283,27 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
+    }
+
+    @SneakyThrows
+    @Override
+    public IssuerMetadataResponse getIssuerMetadata(String issuerId) {
+
+        DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(issuerId);
+
+        CredentialsSupported credentialsSupported = CredentialsSupported.builder()
+                .type(Constants.CREDENTIAL_OBJECT)
+                .profiles(Constants.CREDENTIAL_PROFILE)
+                .offerReason(Constants.OFFER_REASON)
+                .bindingMethods(List.of(Constants.DID_WEB))
+                .credentialType(Constants.SUPPORTED_VC_TYPES)
+                .issuancePolicy(Map.of())
+                .build();
+        return IssuerMetadataResponse.builder()
+                .context(walletStubSettings.issuerMetadataContextUrls())
+                .type(Constants.CREDENTIAL_ISSUER)
+                .credentialIssuer(issuerDidDocument.getId())
+                .credentialsSupported(List.of(credentialsSupported))
+                .build();
     }
 }
