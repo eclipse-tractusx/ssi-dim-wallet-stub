@@ -27,6 +27,7 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
 import org.eclipse.tractusx.wallet.stub.credential.impl.internal.api.InternalCredentialService;
@@ -63,9 +64,9 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
 
 
     @Override
-    public String getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type) {
+    public Pair<String, String> getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type) {
         try {
-            Optional<String> optionalVC = storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type);
+            Optional<Pair<String, String>> optionalVC = storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type);
             if (optionalVC.isPresent()) {
                 return optionalVC.get();
             }
@@ -94,8 +95,9 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
             SignedJWT vcJWT = CommonUtils.signedJWT(tokenBody, issuerKeyPair, issuerDocument.getVerificationMethod().getFirst().getId());
 
             String vcAsJwt = vcJWT.serialize();
-            storage.saveCredentialAsJwt(verifiableCredential.get(Constants.ID).toString(), vcAsJwt, holderBpn, type);
-            return vcAsJwt;
+            String vcId = verifiableCredential.get(Constants.ID).toString();
+            storage.saveCredentialAsJwt(vcId, vcAsJwt, holderBpn, type);
+            return Pair.of(vcId ,vcAsJwt);
         } catch (IllegalArgumentException | InternalErrorException e) {
             throw e;
         } catch (Exception e) {

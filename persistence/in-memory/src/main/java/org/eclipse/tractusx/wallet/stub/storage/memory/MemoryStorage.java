@@ -21,8 +21,12 @@
 
 package org.eclipse.tractusx.wallet.stub.storage.memory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
+import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +41,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class MemoryStorage implements Storage {
 
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     //To store KeyPair: BPN as a key and keypair as value
     private static final Map<String, KeyPair> KEY_STORE = new ConcurrentHashMap<>();
@@ -90,9 +96,18 @@ public class MemoryStorage implements Storage {
         return Optional.ofNullable(HOLDER_CREDENTIAL_STORE.get(getMapKey(holderBpn, type)));
     }
 
+    @SneakyThrows
     @Override
-    public Optional<String> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type) {
-        return Optional.ofNullable(HOLDER_CREDENTIAL_AS_JWT_STORE.get(getMapKey(holderBpn, type)));
+    public Optional<Pair<String, String>> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type) {
+        String jwtString = HOLDER_CREDENTIAL_AS_JWT_STORE.get(getMapKey(holderBpn, type));
+        if(jwtString == null) {
+            return Optional.empty();
+        }else {
+            String payload = jwtString.split("\\.")[1];
+            Map<String, Object> map = (Map<String, Object>) objectMapper.readValue(payload, Map.class).get(Constants.VC);
+            String vcId = map.get(Constants.ID).toString();
+            return Optional.ofNullable(Pair.of(vcId,jwtString));
+        }
     }
 
     @Override

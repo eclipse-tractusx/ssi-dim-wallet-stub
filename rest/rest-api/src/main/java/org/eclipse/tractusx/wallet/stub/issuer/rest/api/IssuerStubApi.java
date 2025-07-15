@@ -79,4 +79,7 @@ public interface IssuerStubApi {
     @GetMapping("/credentials/{externalCredentialId}")
     GetCredentialsResponse getCredential(@PathVariable String externalCredentialId);
 
+
+    //TODO Request credential
+
 }

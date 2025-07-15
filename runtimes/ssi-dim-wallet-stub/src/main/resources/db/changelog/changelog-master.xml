@@ -26,4 +26,5 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
     <include file="/db/changelog/changes/init.sql"/>
+    <include file="/db/changelog/changes/add_vc_id_in_holder_credential_as_jwt.sql"/>
 </databaseChangeLog>

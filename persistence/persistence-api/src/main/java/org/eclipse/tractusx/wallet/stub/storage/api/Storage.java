@@ -21,6 +21,7 @@
 
 package org.eclipse.tractusx.wallet.stub.storage.api;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 
@@ -65,7 +66,7 @@ public interface Storage {
 
     Optional<CustomCredential> getCredentialsByHolderBpnAndType(String holderBpn, String type);
 
-    Optional<String> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type);
+    Optional<Pair<String, String>> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type);
 
 
     /**

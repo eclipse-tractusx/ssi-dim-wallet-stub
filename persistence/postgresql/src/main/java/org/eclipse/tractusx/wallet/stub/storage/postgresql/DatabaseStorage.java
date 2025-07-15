@@ -25,6 +25,7 @@ package org.eclipse.tractusx.wallet.stub.storage.postgresql;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.dao.postgresql.entity.CustomCredentialEntity;
 import org.eclipse.tractusx.wallet.stub.dao.postgresql.entity.DidDocumentEntity;
 import org.eclipse.tractusx.wallet.stub.dao.postgresql.entity.HolderCredentialAsJWTEntity;
@@ -87,7 +88,7 @@ public class DatabaseStorage implements Storage {
     @Override
     public void saveCredentialAsJwt(String vcId, String jwt, String holderBPn, String type) {
         String key = getMapKey(holderBPn, type);
-        holderCredentialAsJWTRepository.save(new HolderCredentialAsJWTEntity(key, jwt));
+        holderCredentialAsJWTRepository.save(new HolderCredentialAsJWTEntity(key,vcId, jwt));
         if (jwtCredentialRepository.findByVcId(vcId) == null) {
             jwtCredentialRepository.save(new JWTCredentialEntity(vcId, jwt));
         }
@@ -121,12 +122,12 @@ public class DatabaseStorage implements Storage {
     }
 
     @Override
-    public Optional<String> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type) {
+    public Optional<Pair<String, String>> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type) {
         HolderCredentialAsJWTEntity holderCredentialAsJWTEntity = holderCredentialAsJWTRepository.findByKey(getMapKey(holderBpn, type));
         if (holderCredentialAsJWTEntity == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(holderCredentialAsJWTEntity.getJwt());
+        return Optional.ofNullable(Pair.of(holderCredentialAsJWTEntity.getVcId(), holderCredentialAsJWTEntity.getJwt()));
     }
 
     @Override
