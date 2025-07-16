@@ -44,8 +44,10 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.MatchingCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialStatusResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.StoreRequestDerive;
@@ -418,5 +420,98 @@ class IssuerCredentialServiceTest {
         assertThrows(IllegalArgumentException.class, () -> {
             issuerCredentialService.requestCredentialFromIssuer(requestCredential, "invalid-caller", "token");
         });
+    }
+
+    @Test
+    void getCredentialRequestStatusTest_throwsCredentialNotFoundException() {
+        String credentialRequestId = "test-credential-id";
+        String token = "test-token";
+
+        DidDocument didDocument = DidDocument.Builder.newInstance()
+                .id("1")
+                .verificationMethod(List.of(VerificationMethod.Builder.newInstance()
+                        .id("1" + "#key-1")
+                        .controller("1")
+                        .type("JsonWebKey2020")
+                        .publicKeyJwk(Map.of(
+                                "kty", "EC",
+                                "crv", "secp256k1",
+                                "use", "sig",
+                                "kid", "key-1",
+                                "alg", "ES256K"
+                        ))
+                        .build()))
+                .build();
+        when(walletStubSettings.baseWalletBPN()).thenReturn("bpnl");
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
+        when(storage.getCredentialAsJwt(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(CredentialNotFoundException.class, () ->{
+            issuerCredentialService.getCredentialRequestStatus(credentialRequestId, token);
+        });
+    }
+
+
+    @Test
+    void getCredentialRequestStatusTest() {
+        // Arrange
+        String credentialRequestId = "test-credential-id";
+        String token = "test-token";
+
+        // Create test credential data
+        CustomCredential customCredential = new CustomCredential();
+        customCredential.put(Constants.TYPE, List.of("VerifiableCredential", "TestCredential"));
+        customCredential.put(Constants.EXPIRATION_DATE, "2025-01-01T00:00:00Z");
+        customCredential.put(Constants.ISSUER, "did:web:test-issuer");
+        customCredential.put(Constants.ID, "did:web:test-holder#test-credential-id");
+        customCredential.put(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE, Map.of("id", "did:web:test-holder"));
+
+
+        DidDocument didDocument = DidDocument.Builder.newInstance()
+                .id("1")
+                .verificationMethod(List.of(VerificationMethod.Builder.newInstance()
+                        .id("1" + "#key-1")
+                        .controller("1")
+                        .type("JsonWebKey2020")
+                        .publicKeyJwk(Map.of(
+                                "kty", "EC",
+                                "crv", "secp256k1",
+                                "use", "sig",
+                                "kid", "key-1",
+                                "alg", "ES256K"
+                        ))
+                        .build()))
+                .build();
+        when(walletStubSettings.baseWalletBPN()).thenReturn("bpnl");
+        when(didDocumentService.getOrCreateDidDocument(anyString())).thenReturn(didDocument);
+        when(storage.getCredentialAsJwt(anyString())).thenReturn(Optional.of("jwt"));
+        when(storage.getVerifiableCredentials(anyString())).thenReturn(Optional.of(customCredential));
+
+        // Act
+        RequestedCredentialStatusResponse response = issuerCredentialService.getCredentialRequestStatus(credentialRequestId, token);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(credentialRequestId, response.getId());
+        assertEquals("2025-01-01T00:00:00Z", response.getExpirationDate());
+        assertEquals("did:web:test-issuer", response.getIssuerDid());
+        assertEquals("did:web:test-holder", response.getHolderDid());
+        assertEquals(Constants.STATUS_ISSUED, response.getStatus());
+
+        // Verify requested credentials
+        assertEquals(1, response.getRequestedCredentials().size());
+        RequestedCredential requestedCredential = response.getRequestedCredentials().getFirst();
+        assertEquals("TestCredential", requestedCredential.getCredentialType());
+        assertEquals("vcdm11_jwt", requestedCredential.getFormat());
+
+        // Verify matching credentials
+        assertEquals(1, response.getMatchingCredentials().size());
+        MatchingCredential matchingCredential = response.getMatchingCredentials().getFirst();
+        assertEquals(credentialRequestId, matchingCredential.getId());
+        assertEquals("TestCredential", matchingCredential.getName());
+        assertEquals("TestCredential", matchingCredential.getDescription());
+        assertEquals("jwt", matchingCredential.getVerifiableCredential());
+        assertEquals(customCredential, matchingCredential.getCredential());
+        assertEquals(Constants.CATENA_X_PORTAL, matchingCredential.getApplication());
     }
 }

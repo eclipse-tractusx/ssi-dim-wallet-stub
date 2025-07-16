@@ -464,13 +464,124 @@ public class CredentialsApiDoc {
                                     "format": "vcdm11_jwt"
                                   }
                                 ],
-                                "issuerDid": "did:web:data-provider",
-                                "holderDid": "did:web:data-consumer",
+                                "issuerDid": "did:web:localhost:BPNL000000000000",
+                                "holderDid": "did:web:localhost:BPNL000000000001",
                                 "expirationDate": "2028-11-25T16:51:22.000Z"
                               }
                             """, description = "Request credentials", name = "Request credentials")
             })
     })
     public @interface RequestCredential {
+    }
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Operation(description = """
+            Check requested credential status .
+            """, summary = "Check requested credential status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Credential details", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Credential details", value = """
+                                    {
+                                         "id": "7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f",
+                                         "expirationDate": "2028-08-31T00:00:00.000Z",
+                                         "issuerDid": "did:web:localhost:BPNL000000000000",
+                                         "holderDid": "did:web:localhost:BPNL000000000000",
+                                         "requestedCredentials":
+                                         [
+                                             {
+                                                 "credentialType": "BpnCredential",
+                                                 "format": "vcdm11_jwt"
+                                             }
+                                         ],
+                                         "status": "RECEIVED",
+                                         "matchingCredentials":
+                                         [
+                                             {
+                                                 "id": "7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f",
+                                                 "name": "BpnCredential",
+                                                 "description": "BpnCredential",
+                                                 "verifiableCredential": "eyJraWQiOiJkaWQ6d2ViOmxvY2FsaG9zdDpCUE5MMDAwMDAwMDAwMDAwI2MzOTMyZmY1LThkYTQtM2RlOS1hOTQyLTYyMTI1ZjM5NGU0MSIsInR5cCI6IkpXVCIsImFsZyI6IkVTMjU2SyJ9.eyJhdWQiOlsiZGlkOndlYjpsb2NhbGhvc3Q6QlBOTDAwMDAwMDAwMDAwMCIsImRpZDp3ZWI6bG9jYWxob3N0OkJQTjEyMyJdLCJicG4iOiJCUE4xMjMiLCJzdWIiOiJkaWQ6d2ViOmxvY2FsaG9zdDpCUE5MMDAwMDAwMDAwMDAwIiwiaXNzIjoiZGlkOndlYjpsb2NhbGhvc3Q6QlBOTDAwMDAwMDAwMDAwMCIsImV4cCI6MTc1MjY0NTU1NSwiaWF0IjoxNzUyNjQ1MjU1LCJ2YyI6eyJjcmVkZW50aWFsU3ViamVjdCI6eyJicG4iOiJCUE4xMjMiLCJob2xkZXJJZGVudGlmaWVyIjoiQlBOMTIzIiwiaWQiOiJkaWQ6d2ViOmxvY2FsaG9zdDpCUE4xMjMifSwiaXNzdWFuY2VEYXRlIjoiMjAyNS0wNy0xNlQwNTo1NDoxNVoiLCJpZCI6ImRpZDp3ZWI6bG9jYWxob3N0OkJQTkwwMDAwMDAwMDAwMDAjN2VmM2RkOGQtMDFjNS0zN2ZlLWI0YzYtYjk2YzBiNjgwMzFmIiwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIkJwbkNyZWRlbnRpYWwiXSwiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCJodHRwczovL3czaWQub3JnL2NhdGVuYXgvY3JlZGVudGlhbHMvdjEuMC4wIl0sImlzc3VlciI6ImRpZDp3ZWI6bG9jYWxob3N0OkJQTkwwMDAwMDAwMDAwMDAiLCJleHBpcmF0aW9uRGF0ZSI6IjIwMjYtMDctMTZUMDU6NTQ6MTVaIn0sImp0aSI6ImI2ZWY4ZmZjLWM4OWEtNDllMi1hYTE5LWI0ZDgxYmUyYTA3YSJ9.jihODuZer8PkjXK-XvZU_jcv0b9GC2cQG1i2ZDQfcFFxpmv1rQnHkWk3Z8swhaKN0iMY5WxzKAWZmCKAcz3zTw",
+                                                 "credential":
+                                                 {
+                                                     "credentialSubject":
+                                                     {
+                                                         "bpn": "BPN123",
+                                                         "holderIdentifier": "BPN123",
+                                                         "id": "did:web:localhost:BPN123"
+                                                     },
+                                                     "issuanceDate": "2025-07-16T05:54:15Z",
+                                                     "id": "did:web:localhost:BPNL000000000000#7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f",
+                                                     "type":
+                                                     [
+                                                         "VerifiableCredential",
+                                                         "BpnCredential"
+                                                     ],
+                                                     "@context":
+                                                     [
+                                                         "https://www.w3.org/2018/credentials/v1",
+                                                         "https://w3id.org/catenax/credentials/v1.0.0"
+                                                     ],
+                                                     "issuer": "did:web:localhost:BPNL000000000000",
+                                                     "expirationDate": "2026-07-16T05:54:15Z"
+                                                 },
+                                                 "application": "catena-x-portal"
+                                             }
+                                         ]
+                                     }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "404", description = "Bad request", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Illegal Argument Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Invalid request id",
+                                      "status": 400,
+                                      "detail": "Credential details",
+                                      "instance": "/api/v2.0.0/dcp/credentialRequestsReceived/{requestId}",
+                                      "properties": {
+                                        "timestamp": 1743154190590
+                                      }
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Missing Request Header Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Please provide the required header: Authorization",
+                                      "status": 401,
+                                      "detail": "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                                      "instance": "/api/v2.0.0/dcp/credentialRequestsReceived/{requestId}",
+                                      "properties": {
+                                        "timestamp": 1743085396772
+                                      }
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: ...",
+                                      "instance": "/api/v2.0.0/dcp/credentialRequestsReceived/{requestId}",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
+                                    }
+                                    """)
+                    })
+            })
+    })
+    public @interface CredentialRequestStatus {
     }
 }

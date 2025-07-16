@@ -30,6 +30,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialStatusResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.springframework.http.HttpHeaders;
@@ -98,4 +99,9 @@ public interface IssuerStubApi {
     IssueCredentialResponse requestCredentialFromIssuer(@Valid @RequestBody RequestCredential requestCredential,
                                                         @Parameter(description = "Application key, please pass catena-x-portal", example = "catena-x-portal") @PathVariable String applicationKey,
                                                         @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
+
+    @CredentialsApiDoc.CredentialRequestStatus
+    @GetMapping(path = "/dcp/credentialRequestsReceived/{requestId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    RequestedCredentialStatusResponse getCredentialRequestStatus(@Parameter(description = "The credential request id", example = "7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f") @PathVariable(name = "requestId") String credentialRequestId,
+                                                                 @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 }

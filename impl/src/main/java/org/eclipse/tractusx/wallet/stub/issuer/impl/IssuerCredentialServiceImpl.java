@@ -52,7 +52,10 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.MatchingCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialStatusResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
@@ -335,6 +338,36 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
         return IssueCredentialResponse.builder()
                 .id(pair.getLeft())
                 .jwt(pair.getRight())
+                .build();
+    }
+
+    @Override
+    public RequestedCredentialStatusResponse getCredentialRequestStatus(String credentialRequestId, String token) {
+        GetCredentialsResponse credential = getCredential(credentialRequestId);
+        String type = ((List<String>) credential.getCredential().get(Constants.TYPE)).get(1);
+        Map<String, String> credentialSubject = (Map<String, String>) credential.getCredential().get(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE);
+
+        return RequestedCredentialStatusResponse.builder()
+                .id(credentialRequestId)
+                .expirationDate(credential.getCredential().get(Constants.EXPIRATION_DATE).toString())
+                .issuerDid(credential.getCredential().get(Constants.ISSUER).toString())
+                .holderDid(credentialSubject.get(Constants.ID))
+                .requestedCredentials(List.of(RequestedCredential.builder()
+                                .credentialType(type)
+                                .format("vcdm11_jwt")
+                        .build())
+                )
+                .status(Constants.STATUS_ISSUED)
+                .matchingCredentials(List.of(
+                        MatchingCredential.builder()
+                                .id(credentialRequestId)
+                                .name(type)
+                                .description(type)
+                                .verifiableCredential(credential.getVerifiableCredential())
+                                .credential(credential.getCredential())
+                                .application(Constants.CATENA_X_PORTAL)
+                                .build()
+                ))
                 .build();
     }
 }

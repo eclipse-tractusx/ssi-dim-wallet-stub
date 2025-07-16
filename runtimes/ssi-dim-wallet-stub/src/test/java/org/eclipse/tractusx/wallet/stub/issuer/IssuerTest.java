@@ -24,8 +24,10 @@ package org.eclipse.tractusx.wallet.stub.issuer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.MatchingCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialStatusResponse;
 import org.eclipse.tractusx.wallet.stub.runtime.postgresql.WalletStubApplication;
 import org.eclipse.tractusx.wallet.stub.config.TestContextInitializer;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
@@ -61,6 +63,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = { WalletStubApplication.class })
 @ContextConfiguration(initializers = { TestContextInitializer.class })
@@ -431,14 +434,77 @@ class IssuerTest {
         ResponseEntity<IssueCredentialResponse> response = restTemplate.exchange("/api/v2.0.0/dcp/requestCredentials/catena-x-portal", HttpMethod.POST, entity, IssueCredentialResponse.class);
         Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.BAD_REQUEST.value());
     }
+    @Test
+    void testGetCredentialRequestStatus_with_invalid_requestId() {
+        String baseWalletBPN = walletStubSettings.baseWalletBPN();
+        //act
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(baseWalletBPN, restTemplate, tokenService, tokenSettings));
+
+        HttpEntity<RequestCredential> entity = new HttpEntity<>(headers);
+        ResponseEntity<RequestedCredentialStatusResponse> response = restTemplate.exchange("/api/v2.0.0/dcp/credentialRequestsReceived/"+ UUID.randomUUID(), HttpMethod.GET, entity, RequestedCredentialStatusResponse.class);
+        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.NOT_FOUND.value());
+
+
+    }
+
+    @Test
+    void testGetCredentialRequestStatus(){
+
+        //plan
+        String holderBpn = TestUtils.getRandomBpmNumber();
+        String baseWalletBPN = walletStubSettings.baseWalletBPN();
+        IssueCredentialResponse issueCredentialResponse = issueCredential(Constants.BPN_CREDENTIAL, holderBpn);
+        String requestId = issueCredentialResponse.getId();
+        //act
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(baseWalletBPN, restTemplate, tokenService, tokenSettings));
+
+        HttpEntity<RequestCredential> entity = new HttpEntity<>(headers);
+        ResponseEntity<RequestedCredentialStatusResponse> response = restTemplate.exchange("/api/v2.0.0/dcp/credentialRequestsReceived/"+requestId, HttpMethod.GET, entity, RequestedCredentialStatusResponse.class);
+
+        //check
+        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        RequestedCredentialStatusResponse responseBody = response.getBody();
+        Assertions.assertNotNull(responseBody);
+        Assertions.assertEquals(requestId, responseBody.getId());
+        Assertions.assertEquals(Constants.STATUS_ISSUED, responseBody.getStatus());
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn), responseBody.getHolderDid());
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), baseWalletBPN), responseBody.getIssuerDid());
+
+        List<RequestedCredential> requestedCredentials = responseBody.getRequestedCredentials();
+        Assertions.assertNotNull(requestedCredentials);
+        Assertions.assertEquals(1, requestedCredentials.size());
+        RequestedCredential requestedCredential = requestedCredentials.get(0);
+        Assertions.assertEquals(Constants.BPN_CREDENTIAL, requestedCredential.getCredentialType());
+        Assertions.assertEquals("vcdm11_jwt", requestedCredential.getFormat());
+
+        List<MatchingCredential> matchingCredentials = responseBody.getMatchingCredentials();
+        Assertions.assertNotNull(matchingCredentials);
+        Assertions.assertEquals(1, matchingCredentials.size());
+        MatchingCredential matchingCredential = matchingCredentials.get(0);
+        Assertions.assertEquals(issueCredentialResponse.getId(), matchingCredential.getId());
+        Assertions.assertNotNull(matchingCredential.getVerifiableCredential());
+        Map<String, Object> credential = matchingCredential.getCredential();
+        Assertions.assertNotNull(credential);
+
+
+    }
 
     @Test
     void testRequestCredentialFromIssuer(){
+        String holderBpn = TestUtils.getRandomBpmNumber();
+        IssueCredentialResponse issueCredentialResponse = issueCredential(Constants.BPN_CREDENTIAL, holderBpn);
+        Assertions.assertNotNull(issueCredentialResponse);
+        Assertions.assertNotNull(issueCredentialResponse.getId());
+        Assertions.assertEquals(CommonUtils.getUuid(holderBpn, Constants.BPN_CREDENTIAL), issueCredentialResponse.getId());
+        Assertions.assertNotNull(issueCredentialResponse.getJwt());
+    }
 
+    private IssueCredentialResponse issueCredential(String type, String holderBpn) {
         String baseWalletBPN = walletStubSettings.baseWalletBPN();
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(baseWalletBPN, restTemplate, tokenService, tokenSettings));
-        String holderBpn = TestUtils.getRandomBpmNumber();
         String holderDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn);
         String issuerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN());
 
@@ -447,17 +513,13 @@ class IssuerTest {
                 .holderDid(holderDid)
                 .expirationDate("2025-01-01T00:00:00Z")
                 .requestedCredentials(List.of(RequestedCredential.builder()
-                        .credentialType("BpnCredential")
+                        .credentialType(type)
                         .build()))
                 .build();
 
         HttpEntity<RequestCredential> entity = new HttpEntity<>(requestCredential, headers);
         ResponseEntity<IssueCredentialResponse> response = restTemplate.exchange("/api/v2.0.0/dcp/requestCredentials/catena-x-portal", HttpMethod.POST, entity, IssueCredentialResponse.class);
         Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
-        IssueCredentialResponse issueCredentialResponse = response.getBody();
-        Assertions.assertNotNull(issueCredentialResponse);
-        Assertions.assertNotNull(issueCredentialResponse.getId());
-        Assertions.assertEquals(CommonUtils.getUuid(holderBpn, "BpnCredential"), issueCredentialResponse.getId());
-        Assertions.assertNotNull(issueCredentialResponse.getJwt());
+        return response.getBody();
     }
 }
