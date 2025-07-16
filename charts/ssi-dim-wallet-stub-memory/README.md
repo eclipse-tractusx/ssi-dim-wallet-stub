@@ -90,4 +90,4 @@ helm install wallet-stub -n wallet charts/ssi-dim-wallet-stub-memory
 | `wallet.keycloak.authServerUrl`             | Keycloak host URL                                                                      | `"http://localhost:28080/auth"`          |
 | `wallet.service.type`                       | Kubernetes service type                                                                | `ClusterIP`                              |
 | `wallet.service.port`                       | Kubernetes service port                                                                | `8080`                                   |
-| `keycloak.enabled`                          | Enable Keycloak configuration                                                          | `false`                                  |
+| `keycloak.enabled`                          | Enable centralidp for testing                                                          | `false`                                  |
