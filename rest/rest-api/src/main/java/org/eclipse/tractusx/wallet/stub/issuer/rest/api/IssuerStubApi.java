@@ -24,13 +24,16 @@ package org.eclipse.tractusx.wallet.stub.issuer.rest.api;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.eclipse.tractusx.wallet.stub.apidoc.rest.api.CredentialsApiDoc;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -39,6 +42,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Map;
 
 /**
  * The type Wallet controller.
@@ -80,6 +85,17 @@ public interface IssuerStubApi {
     GetCredentialsResponse getCredential(@PathVariable String externalCredentialId);
 
 
-    //TODO Request credential
-
+    /**
+     * Request a credential from the issuer.
+     *
+     * @param requestCredential The request credential
+     * @param applicationKey    The application key
+     * @param token             The authorization token
+     * @return The issue credential response
+     */
+    @CredentialsApiDoc.RequestCredential
+    @PostMapping(path = "/dcp/requestCredentials/{applicationKey}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    IssueCredentialResponse requestCredentialFromIssuer(@Valid @RequestBody RequestCredential requestCredential,
+                                                        @Parameter(description = "Application key, please pass catena-x-portal", example = "catena-x-portal") @PathVariable String applicationKey,
+                                                        @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 }

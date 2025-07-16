@@ -27,6 +27,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.IssuerCredentialService;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.rest.api.IssuerStubApi;
@@ -58,5 +59,10 @@ public class IssuerStubController implements IssuerStubApi {
     @Override
     public GetCredentialsResponse getCredential(String externalCredentialId) {
         return issuerCredentialService.getCredential(externalCredentialId);
+    }
+
+    @Override
+    public IssueCredentialResponse requestCredentialFromIssuer(RequestCredential requestCredential, String applicationKey, String token) {
+        return issuerCredentialService.requestCredentialFromIssuer(requestCredential, applicationKey, token);
     }
 }

@@ -123,6 +123,9 @@ Detailed documentation can be found [here](docs%2FREADME.md)
 10. No actual revocation of verifiable credentials
 11. All stored credentials will be lost upon application restart unless persistence and the database are enabled.
 12. JWTs are printed with debug log level for debugging purposes
+13. In the DCP credential request API, the credential expiration date will be ignored as we are issuing the credentials with a fixed expiration date of 1 year.
+14. In the DCP credential request API, issuerDid will be ignored as we are issuing the credentials with a fixed issuerDid of the base wallet BPN.
+15. In the DCP credential request API, We can request only one credential at a time, as the application is not designed to handle multiple credentials in a single request.
 
 ### Notice for Docker image
 

@@ -31,8 +31,10 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
+import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.api.CredentialNotFoundException;
@@ -42,6 +44,8 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.StoreRequestDerive;
@@ -55,6 +59,7 @@ import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -98,6 +103,9 @@ class IssuerCredentialServiceTest {
 
     @MockitoBean
     private TokenSettings tokenSettings;
+
+    @MockitoBean
+    private CredentialService credentialService;
 
     @Autowired
     private IssuerCredentialService issuerCredentialService;
@@ -332,5 +340,83 @@ class IssuerCredentialServiceTest {
 
         TestUtils.validateIssuerMetadataResponse(issuerMetadata, didDocument, walletStubSettings);
 
+    }
+
+    @Test
+    void requestCredentialFromIssuerTest(){
+
+        //plan
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .subject("1")
+                .issuer("")
+                .expirationTime(new Date(System.currentTimeMillis() + 60))
+                .claim(Constants.BPN, "BPNL000000000000")
+                .build();
+        when(tokenService.verifyTokenAndGetClaims(anyString())).thenReturn(jwtClaimsSet);
+        when(walletStubSettings.baseWalletBPN()).thenReturn("BPNL000000000000");
+        when(credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt("BPNL000000000001", "BpnCredential")).thenReturn(Pair.of("id", "jwt"));
+        RequestCredential requestCredential = RequestCredential.builder()
+                .issuerDid("did:web:localhost:BPNL000000000000")
+                .holderDid("did:web:localhost:BPNL000000000001")
+                .expirationDate("2025-01-01T00:00:00Z")
+                .requestedCredentials(List.of(RequestedCredential.builder()
+                        .credentialType("BpnCredential")
+                        .build()))
+                .build();
+
+        //act
+        IssueCredentialResponse issueCredentialResponse = issuerCredentialService
+                .requestCredentialFromIssuer(requestCredential, "catena-x-portal", "token");
+
+        //assert
+        assertNotNull(issueCredentialResponse);
+        assertEquals("id", issueCredentialResponse.getId());
+        assertEquals("jwt", issueCredentialResponse.getJwt());
+        Mockito.verify(didDocumentService, Mockito.times(1))
+                .getOrCreateDidDocument("BPNL000000000001");
+    }
+
+    @Test
+    void requestCredentialFromIssuerTest_throwsIllegalArgumentException_when_multipleRequest() {
+        RequestCredential requestCredential = RequestCredential.builder()
+                .issuerDid("did:web:localhost:BPNL000000000000")
+                .holderDid("did:web:localhost:BPNL000000000001")
+                .expirationDate("2025-01-01T00:00:00Z")
+                .requestedCredentials(List.of(RequestedCredential.builder()
+                        .credentialType("BpnCredential")
+                        .build(),
+                        RequestedCredential.builder()
+                        .credentialType("MembershipCredential")
+                        .build()))
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            issuerCredentialService.requestCredentialFromIssuer(requestCredential, "catena-x-portal", "token");
+        });
+    }
+
+    @Test
+    void requestCredentialFromIssuerTest_throwsIllegalArgumentException_when_invalid_caller(){
+        RequestCredential requestCredential = RequestCredential.builder()
+                .issuerDid("did:web:localhost:BPNL000000000000")
+                .holderDid("did:web:localhost:BPNL000000000001")
+                .expirationDate("2025-01-01T00:00:00Z")
+                .requestedCredentials(List.of(RequestedCredential.builder()
+                        .credentialType("BpnCredential")
+                        .build()))
+                .build();
+        //plan
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .subject("1")
+                .issuer("")
+                .expirationTime(new Date(System.currentTimeMillis() + 60))
+                .claim(Constants.BPN, "some-other-bpn")
+                .build();
+        when(tokenService.verifyTokenAndGetClaims(anyString())).thenReturn(jwtClaimsSet);
+        when(walletStubSettings.baseWalletBPN()).thenReturn("BPNL000000000000");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            issuerCredentialService.requestCredentialFromIssuer(requestCredential, "invalid-caller", "token");
+        });
     }
 }

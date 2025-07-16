@@ -37,7 +37,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
+import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.api.CredentialNotFoundException;
@@ -50,6 +52,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
@@ -80,6 +83,8 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
     private final Storage storage;
     private final TokenService tokenService;
     private final TokenSettings tokenSettings;
+    private final CredentialService credentialService;
+
 
     @SuppressWarnings("unchecked")
     private static String getHolderBpn(CustomCredential verifiableCredential) {
@@ -304,6 +309,32 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
                 .type(Constants.CREDENTIAL_ISSUER)
                 .credentialIssuer(issuerDidDocument.getId())
                 .credentialsSupported(List.of(credentialsSupported))
+                .build();
+    }
+
+    @Override
+    public IssueCredentialResponse requestCredentialFromIssuer(RequestCredential requestCredential, String applicationKey, String token) {
+
+        //in the stub issuer we only support one requested credential
+        if(requestCredential.getRequestedCredentials().size() !=1){
+            throw new IllegalArgumentException("Only one requested credential is supported in the stub issuer");
+        }
+
+        //validate token
+        String callerBpn = tokenService.verifyTokenAndGetClaims(token).getClaim(Constants.BPN).toString();
+        if(!Objects.equals(callerBpn, walletStubSettings.baseWalletBPN())){
+            throw new IllegalArgumentException("Caller BPN does not match the base wallet BPN");
+        }
+
+        String holderBpn = CommonUtils.getBpnFromDid(requestCredential.getHolderDid());
+
+        //create did document if not exists
+        didDocumentService.getOrCreateDidDocument(holderBpn);
+
+        Pair<String, String> pair = credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(holderBpn, requestCredential.getRequestedCredentials().get(0).getCredentialType());
+        return IssueCredentialResponse.builder()
+                .id(pair.getLeft())
+                .jwt(pair.getRight())
                 .build();
     }
 }

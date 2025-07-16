@@ -31,6 +31,7 @@ import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -104,8 +105,8 @@ public class MemoryStorage implements Storage {
             return Optional.empty();
         }else {
             String payload = jwtString.split("\\.")[1];
-            Map<String, Object> map = (Map<String, Object>) objectMapper.readValue(payload, Map.class).get(Constants.VC);
-            String vcId = map.get(Constants.ID).toString();
+            Map<String, Object> map = (Map<String, Object>) objectMapper.readValue(new String(Base64.getDecoder().decode(payload)), Map.class).get(Constants.VC);
+            String vcId = map.get(Constants.ID).toString().split("#")[1];
             return Optional.ofNullable(Pair.of(vcId,jwtString));
         }
     }

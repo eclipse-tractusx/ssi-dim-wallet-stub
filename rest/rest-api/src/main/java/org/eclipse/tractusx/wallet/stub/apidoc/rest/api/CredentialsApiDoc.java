@@ -388,4 +388,89 @@ public class CredentialsApiDoc {
     public @interface GetCredentials {
 
     }
+
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Operation(description = """
+            Request credential from issuer as per DCP flow.
+            """, summary = "Request credential from issuer as per DCP flow")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "JWT presentation", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Create a new credential", value = """
+                                    {
+                                       "id": "1f36af58-0fc0-4b24-9b1c-e37d59668089"
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Illegal Argument Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Bad request: Invalid token -> token",
+                                      "status": 400,
+                                      "detail": "IllegalArgumentException: Invalid token -> token",
+                                      "instance": "/api/v2.0.0/dcp/requestCredentials/{applicationKey}",
+                                      "properties": {
+                                        "timestamp": 1743154190590
+                                      }
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Missing Request Header Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Please provide the required header: Authorization",
+                                      "status": 401,
+                                      "detail": "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                                      "instance": "/api/v2.0.0/dcp/requestCredentials/{applicationKey}",
+                                      "properties": {
+                                        "timestamp": 1743085396772
+                                      }
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: ...",
+                                      "instance": "/api/v2.0.0/credentials",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
+                                    }
+                                    """)
+                    })
+            })
+    })
+    @RequestBody(content = {
+            @Content(examples = {
+                    @ExampleObject(value = """
+                            {
+                                "requestedCredentials": [
+                                  {
+                                    "credentialType": "BpnCredential",
+                                    "format": "vcdm11_jwt"
+                                  }
+                                ],
+                                "issuerDid": "did:web:data-provider",
+                                "holderDid": "did:web:data-consumer",
+                                "expirationDate": "2028-11-25T16:51:22.000Z"
+                              }
+                            """, description = "Request credentials", name = "Request credentials")
+            })
+    })
+    public @interface RequestCredential {
+    }
 }

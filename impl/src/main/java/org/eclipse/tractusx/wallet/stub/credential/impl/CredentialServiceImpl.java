@@ -95,9 +95,9 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
             SignedJWT vcJWT = CommonUtils.signedJWT(tokenBody, issuerKeyPair, issuerDocument.getVerificationMethod().getFirst().getId());
 
             String vcAsJwt = vcJWT.serialize();
-            String vcId = verifiableCredential.get(Constants.ID).toString();
-            storage.saveCredentialAsJwt(vcId, vcAsJwt, holderBpn, type);
-            return Pair.of(vcId ,vcAsJwt);
+            String vcIdUri = verifiableCredential.get(Constants.ID).toString();
+            storage.saveCredentialAsJwt(vcIdUri, vcAsJwt, holderBpn, type);
+            return Pair.of(vcIdUri.split("#")[1] ,vcAsJwt);
         } catch (IllegalArgumentException | InternalErrorException e) {
             throw e;
         } catch (Exception e) {
@@ -180,7 +180,7 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
             subject.put(Constants.MEMBER_OF, "Catena-X");
             CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                     vcIdUri.toString(), Constants.MEMBERSHIP_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
-            storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.MEMBERSHIP_CREDENTIAL);
+            storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, Constants.MEMBERSHIP_CREDENTIAL);
             return credentialWithoutProof;
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
@@ -196,7 +196,7 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
             CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                     vcIdUri.toString(), Constants.BPN_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-            storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.BPN_CREDENTIAL);
+            storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, Constants.BPN_CREDENTIAL);
             return credentialWithoutProof;
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
@@ -215,7 +215,7 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                 vcIdUri.toString(), Constants.USAGE_PURPOSE_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.USAGE_PURPOSE_CREDENTIAL);
+        storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, Constants.USAGE_PURPOSE_CREDENTIAL);
         return credentialWithoutProof;
     }
 
@@ -231,7 +231,7 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
             CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                     vcIdUri.toString(), Constants.DATA_EXCHANGE_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-            storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.DATA_EXCHANGE_CREDENTIAL);
+            storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, Constants.DATA_EXCHANGE_CREDENTIAL);
             return credentialWithoutProof;
         } catch (IllegalArgumentException | InternalErrorException e) {
             throw e;
