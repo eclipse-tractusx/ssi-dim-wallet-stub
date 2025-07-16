@@ -68,7 +68,12 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
         try {
             Optional<Pair<String, String>> optionalVC = storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type);
             if (optionalVC.isPresent()) {
-                return optionalVC.get();
+                //if Id is URI , we need to extract the id part
+                String vcId = optionalVC.get().getLeft();
+                if(vcId.contains("#")){
+                    vcId = vcId.split("#")[1];
+                }
+                return Pair.of(vcId, optionalVC.get().getRight());
             }
 
             CustomCredential verifiableCredential = getVerifiableCredentialByHolderBpnAndType(holderBpn, type);
