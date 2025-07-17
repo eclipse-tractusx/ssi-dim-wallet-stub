@@ -27,6 +27,7 @@ import lombok.SneakyThrows;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.MatchingCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialStatusResponse;
 import org.eclipse.tractusx.wallet.stub.runtime.postgresql.WalletStubApplication;
 import org.eclipse.tractusx.wallet.stub.config.TestContextInitializer;
@@ -43,7 +44,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.StoreRequestDerive;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
-import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
 import org.junit.jupiter.api.Assertions;
@@ -477,7 +478,7 @@ class IssuerTest {
         Assertions.assertEquals(1, requestedCredentials.size());
         RequestedCredential requestedCredential = requestedCredentials.get(0);
         Assertions.assertEquals(Constants.BPN_CREDENTIAL, requestedCredential.getCredentialType());
-        Assertions.assertEquals("vcdm11_jwt", requestedCredential.getFormat());
+        Assertions.assertEquals(Constants.VCDM_11_JWT, requestedCredential.getFormat());
 
         List<MatchingCredential> matchingCredentials = responseBody.getMatchingCredentials();
         Assertions.assertNotNull(matchingCredentials);
@@ -499,6 +500,48 @@ class IssuerTest {
         Assertions.assertNotNull(issueCredentialResponse.getId());
         Assertions.assertEquals(CommonUtils.getUuid(holderBpn, Constants.BPN_CREDENTIAL), issueCredentialResponse.getId());
         Assertions.assertNotNull(issueCredentialResponse.getJwt());
+    }
+
+    @Test
+    void testGetRequestedCredential(){
+
+        //plan
+        String holderBpn = TestUtils.getRandomBpmNumber();
+        String someOtherBpn = TestUtils.getRandomBpmNumber();
+        issueCredential(Constants.BPN_CREDENTIAL, holderBpn);
+        issueCredential(Constants.BPN_CREDENTIAL, someOtherBpn);
+
+
+        //act
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(walletStubSettings.baseWalletBPN(), restTemplate, tokenService, tokenSettings));
+        String filterQuery = "holderDid eq '" + CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn) + "'";
+        HttpEntity<RequestCredential> entity = new HttpEntity<>(headers);
+        ResponseEntity<RequestedCredentialResponse> response = restTemplate.exchange("/api/v2.0.0/dcp/credentialRequestsReceived?filter="+filterQuery, HttpMethod.GET, entity, RequestedCredentialResponse.class);
+
+        //check
+        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        RequestedCredentialResponse credentialResponse = response.getBody();
+        Assertions.assertNotNull(credentialResponse);
+
+        List<RequestCredential> requestedCredentials = credentialResponse.getRequestedCredentials();
+        Assertions.assertNotNull(requestedCredentials);
+        Assertions.assertEquals(1, requestedCredentials.size());
+        RequestCredential requestedCredential = requestedCredentials.get(0);
+
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn), requestedCredential.getHolderDid());
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), requestedCredential.getIssuerDid());
+        Assertions.assertEquals(Constants.BPN_CREDENTIAL, requestedCredential.getRequestedCredentials().get(0).getCredentialType());
+        Assertions.assertEquals(Constants.VCDM_11_JWT, requestedCredential.getRequestedCredentials().get(0).getFormat());
+        Assertions.assertEquals(Constants.STATUS_ISSUED, requestedCredential.getStatus());
+        Assertions.assertNotNull(requestedCredential.getId());
+        Assertions.assertNotNull(requestedCredential.getExpirationDate());
+
+        List<String> matchingCredentials = requestedCredential.getApprovedCredentials();
+        Assertions.assertNotNull(matchingCredentials);
+        Assertions.assertEquals(1, matchingCredentials.size());
+        String matchingCredential = matchingCredentials.get(0);
+        Assertions.assertEquals(CommonUtils.getUuid(holderBpn, Constants.BPN_CREDENTIAL), matchingCredential);
     }
 
     private IssueCredentialResponse issueCredential(String type, String holderBpn) {

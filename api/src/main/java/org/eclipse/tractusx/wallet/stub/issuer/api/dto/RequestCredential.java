@@ -40,10 +40,18 @@ public class RequestCredential {
 
     private String issuerDid;
 
+    private String id;
+
     @NotBlank
     private String holderDid;
 
     private String expirationDate;
 
     private List<RequestedCredential> requestedCredentials;
+
+    private List<String> approvedCredentials;
+
+    private String deliveryStatus;
+
+    private String status;
 }

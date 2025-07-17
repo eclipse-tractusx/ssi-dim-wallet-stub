@@ -25,6 +25,7 @@ package org.eclipse.tractusx.wallet.stub.storage.postgresql;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.dao.postgresql.entity.CustomCredentialEntity;
 import org.eclipse.tractusx.wallet.stub.dao.postgresql.entity.DidDocumentEntity;
@@ -39,9 +40,12 @@ import org.eclipse.tractusx.wallet.stub.dao.postgresql.repository.HolderCredenti
 import org.eclipse.tractusx.wallet.stub.dao.postgresql.repository.JWTCredentialRepository;
 import org.eclipse.tractusx.wallet.stub.dao.postgresql.repository.KeyPairRepository;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -88,7 +92,7 @@ public class DatabaseStorage implements Storage {
     @Override
     public void saveCredentialAsJwt(String vcId, String jwt, String holderBPn, String type) {
         String key = getMapKey(holderBPn, type);
-        holderCredentialAsJWTRepository.save(new HolderCredentialAsJWTEntity(key,vcId, jwt));
+        holderCredentialAsJWTRepository.save(new HolderCredentialAsJWTEntity(key,vcId, holderBPn, jwt));
         if (jwtCredentialRepository.findByVcId(vcId) == null) {
             jwtCredentialRepository.save(new JWTCredentialEntity(vcId, jwt));
         }
@@ -106,7 +110,7 @@ public class DatabaseStorage implements Storage {
     @Override
     public void saveCredentials(String vcId, CustomCredential credential, String holderBpn, String type) {
         String key = getMapKey(holderBpn, type);
-        holderCredentialRepository.save(new HolderCredentialEntity(key, credential));
+        holderCredentialRepository.save(new HolderCredentialEntity(key,holderBpn, credential));
         if (customCredentialRepository.findByVcId(vcId) == null) {
             customCredentialRepository.save(new CustomCredentialEntity(vcId, credential));
         }
@@ -195,4 +199,8 @@ public class DatabaseStorage implements Storage {
         return Optional.ofNullable(didDocumentEntity.getDidDocument());
     }
 
+    @Override
+    public List<CustomCredential> getVcIdAndTypesByHolderBpn(String holderBpn) {
+        return holderCredentialRepository.getCredentialByHolderBpn(holderBpn).stream().map(HolderCredentialEntity::getCredential).toList();
+    }
 }

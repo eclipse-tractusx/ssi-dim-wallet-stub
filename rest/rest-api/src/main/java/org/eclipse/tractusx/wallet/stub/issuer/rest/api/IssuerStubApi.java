@@ -30,6 +30,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialStatusResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -100,8 +102,28 @@ public interface IssuerStubApi {
                                                         @Parameter(description = "Application key, please pass catena-x-portal", example = "catena-x-portal") @PathVariable String applicationKey,
                                                         @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 
+    /**
+     * Gets the status of a credential request.
+     *
+     * @param credentialRequestId The credential request id
+     * @param token               The authorization token
+     * @return The requested credential status response
+     */
     @CredentialsApiDoc.CredentialRequestStatus
     @GetMapping(path = "/dcp/credentialRequestsReceived/{requestId}", produces = MediaType.APPLICATION_JSON_VALUE)
     RequestedCredentialStatusResponse getCredentialRequestStatus(@Parameter(description = "The credential request id", example = "7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f") @PathVariable(name = "requestId") String credentialRequestId,
                                                                  @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
+
+
+    /**
+     * Gets the requested credential based on a filter.
+     *
+     * @param filter The filter to apply to the requested credentials
+     * @param token  The authorization token
+     * @return The requested credential response
+     */
+    @CredentialsApiDoc.credentialRequestsReceived
+    @GetMapping(path = "/dcp/credentialRequestsReceived", produces = MediaType.APPLICATION_JSON_VALUE)
+    RequestedCredentialResponse getRequestedCredential(@RequestParam(name = "filter") String filter,
+                                                       @Parameter(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token);
 }

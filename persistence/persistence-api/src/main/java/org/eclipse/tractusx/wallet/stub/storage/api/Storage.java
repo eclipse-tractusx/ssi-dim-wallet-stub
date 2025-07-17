@@ -26,6 +26,7 @@ import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 
 import java.security.KeyPair;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -64,8 +65,22 @@ public interface Storage {
      */
     void saveCredentials(String vcId, CustomCredential credential, String holderBpn, String type);
 
+    /**
+     * Retrieves the Verifiable Credential associated with the provided Business Partner Number (holderBpn) and type.
+     *
+     * @param holderBpn The Business Partner Number of the holder.
+     * @param type      The type of the credential.
+     * @return An Optional containing the Verifiable Credential if found, otherwise an empty Optional.
+     */
     Optional<CustomCredential> getCredentialsByHolderBpnAndType(String holderBpn, String type);
 
+    /**
+     * Retrieves the JWT credential associated with the provided Business Partner Number (holderBpn) and type.
+     *
+     * @param holderBpn The Business Partner Number of the holder.
+     * @param type      The type of the credential.
+     * @return An Optional containing a Pair of the Verifiable Credential ID and the JWT credential if found, otherwise an empty Optional.
+     */
     Optional<Pair<String, String>> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type);
 
 
@@ -112,4 +127,12 @@ public interface Storage {
      * @return An Optional containing the DID Document associated with the provided bpn. If no DID Document is found, return an empty Optional.
      */
     Optional<DidDocument> getDidDocument(String bpn);
+
+    /**
+     * Retrieves a list of Verifiable Credential IDs and their types associated with the provided Business Partner Number (holderBpn).
+     *
+     * @param holderBpn The Business Partner Number of the holder.
+     * @return A list of CustomCredential objects containing the Verifiable Credential IDs and their types.
+     */
+    List<CustomCredential> getVcIdAndTypesByHolderBpn(String holderBpn);
 }

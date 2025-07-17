@@ -55,6 +55,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.MatchingCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialStatusResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
@@ -62,14 +63,13 @@ import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
-import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.KeyPair;
 import java.security.interfaces.ECPrivateKey;
 import java.util.*;
@@ -136,16 +136,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
 
             DidDocument holderDidDocument = didDocumentService.getOrCreateDidDocument(holderBpn);
 
-            String type;
-            List<String> types = (List<String>) verifiableCredential.get(Constants.TYPE);
-            //https://www.w3.org/TR/vc-data-model/#types As per the VC schema, types can be multiple, but index 1 should have the correct type.
-            if (types.size() == 2) {
-                type = types.get(1);
-            } else if (types.size() == 1) {
-                type = types.getFirst();
-            } else {
-                throw new NoVCTypeFoundException("No type found in VC");
-            }
+            String type = CommonUtils.getTypeFromCustomCredential(verifiableCredential);
 
             //sign
             String vcId = CommonUtils.getUuid(holderBpn, type);
@@ -200,6 +191,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
+
 
     private Optional<String> signCredential(String credentialId) {
         try {
@@ -354,7 +346,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
                 .holderDid(credentialSubject.get(Constants.ID))
                 .requestedCredentials(List.of(RequestedCredential.builder()
                                 .credentialType(type)
-                                .format("vcdm11_jwt")
+                                .format(Constants.VCDM_11_JWT)
                         .build())
                 )
                 .status(Constants.STATUS_ISSUED)
@@ -368,6 +360,38 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
                                 .application(Constants.CATENA_X_PORTAL)
                                 .build()
                 ))
+                .build();
+    }
+
+    @Override
+    public RequestedCredentialResponse getRequestedCredential(String holderDid, String token) {
+        String holderBpn = CommonUtils.getBpnFromDid(holderDid);
+        List<CustomCredential> credentials = storage.getVcIdAndTypesByHolderBpn(holderBpn);
+
+        List<RequestCredential> requestedCredentials = new ArrayList<>(credentials.size());
+
+        credentials.forEach(credential ->{
+            String vcId = credential.get(Constants.ID).toString().split("#")[1];
+            requestedCredentials.add(RequestCredential.builder()
+                            .id(vcId)
+                            .issuerDid(credential.get(Constants.ISSUER).toString())
+                            .holderDid(CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn))
+                            .expirationDate(credential.get(Constants.EXPIRATION_DATE).toString())
+                            .deliveryStatus(Constants.DELIVERY_STATUS_COMPLETED)
+                            .status(Constants.STATUS_ISSUED)
+                            .approvedCredentials(List.of(vcId))
+                            .requestedCredentials(List.of(
+                                    RequestedCredential.builder()
+                                            .credentialType(CommonUtils.getTypeFromCustomCredential(credential))
+                                            .format(Constants.VCDM_11_JWT)
+                                            .build()
+                            ))
+
+                    .build());
+        });
+        return RequestedCredentialResponse.builder()
+                .count(credentials.size())
+                .requestedCredentials(requestedCredentials)
                 .build();
     }
 }

@@ -47,6 +47,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.MatchingCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialStatusResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
@@ -57,7 +58,7 @@ import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
-import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.eclipse.tractusx.wallet.stub.utils.test.TestUtils;
 import org.junit.jupiter.api.Test;
@@ -502,7 +503,7 @@ class IssuerCredentialServiceTest {
         assertEquals(1, response.getRequestedCredentials().size());
         RequestedCredential requestedCredential = response.getRequestedCredentials().getFirst();
         assertEquals("TestCredential", requestedCredential.getCredentialType());
-        assertEquals("vcdm11_jwt", requestedCredential.getFormat());
+        assertEquals(Constants.VCDM_11_JWT, requestedCredential.getFormat());
 
         // Verify matching credentials
         assertEquals(1, response.getMatchingCredentials().size());
@@ -513,5 +514,47 @@ class IssuerCredentialServiceTest {
         assertEquals("jwt", matchingCredential.getVerifiableCredential());
         assertEquals(customCredential, matchingCredential.getCredential());
         assertEquals(Constants.CATENA_X_PORTAL, matchingCredential.getApplication());
+    }
+
+
+    @Test
+    void getRequestedCredentialTest() {
+        // Arrange
+        String holderDid = "did:web:localhost:BPNL000000000001";
+        String token = "test-token";
+        String holderBpn = "BPNL000000000001";
+
+        // Create test credentials
+        CustomCredential credential = new CustomCredential();
+        credential.put(Constants.ID, "did:web:test-issuer#test-credential-id");
+        credential.put(Constants.ISSUER, "did:web:test-issuer");
+        credential.put(Constants.TYPE, List.of("VerifiableCredential", "TestCredential"));
+        credential.put(Constants.EXPIRATION_DATE, "2025-01-01T00:00:00Z");
+
+        // Mock dependencies
+        when(walletStubSettings.didHost()).thenReturn("localhost");
+        when(storage.getVcIdAndTypesByHolderBpn(holderBpn)).thenReturn(List.of(credential));
+
+        // Act
+        RequestedCredentialResponse response = issuerCredentialService.getRequestedCredential(holderDid, token);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(1, response.getCount());
+        assertEquals(1, response.getRequestedCredentials().size());
+
+        RequestCredential requestedCredential = response.getRequestedCredentials().getFirst();
+        assertEquals("test-credential-id", requestedCredential.getId());
+        assertEquals("did:web:test-issuer", requestedCredential.getIssuerDid());
+        assertEquals("did:web:localhost:BPNL000000000001", requestedCredential.getHolderDid());
+        assertEquals("2025-01-01T00:00:00Z", requestedCredential.getExpirationDate());
+        assertEquals(Constants.DELIVERY_STATUS_COMPLETED, requestedCredential.getDeliveryStatus());
+        assertEquals(Constants.STATUS_ISSUED, requestedCredential.getStatus());
+        assertEquals(List.of("test-credential-id"), requestedCredential.getApprovedCredentials());
+
+        List<RequestedCredential> requestedCredentials = requestedCredential.getRequestedCredentials();
+        assertEquals(1, requestedCredentials.size());
+        assertEquals("TestCredential", requestedCredentials.getFirst().getCredentialType());
+        assertEquals(Constants.VCDM_11_JWT, requestedCredentials.getFirst().getFormat());
     }
 }

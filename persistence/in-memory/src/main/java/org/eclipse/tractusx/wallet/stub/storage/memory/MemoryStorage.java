@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -134,5 +135,17 @@ public class MemoryStorage implements Storage {
     @Override
     public Optional<DidDocument> getDidDocument(String bpn) {
         return Optional.ofNullable(DID_DOCUMENT_STORE.get(bpn));
+    }
+
+    @Override
+    public List<CustomCredential> getVcIdAndTypesByHolderBpn(String holderBpn) {
+        return HOLDER_CREDENTIAL_STORE.values().stream().filter(credential -> {
+            Map<String, String> credentialSubject = (Map<String, String>) credential.get(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE);
+            if (!credentialSubject.containsKey(Constants.ID)) {
+                return false;
+            } else {
+                return credentialSubject.get(Constants.ID).toString().contains(holderBpn);
+            }
+        }).toList();
     }
 }

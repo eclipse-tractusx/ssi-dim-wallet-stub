@@ -23,11 +23,14 @@
 package org.eclipse.tractusx.wallet.stub.issuer.rest.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.wallet.stub.issuer.api.IssuerCredentialService;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.GetCredentialsResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialStatusResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
@@ -41,6 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class IssuerStubController implements IssuerStubApi {
 
     private final IssuerCredentialService issuerCredentialService;
@@ -70,5 +74,20 @@ public class IssuerStubController implements IssuerStubApi {
     @Override
     public RequestedCredentialStatusResponse getCredentialRequestStatus(String credentialRequestId, String token) {
         return issuerCredentialService.getCredentialRequestStatus(credentialRequestId, token);
+    }
+
+    @Override
+    public RequestedCredentialResponse getRequestedCredential(String filter, String token) {
+        //We are not supporting OData query parameters in this stub implementation. This is out of scope for the stub application
+        //We are assuming we will get a filter like: $filter=holderDid eq 'did:example:1234'
+        //No other filters are supported in this stub implementation
+        String holderDid;
+        try{
+            holderDid= filter.trim().split("\\s")[2].replaceAll("'", StringUtils.EMPTY).trim();
+       }catch (Exception e){
+            log.error("Error while parsing filter: {}", filter, e);
+            throw new IllegalArgumentException("Invalid filter format. Expected format: $filter=holderDid eq 'did:example:1234'");
+        }
+        return issuerCredentialService.getRequestedCredential(holderDid, token);
     }
 }

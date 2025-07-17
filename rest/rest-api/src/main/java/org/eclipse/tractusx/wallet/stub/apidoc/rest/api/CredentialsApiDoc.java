@@ -584,4 +584,92 @@ public class CredentialsApiDoc {
     })
     public @interface CredentialRequestStatus {
     }
+
+
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Operation(description = """
+            Get requested credentials.
+            """, summary = "Get requested credentials")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Credential details", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Credential details", value = """
+                                    {
+                                          "count": 1,
+                                          "data": [
+                                              {
+                                                  "id": "f15a7272-dd6c-4721-bd6b-43258096932a",
+                                                  "expirationDate": "2025-06-24T08:36:05.000Z",
+                                                  "requestedCredentials": [
+                                                      {
+                                                          "format": "vcdm11_jwt",
+                                                          "credentialType": "BpnCredential"
+                                                      }
+                                                  ],
+                                                  "holderDid": "did:web:localhost:BPNL000000000000",
+                                                  "issuerDid": "did:web:localhost:BPNL000000000000",
+                                                  "status": "ISSUED",
+                                                  "approvedCredentials": [
+                                                      "45836ee5-a6e4-4a50-8216-d3231c523a8f"
+                                                  ],
+                                                  "deliveryStatus": "COMPLETED"
+                                              }
+                                          ]
+                                      }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "404", description = "Bad request", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Illegal Argument Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Invalid holder did",
+                                      "status": 400,
+                                      "detail": "Credential details",
+                                      "instance": "/api/v2.0.0/dcp/credentialRequestsReceived",
+                                      "properties": {
+                                        "timestamp": 1743154190590
+                                      }
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Missing Request Header Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Please provide the required header: Authorization",
+                                      "status": 401,
+                                      "detail": "MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present",
+                                      "instance": "/api/v2.0.0/dcp/credentialRequestsReceived",
+                                      "properties": {
+                                        "timestamp": 1743085396772
+                                      }
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: ...",
+                                      "instance": "/api/v2.0.0/dcp/credentialRequestsReceived",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
+                                    }
+                                    """)
+                    })
+            })
+    })
+    public @interface credentialRequestsReceived {
+    }
 }

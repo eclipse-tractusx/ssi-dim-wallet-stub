@@ -95,4 +95,6 @@ public class Constants {
     public static final String ISSUER = "issuer";
     public static final String CATENA_X_PORTAL = "catena-x Portal";
 
+    public static final String VCDM_11_JWT = "vcdm11_jwt";
+    public static final String DELIVERY_STATUS_COMPLETED = "COMPLETED";
 }

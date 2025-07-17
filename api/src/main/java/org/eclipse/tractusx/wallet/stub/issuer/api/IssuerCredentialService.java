@@ -29,6 +29,7 @@ import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssueCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestCredential;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.RequestedCredentialStatusResponse;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialRequest;
 import org.eclipse.tractusx.wallet.stub.issuer.api.dto.SignCredentialResponse;
@@ -67,4 +68,13 @@ public interface IssuerCredentialService {
      * @return The response containing the status of the requested credential.
      */
     RequestedCredentialStatusResponse getCredentialRequestStatus(String credentialRequestId, String token);
+
+    /**
+     * Retrieves a requested credential by holder DID and token.
+     *
+     * @param holderDid The DID of the holder.
+     * @param token     The token for authorization.
+     * @return The response containing the requested credential.
+     */
+    RequestedCredentialResponse getRequestedCredential(String holderDid, String token);
 }
