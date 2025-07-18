@@ -52,9 +52,8 @@ public class Constants {
             DATA_EXCHANGE_CREDENTIAL
     );
 
-    public static final String VC_20_BSSL_JWT = "vc20-bssl/jwt";
     public static final String VC_10_SL_2021_JWT = "vc10-sl2021/jwt";
-    public static final List<String> CREDENTIAL_PROFILE =   List.of(VC_20_BSSL_JWT, VC_10_SL_2021_JWT);
+    public static final List<String> CREDENTIAL_PROFILE =   List.of(VC_10_SL_2021_JWT);
     public static final String OFFER_REASON = "reissue";
     public static final String DID_WEB = "did:web";
     public static final String CREDENTIAL_OBJECT = "CredentialObject";

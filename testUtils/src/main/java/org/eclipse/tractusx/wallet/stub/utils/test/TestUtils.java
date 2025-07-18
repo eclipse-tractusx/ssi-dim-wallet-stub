@@ -165,7 +165,6 @@ public class TestUtils {
         CredentialsSupported credentialsSupported = issuerMetadata.getCredentialsSupported().get(0);
 
         assertEquals(2, credentialsSupported.getProfiles().size());
-        assertTrue(credentialsSupported.getProfiles().contains(Constants.VC_20_BSSL_JWT));
         assertTrue(credentialsSupported.getProfiles().contains(Constants.VC_10_SL_2021_JWT));
 
         //validate supported credential types
