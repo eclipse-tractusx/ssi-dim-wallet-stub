@@ -27,12 +27,12 @@ import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
-import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.exception.api.MalformedCredentialsException;
 import org.eclipse.tractusx.wallet.stub.exception.api.ParseStubException;
@@ -50,6 +50,7 @@ import java.security.interfaces.ECPublicKey;
 import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -59,10 +60,25 @@ public class TokenServiceImpl implements TokenService {
 
     private final KeyService keyService;
 
-    private final DidDocumentService didDocumentService;
-
     private final TokenSettings tokenSettings;
 
+
+    @SneakyThrows
+    @Override
+    public Optional<String> getBpnFromToken(String token) {
+        JWTClaimsSet jwtClaimsSet = this.verifyTokenAndGetClaims(token);
+
+        String bpn = jwtClaimsSet.getClaimAsString(Constants.BPN);
+        if(StringUtils.isBlank(bpn)){
+            bpn = jwtClaimsSet.getClaimAsString(Constants.CAPITAL_BPN);
+        }
+        if (StringUtils.isBlank(bpn)) {
+            log.error("BPN not found in token claims: {}", jwtClaimsSet.toString());
+            return Optional.empty();
+        }else{
+            return Optional.of(bpn);
+        }
+    }
 
     @Override
     public JWTClaimsSet verifyTokenAndGetClaims(String token) {
@@ -80,11 +96,10 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenResponse createAccessTokenResponse(TokenRequest request) {
+    public TokenResponse createAccessTokenResponse(TokenRequest request, DidDocument didDocument) {
         try {
             //here clientId will be BPN
             KeyPair keyPair = keyService.getKeyPair(request.getClientId());
-            DidDocument didDocument = didDocumentService.getOrCreateDidDocument(request.getClientId());
 
             //time config
             Date time = new Date();

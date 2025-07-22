@@ -25,6 +25,8 @@
 package org.eclipse.tractusx.wallet.stub.did.api;
 
 
+import org.eclipse.edc.iam.did.spi.document.Service;
+
 import java.util.Optional;
 
 public interface DidDocumentService {
@@ -32,4 +34,13 @@ public interface DidDocumentService {
     DidDocument getOrCreateDidDocument(String issuerBpn);
 
     Optional<DidDocument> getDidDocument(String bpn);
+
+    /**
+     * Add/Updates the service in the DID document.
+     *
+     * @param service The service to be updated in the DID document.
+     * @param token   The authorization token provided in the request header.
+     * @return The updated DID document.
+     */
+    DidDocument updateDidDocumentService(Service service, String token);
 }

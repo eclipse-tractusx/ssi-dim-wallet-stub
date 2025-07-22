@@ -37,6 +37,7 @@ import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +58,8 @@ public class DidDocumentServiceImpl implements DidDocumentService {
     private final WalletStubSettings walletStubSettings;
 
     private final Storage storage;
+
+    private final TokenService tokenService;
 
     @Override
     public DidDocument getOrCreateDidDocument(String issuerBpn) {
@@ -119,5 +122,26 @@ public class DidDocumentServiceImpl implements DidDocumentService {
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
+    }
+
+    @Override
+    public DidDocument updateDidDocumentService(org.eclipse.edc.iam.did.spi.document.Service service, String token) {
+
+        // Validate the token and extract BPN
+        String bpn = tokenService.getBpnFromToken(token).orElseThrow(() -> new SecurityException("Invalid token: BPN not found"));
+
+        DidDocument didDocument = getOrCreateDidDocument(bpn);
+        List<org.eclipse.edc.iam.did.spi.document.Service> existingServices = didDocument.getService();
+
+        // Check if the service already exists in the DID document, remove it if it does, and then add the new or updated service
+        boolean serviceExists = existingServices.removeIf(s -> s.getType().equals(service.getType()));
+        if (serviceExists) {
+            log.debug("Updated existing service in DID document for bpn: {}, Service type: {}", bpn, service.getType());
+        } else {
+            log.debug("Added new service to DID document for bpn: {}, Service type: {}", bpn, service.getType());
+        }
+        existingServices.add(service);
+        storage.saveDidDocument(bpn, didDocument);
+        return didDocument;
     }
 }

@@ -30,6 +30,7 @@ import com.nimbusds.jose.crypto.ECDSASigner;
 import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
@@ -58,10 +59,12 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
@@ -183,7 +186,7 @@ class TokenServiceTest {
         String token = signedJWT.serialize();
 
         TokenRequest tokenRequest = new TokenRequest("client", "secret", "grant");
-        TokenResponse tokenResponse = tokenService.createAccessTokenResponse(tokenRequest);
+        TokenResponse tokenResponse = tokenService.createAccessTokenResponse(tokenRequest, didDocument);
 
         assertEquals(tokenResponse.getAccessToken().split("\\.")[0],
                 token.split("\\.")[0]);
@@ -231,5 +234,48 @@ class TokenServiceTest {
         assertThrows(MalformedCredentialsException.class, () -> {
             tokenService.setClientInfo(tokenRequest, token);
         });
+    }
+
+    @Test
+    void getBpnFromToken_shouldExtractBpn(){
+        // Arrange
+        String expectedBpn = "BPNL00000001CRHK";
+        KeyPair keyPair = DeterministicECKeyPairGenerator.createKeyPair("test", "test");
+
+        // Create signed JWT with BPN claim
+        List.of(Constants.BPN, Constants.CAPITAL_BPN).forEach(bpnKeyName->{
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                    .claim(bpnKeyName, expectedBpn)
+                    .build();
+            SignedJWT signedJWT = createSignedJWT(claimsSet, keyPair, "did:web:localhost:BPNL00000001CRHK#key-1");
+
+            // Mock dependencies
+            when(keyService.getKeyPair(anyString())).thenReturn(keyPair);
+
+            // Act
+            Optional<String> result = tokenService.getBpnFromToken(signedJWT.serialize());
+
+            // Assert
+            assertTrue(result.isPresent());
+            assertEquals(expectedBpn, result.get());
+        });
+
+    }
+
+
+    // Helper method to create signed JWT
+    @SneakyThrows
+    private SignedJWT createSignedJWT(JWTClaimsSet claimsSet, KeyPair keyPair, String keyId) {
+        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256K)
+                .type(JOSEObjectType.JWT)
+                .keyID(keyId)
+                .build();
+
+        SignedJWT signedJWT = new SignedJWT(header, claimsSet);
+        JWSSigner signer = new ECDSASigner((ECPrivateKey) keyPair.getPrivate());
+        signer.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+        signedJWT.sign(signer);
+
+        return signedJWT;
     }
 }

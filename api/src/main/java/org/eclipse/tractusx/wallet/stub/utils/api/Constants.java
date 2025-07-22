@@ -31,6 +31,7 @@ import java.util.List;
 public class Constants {
 
     public static final String BPN = "bpn";
+    public static final String CAPITAL_BPN = "BPN";
     public static final String TOKEN_TYPE_BEARER = "Bearer";
     public static final String TOKEN = "token";
     public static final String HOLDER_IDENTIFIER = "holderIdentifier";

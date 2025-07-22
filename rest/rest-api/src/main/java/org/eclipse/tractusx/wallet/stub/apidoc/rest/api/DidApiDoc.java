@@ -25,6 +25,7 @@ package org.eclipse.tractusx.wallet.stub.apidoc.rest.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
@@ -47,7 +48,7 @@ public class DidApiDoc {
     @Retention(RetentionPolicy.RUNTIME)
     @Operation(description = """
             Resolve the DID document for a given BPN
-            
+
             """, summary = "Resolve the DID document for a given BPN")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "DID document", content = {
@@ -107,5 +108,87 @@ public class DidApiDoc {
     })
     public @interface DidDocument {
 
+    }
+
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Operation(description = """
+            Add/Update the service in the DID document.
+
+            """, summary = "Add/Update the service in the DID document")
+    @RequestBody(content = {
+            @Content(examples = {
+                    @ExampleObject(value = """
+                            {
+                               "type": "DataService",
+                               "serviceEndpoint": "https://subdomain.provider-domain.com/subpath/.well-known/dspace-version",
+                               "id": "did:web:provider-domain.com#dsp-agent-1"
+                            }
+                            """, description = "Add/update Update Did document service", name = "Add/update Update Did document service")
+            })
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "DID document", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "DID document", value = """
+                                    {
+                                      "service": [
+                                        {
+                                          "id": "https://localhost#credential-service",
+                                          "type": "CredentialService",
+                                          "serviceEndpoint": "https://localhost/api"
+                                        },
+                                        {
+                                              "type": "DataService",
+                                              "serviceEndpoint": "https://subdomain.provider-domain.com/subpath/.well-known/dspace-version",
+                                              "id": "did:web:provider-domain.com#dsp-agent-1"
+                                            }
+                                      ],
+                                      "verificationMethod": [
+                                        {
+                                          "id": "did:web:localhost:BPNL000000000000#c3932ff5-8da4-3de9-a942-62125f394e41",
+                                          "type": "JsonWebKey2020",
+                                          "controller": "did:web:localhost:BPNL000000000000",
+                                          "publicKeyJwk": {
+                                            "kty": "EC",
+                                            "use": "sig",
+                                            "crv": "secp256k1",
+                                            "x": "NytYgtL_rte4EIXpb46e7pntJiPjH4l_pN1j1PVxkO8",
+                                            "y": "99JkYiCOkBfb8qCncv_YWdHy3eZGAQojWbmaEDFwSlU"
+                                          }
+                                        }
+                                      ],
+                                      "authentication": [
+                                        "did:web:localhost:BPNL000000000000#c3932ff5-8da4-3de9-a942-62125f394e41"
+                                      ],
+                                      "id": "did:web:localhost:BPNL000000000000",
+                                      "@context": [
+                                        "https://www.w3.org/ns/did/v1",
+                                        "https://w3c.github.io/vc-jws-2020/contexts/v1",
+                                        "https://w3id.org/did-resolution/v1"
+                                      ]
+                                    }
+                                    """)
+                    })
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(examples = {
+                            @ExampleObject(name = "Internal Error Exception", value = """
+                                    {
+                                      "type": "about:blank",
+                                      "title": "Internal Server Error",
+                                      "status": 500,
+                                      "detail": "InternalErrorException: ...",
+                                      "instance": "/BPNL12121221/did.json",
+                                      "properties": {
+                                        "timestamp": 1743062000750
+                                      }
+                                    }
+                                    """)
+                    })
+            })
+    })
+    public @interface UpdateDidDocumentService {
     }
 }

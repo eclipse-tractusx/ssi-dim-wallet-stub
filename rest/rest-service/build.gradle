@@ -54,6 +54,9 @@ dependencies {
 
     // UTILS
     implementation 'org.apache.commons:commons-lang3'
+
+    // EDC
+    implementation "org.eclipse.edc:crypto-common-lib"
 }
 
 test {
