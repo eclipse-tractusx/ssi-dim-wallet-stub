@@ -74,6 +74,8 @@ public class Constants {
     public static final String TYPE = "type";
     public static final String SCOPE = "scope";
     public static final String CREDENTIAL_SERVICE = "CredentialService";
+    public static final String ISSUER_SERVICE = "IssuerService";
+
     public static final String JSON_WEB_KEY_2020 = "JsonWebKey2020";
     public static final String STATUS_PURPOSE = "statusPurpose";
     public static final String REVOCATION = "revocation";

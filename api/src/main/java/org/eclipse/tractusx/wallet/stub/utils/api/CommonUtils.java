@@ -271,4 +271,12 @@ public class CommonUtils {
         credential.put("expirationDate", DATE_TIME_FORMATER.format(expiryDate.toInstant()));
         return credential;
     }
+
+    public static String getCredentialServiceUrl(String stubUrl){
+        return  stubUrl + "/api";
+    }
+
+    public static String getIssuerServiceUrl(String stubUrl, String bpn) {
+        return stubUrl + "/api/v1.0.0/dcp/" + bpn;
+    }
 }
