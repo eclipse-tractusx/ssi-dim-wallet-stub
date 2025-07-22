@@ -22,6 +22,7 @@
 
 package org.eclipse.tractusx.wallet.stub.credential.api;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 
 public interface CredentialService {
@@ -33,9 +34,9 @@ public interface CredentialService {
      *
      * @param holderBpn The BPN of the holder for whom the credential is issued.
      * @param type      The type of the credential.
-     * @return The verifiable credential in JWT format for the specified holder's BPN and type.
+     * @return A pair containing the id of verifiable credential and JWT string.
      */
-    String getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type);
+    Pair<String, String> getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type);
 
     /**
      * Issues a status list credential for the specified holder's BPN and VC ID.

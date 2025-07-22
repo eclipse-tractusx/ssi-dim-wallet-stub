@@ -1,7 +1,6 @@
 /*
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
- *  Copyright (c) 2025 LKS Next
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -20,33 +19,12 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.dao.postgresql.entity;
+--liquibase formatted sql
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.*;
+--changeset nitin-vavdiya:1
+ALTER TABLE holder_credential_as_jwt ADD COLUMN holder_bpn VARCHAR NOT NULL;
+--rollback ALTER TABLE holder_credential_as_jwt DROP COLUMN holder_bpn;
 
-@Entity
-@Table(name = "holder_credential_as_jwt")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class HolderCredentialAsJWTEntity {
-
-    @Id
-    @Column(name = "\"key\"", nullable = false)
-    private String key;
-
-    @Column(nullable = false)
-    private String vcId;
-
-    @Column(nullable = false)
-    private String holderBpn;
-
-    @Column(name = "jwt", columnDefinition = "TEXT", nullable = false)
-    private String jwt;
-}
+--changeset nitin-vavdiya:2
+ALTER TABLE holder_credential ADD COLUMN holder_bpn VARCHAR NOT NULL;
+--rollback ALTER TABLE holder_credential DROP COLUMN holder_bpn;

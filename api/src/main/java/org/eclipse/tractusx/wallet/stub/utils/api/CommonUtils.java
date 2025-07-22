@@ -19,7 +19,7 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.utils.impl;
+package org.eclipse.tractusx.wallet.stub.utils.api;
 
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -49,10 +49,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 
+import org.eclipse.tractusx.wallet.stub.exception.api.NoVCTypeFoundException;
 import org.eclipse.tractusx.wallet.stub.exception.api.ParseStubException;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
-import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
-import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 
 @UtilityClass
 public class CommonUtils {
@@ -182,6 +181,28 @@ public class CommonUtils {
     public static String getBpnFromDid(String did) {
         Matcher matcher = pattern.matcher(did);
         return matcher.find() ? matcher.group() : null;
+    }
+
+    /**
+     * Extracts the type from a custom credential.
+     *
+     * @param verifiableCredential The custom credential from which to extract the type.
+     * @return The type of the custom credential.
+     */
+    public static String getTypeFromCustomCredential(CustomCredential verifiableCredential) {
+        Object typesObj = verifiableCredential.get(Constants.TYPE);
+        if (!(typesObj instanceof List<?> types) || types.isEmpty() || !(types.getFirst() instanceof String)) {
+            throw new NoVCTypeFoundException("Invalid type format in VC");
+        }
+        List<String> typeList = (List<String>) typesObj;
+        //https://www.w3.org/TR/vc-data-model/#types As per the VC schema, types can be multiple, but index 1 should have the correct type.
+        if (typeList.size() == 2) {
+            return typeList.get(1);
+        } else if (typeList.size() == 1) {
+            return typeList.getFirst();
+        } else {
+            throw new NoVCTypeFoundException("No type found in VC");
+        }
     }
 
     private static String createEncodedList(byte[] bitstringBytes) throws IOException {

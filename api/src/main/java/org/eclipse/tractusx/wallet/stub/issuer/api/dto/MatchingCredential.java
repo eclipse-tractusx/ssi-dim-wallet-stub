@@ -1,7 +1,6 @@
 /*
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
- *  Copyright (c) 2025 LKS Next
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -20,33 +19,28 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.dao.postgresql.entity;
+package org.eclipse.tractusx.wallet.stub.issuer.api.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.*;
 
-@Entity
-@Table(name = "holder_credential_as_jwt")
-@Getter
-@Setter
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.Map;
+
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
-public class HolderCredentialAsJWTEntity {
+public class MatchingCredential {
 
-    @Id
-    @Column(name = "\"key\"", nullable = false)
-    private String key;
-
-    @Column(nullable = false)
-    private String vcId;
-
-    @Column(nullable = false)
-    private String holderBpn;
-
-    @Column(name = "jwt", columnDefinition = "TEXT", nullable = false)
-    private String jwt;
+    private String id;
+    private String name;
+    private String description;
+    private String verifiableCredential;
+    private String application = "catena-x-portal";
+    private Map<String, Object> credential;
 }

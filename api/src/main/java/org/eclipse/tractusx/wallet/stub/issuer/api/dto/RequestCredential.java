@@ -1,7 +1,6 @@
 /*
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
- *  Copyright (c) 2025 LKS Next
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -20,33 +19,39 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.dao.postgresql.entity;
+package org.eclipse.tractusx.wallet.stub.issuer.api.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.*;
 
-@Entity
-@Table(name = "holder_credential_as_jwt")
-@Getter
-@Setter
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
-public class HolderCredentialAsJWTEntity {
+public class RequestCredential {
 
-    @Id
-    @Column(name = "\"key\"", nullable = false)
-    private String key;
+    private String issuerDid;
 
-    @Column(nullable = false)
-    private String vcId;
+    private String id;
 
-    @Column(nullable = false)
-    private String holderBpn;
+    @NotBlank
+    private String holderDid;
 
-    @Column(name = "jwt", columnDefinition = "TEXT", nullable = false)
-    private String jwt;
+    private String expirationDate;
+
+    private List<RequestedCredential> requestedCredentials;
+
+    private List<String> approvedCredentials;
+
+    private String deliveryStatus;
+
+    private String status;
 }

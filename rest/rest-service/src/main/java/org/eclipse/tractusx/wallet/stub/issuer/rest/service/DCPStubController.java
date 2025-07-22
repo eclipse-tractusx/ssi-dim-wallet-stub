@@ -1,7 +1,7 @@
 /*
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
- *  Copyright (c) 2025 LKS Next
+ *  Copyright (c) 2025 Cofinity-X
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -20,33 +20,22 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.dao.postgresql.entity;
+package org.eclipse.tractusx.wallet.stub.issuer.rest.service;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
+import org.eclipse.tractusx.wallet.stub.issuer.api.IssuerCredentialService;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.rest.api.DCPIssuerStubApi;
+import org.springframework.web.bind.annotation.RestController;
 
-@Entity
-@Table(name = "holder_credential_as_jwt")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class HolderCredentialAsJWTEntity {
+@RestController
+@RequiredArgsConstructor
+public class DCPStubController implements DCPIssuerStubApi {
 
-    @Id
-    @Column(name = "\"key\"", nullable = false)
-    private String key;
+    private final IssuerCredentialService issuerCredentialService;
 
-    @Column(nullable = false)
-    private String vcId;
-
-    @Column(nullable = false)
-    private String holderBpn;
-
-    @Column(name = "jwt", columnDefinition = "TEXT", nullable = false)
-    private String jwt;
+    @Override
+    public IssuerMetadataResponse getIssuerMetadata(String walletIdentifier) {
+        return issuerCredentialService.getIssuerMetadata(walletIdentifier);
+    }
 }

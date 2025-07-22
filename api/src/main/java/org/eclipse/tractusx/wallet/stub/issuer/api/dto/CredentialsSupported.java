@@ -1,7 +1,7 @@
 /*
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
- *  Copyright (c) 2025 LKS Next
+ *  Copyright (c) 2025 Cofinity-X
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -20,33 +20,34 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.dao.postgresql.entity;
+package org.eclipse.tractusx.wallet.stub.issuer.api.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Entity
-@Table(name = "holder_credential_as_jwt")
-@Getter
-@Setter
+import java.util.List;
+import java.util.Map;
+
+
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
-public class HolderCredentialAsJWTEntity {
+public class CredentialsSupported {
 
-    @Id
-    @Column(name = "\"key\"", nullable = false)
-    private String key;
+    private String type;
 
-    @Column(nullable = false)
-    private String vcId;
+    private List<String> profiles;
 
-    @Column(nullable = false)
-    private String holderBpn;
+    private String offerReason;
 
-    @Column(name = "jwt", columnDefinition = "TEXT", nullable = false)
-    private String jwt;
+    private List<String> bindingMethods;
+
+    private List<String> credentialType;
+
+    private Map<String, Object> issuancePolicy;
 }

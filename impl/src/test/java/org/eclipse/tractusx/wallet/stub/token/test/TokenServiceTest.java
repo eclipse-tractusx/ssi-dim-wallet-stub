@@ -43,7 +43,7 @@ import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
-import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
