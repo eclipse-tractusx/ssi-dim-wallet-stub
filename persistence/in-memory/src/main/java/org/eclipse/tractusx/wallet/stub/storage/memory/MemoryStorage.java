@@ -23,6 +23,7 @@ package org.eclipse.tractusx.wallet.stub.storage.memory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
@@ -41,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * The in-memory storage
  */
 @Service
+@Slf4j
 public class MemoryStorage implements Storage {
 
 
@@ -105,10 +107,21 @@ public class MemoryStorage implements Storage {
         if(jwtString == null) {
             return Optional.empty();
         }else {
-            String payload = jwtString.split("\\.")[1];
-            Map<String, Object> map = (Map<String, Object>) objectMapper.readValue(new String(Base64.getDecoder().decode(payload)), Map.class).get(Constants.VC);
-            String vcId = map.get(Constants.ID).toString().split("#")[1];
-            return Optional.ofNullable(Pair.of(vcId,jwtString));
+            String[] parts = jwtString.split("\\.");
+            if (parts.length < 2) {
+                return Optional.empty();
+            }
+            try {
+                String payload = new String(Base64.getDecoder().decode(parts[1]));
+                Map<String, Object> vcMap = objectMapper.readValue(payload, Map.class);
+                Map<String, Object> vc = (Map<String, Object>) vcMap.get(Constants.VC);
+                String id = (String) vc.get(Constants.ID);
+                String vcId = id.split("#")[1];
+                return Optional.of(Pair.of(vcId, jwtString));
+            } catch (Exception e) {
+                log.error("Error decoding JWT for holderBpn: {}, type: {}", holderBpn, type, e);
+                return Optional.empty();
+            }
         }
     }
 
@@ -144,7 +157,8 @@ public class MemoryStorage implements Storage {
             if (!credentialSubject.containsKey(Constants.ID)) {
                 return false;
             } else {
-                return credentialSubject.get(Constants.ID).toString().contains(holderBpn);
+                //id will be holder did i.e. did:web:example.com:bpn123
+                return credentialSubject.get(Constants.ID).endsWith(holderBpn);
             }
         }).toList();
     }

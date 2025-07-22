@@ -190,17 +190,19 @@ public class CommonUtils {
      * @return The type of the custom credential.
      */
     public static String getTypeFromCustomCredential(CustomCredential verifiableCredential) {
-        String type;
-        List<String> types = (List<String>) verifiableCredential.get(Constants.TYPE);
+        Object typesObj = verifiableCredential.get(Constants.TYPE);
+        if (!(typesObj instanceof List<?> types) || types.isEmpty() || !(types.getFirst() instanceof String)) {
+            throw new NoVCTypeFoundException("Invalid type format in VC");
+        }
+        List<String> typeList = (List<String>) typesObj;
         //https://www.w3.org/TR/vc-data-model/#types As per the VC schema, types can be multiple, but index 1 should have the correct type.
-        if (types.size() == 2) {
-            type = types.get(1);
-        } else if (types.size() == 1) {
-            type = types.getFirst();
+        if (typeList.size() == 2) {
+            return typeList.get(1);
+        } else if (typeList.size() == 1) {
+            return typeList.getFirst();
         } else {
             throw new NoVCTypeFoundException("No type found in VC");
         }
-        return type;
     }
 
     private static String createEncodedList(byte[] bitstringBytes) throws IOException {

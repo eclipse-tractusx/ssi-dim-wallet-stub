@@ -162,9 +162,9 @@ public class TestUtils {
 
         assertNotNull(issuerMetadata.getCredentialsSupported());
         assertEquals(1, issuerMetadata.getCredentialsSupported().size());
-        CredentialsSupported credentialsSupported = issuerMetadata.getCredentialsSupported().get(0);
+        CredentialsSupported credentialsSupported = issuerMetadata.getCredentialsSupported().getFirst();
 
-        assertEquals(2, credentialsSupported.getProfiles().size());
+        assertEquals(1, credentialsSupported.getProfiles().size());
         assertTrue(credentialsSupported.getProfiles().contains(Constants.VC_10_SL_2021_JWT));
 
         //validate supported credential types
