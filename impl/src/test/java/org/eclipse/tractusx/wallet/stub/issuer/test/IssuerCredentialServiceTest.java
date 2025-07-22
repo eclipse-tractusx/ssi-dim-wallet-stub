@@ -497,7 +497,7 @@ class IssuerCredentialServiceTest {
         assertEquals("2025-01-01T00:00:00Z", response.getExpirationDate());
         assertEquals("did:web:test-issuer", response.getIssuerDid());
         assertEquals("did:web:test-holder", response.getHolderDid());
-        assertEquals(Constants.STATUS_ISSUED, response.getStatus());
+        assertEquals(Constants.CREDENTIAL_STATUS_ISSUED, response.getStatus());
 
         // Verify requested credentials
         assertEquals(1, response.getRequestedCredentials().size());
@@ -549,7 +549,7 @@ class IssuerCredentialServiceTest {
         assertEquals("did:web:localhost:BPNL000000000001", requestedCredential.getHolderDid());
         assertEquals("2025-01-01T00:00:00Z", requestedCredential.getExpirationDate());
         assertEquals(Constants.DELIVERY_STATUS_COMPLETED, requestedCredential.getDeliveryStatus());
-        assertEquals(Constants.STATUS_ISSUED, requestedCredential.getStatus());
+        assertEquals(Constants.CREDENTIAL_STATUS_ISSUED, requestedCredential.getStatus());
         assertEquals(List.of("test-credential-id"), requestedCredential.getApprovedCredentials());
 
         List<RequestedCredential> requestedCredentials = requestedCredential.getRequestedCredentials();

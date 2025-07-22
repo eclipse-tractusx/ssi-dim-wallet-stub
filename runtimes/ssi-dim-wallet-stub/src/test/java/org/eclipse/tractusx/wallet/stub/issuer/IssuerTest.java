@@ -469,7 +469,7 @@ class IssuerTest {
         RequestedCredentialStatusResponse responseBody = response.getBody();
         Assertions.assertNotNull(responseBody);
         Assertions.assertEquals(requestId, responseBody.getId());
-        Assertions.assertEquals(Constants.STATUS_ISSUED, responseBody.getStatus());
+        Assertions.assertEquals(Constants.CREDENTIAL_STATUS_ISSUED, responseBody.getStatus());
         Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn), responseBody.getHolderDid());
         Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), baseWalletBPN), responseBody.getIssuerDid());
 
@@ -533,7 +533,7 @@ class IssuerTest {
         Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), requestedCredential.getIssuerDid());
         Assertions.assertEquals(Constants.BPN_CREDENTIAL, requestedCredential.getRequestedCredentials().get(0).getCredentialType());
         Assertions.assertEquals(Constants.VCDM_11_JWT, requestedCredential.getRequestedCredentials().get(0).getFormat());
-        Assertions.assertEquals(Constants.STATUS_ISSUED, requestedCredential.getStatus());
+        Assertions.assertEquals(Constants.CREDENTIAL_STATUS_ISSUED, requestedCredential.getStatus());
         Assertions.assertNotNull(requestedCredential.getId());
         Assertions.assertNotNull(requestedCredential.getExpirationDate());
 

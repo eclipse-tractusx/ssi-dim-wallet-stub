@@ -349,7 +349,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
                                 .format(Constants.VCDM_11_JWT)
                         .build())
                 )
-                .status(Constants.STATUS_ISSUED)
+                .status(Constants.CREDENTIAL_STATUS_ISSUED)
                 .matchingCredentials(List.of(
                         MatchingCredential.builder()
                                 .id(credentialRequestId)
@@ -378,7 +378,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
                             .holderDid(CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn))
                             .expirationDate(credential.get(Constants.EXPIRATION_DATE).toString())
                             .deliveryStatus(Constants.DELIVERY_STATUS_COMPLETED)
-                            .status(Constants.STATUS_ISSUED)
+                            .status(Constants.CREDENTIAL_STATUS_ISSUED)
                             .approvedCredentials(List.of(vcId))
                             .requestedCredentials(List.of(
                                     RequestedCredential.builder()

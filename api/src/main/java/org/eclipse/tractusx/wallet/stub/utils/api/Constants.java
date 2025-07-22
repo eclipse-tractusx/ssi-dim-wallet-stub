@@ -90,10 +90,10 @@ public class Constants {
     public static final String PROVIDER_DID = "providerDid";
     public static final String CONTENT = "content";
     public static final String JWT = "jwt";
-    public static final String STATUS_ISSUED = "ISSUED";
+    public static final String CREDENTIAL_STATUS_ISSUED = "ISSUED";
     public static final String EXPIRATION_DATE = "expirationDate";
     public static final String ISSUER = "issuer";
-    public static final String CATENA_X_PORTAL = "catena-x Portal";
+    public static final String CATENA_X_PORTAL = "catena-x-portal";
 
     public static final String VCDM_11_JWT = "vcdm11_jwt";
     public static final String DELIVERY_STATUS_COMPLETED = "COMPLETED";
