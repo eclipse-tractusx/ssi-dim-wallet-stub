@@ -22,22 +22,41 @@
 
 package org.eclipse.tractusx.wallet.stub.token.api;
 
+import com.nimbusds.jwt.JWTClaimsSet;
+import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
 
-import com.nimbusds.jwt.JWTClaimsSet;
+import java.util.Optional;
 
 public interface TokenService {
+
+    /**
+     * Extracts the BPN (Business Partner Number) from the provided JWT token.
+     *
+     * @param token The JWT token from which to extract the BPN.
+     * @return An Optional containing the BPN if it exists in the token, otherwise an empty Optional.
+     */
+    Optional<String> getBpnFromToken(String token);
+
+    /**
+     * Verifies the provided JWT token and returns the claims set if valid.
+     *
+     * @param token The JWT token to verify.
+     * @return The claims set extracted from the token if it is valid.
+     * @throws IllegalArgumentException if the token is invalid or cannot be parsed.
+     */
 
     JWTClaimsSet verifyTokenAndGetClaims(String token);
 
     /**
-     * Creates an access token response for the given client ID.
+     * Creates an access token response based on the provided token request and DID document.
      *
-     * @param request The token request containing the client ID.
-     * @return A {@link TokenResponse} object containing the access token, token type, and expiration time.
+     * @param request The token request containing the necessary information for creating the access token.
+     * @param didDocument The DID document associated with the request, used for signing the token.
+     * @return A {@link TokenResponse} containing the access token and other relevant information.
      */
-    TokenResponse createAccessTokenResponse(TokenRequest request);
+    TokenResponse createAccessTokenResponse(TokenRequest request, DidDocument didDocument);
 
     /**
      * Parses a Basic Authentication token string to extract the client ID and client secret,

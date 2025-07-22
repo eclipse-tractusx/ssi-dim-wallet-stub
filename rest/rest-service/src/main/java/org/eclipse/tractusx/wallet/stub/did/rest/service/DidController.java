@@ -25,7 +25,7 @@ package org.eclipse.tractusx.wallet.stub.did.rest.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
+import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.did.rest.api.DidApi;
@@ -45,5 +45,11 @@ public class DidController implements DidApi {
     public ResponseEntity<DidDocument> getDocument(String bpn) {
         Optional<DidDocument> didDocument = didDocumentService.getDidDocument(bpn);
         return didDocument.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok(didDocumentService.getOrCreateDidDocument(bpn)));
+    }
+
+    @Override
+    public ResponseEntity<DidDocument> updateDidDocumentService(Service service, String token) {
+        DidDocument didDocument = didDocumentService.updateDidDocumentService(service, token);
+        return ResponseEntity.ok(didDocument);
     }
 }
