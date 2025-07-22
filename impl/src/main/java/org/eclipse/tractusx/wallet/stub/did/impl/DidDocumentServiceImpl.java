@@ -62,14 +62,14 @@ public class DidDocumentServiceImpl implements DidDocumentService {
     private final TokenService tokenService;
 
     @Override
-    public DidDocument getOrCreateDidDocument(String issuerBpn) {
+    public DidDocument getOrCreateDidDocument(String bpn) {
         try {
-            Optional<DidDocument> optionalDidDocument = storage.getDidDocument(issuerBpn);
+            Optional<DidDocument> optionalDidDocument = storage.getDidDocument(bpn);
             if (optionalDidDocument.isPresent()) {
                 return optionalDidDocument.get();
             }
 
-            return createDidDocument(issuerBpn);
+            return createDidDocument(bpn);
         } catch (InternalErrorException e) {
             throw e;
         } catch (Exception e) {
@@ -77,18 +77,18 @@ public class DidDocumentServiceImpl implements DidDocumentService {
         }
     }
 
-    private DidDocument createDidDocument(String issuerBpn) {
-        String did = CommonUtils.getDidWeb(walletStubSettings.didHost(), issuerBpn);
+    private DidDocument createDidDocument(String bpn) {
+        String did = CommonUtils.getDidWeb(walletStubSettings.didHost(), bpn);
 
-        String keyId = CommonUtils.getUuid(issuerBpn, walletStubSettings.env());
-        KeyPair keyPair = keyService.getKeyPair(issuerBpn);
+        String keyId = CommonUtils.getUuid(bpn, walletStubSettings.env());
+        KeyPair keyPair = keyService.getKeyPair(bpn);
 
         Map<String, Object> jsonObject = CryptoConverter.createJwk(keyPair).toJSONObject();
         jsonObject.put(Constants.ID, keyId);
 
         JWK jwk = CryptoConverter.create(jsonObject);
 
-        //create verification method
+        //create verification method and assertion method
         VerificationMethod verificationMethod = VerificationMethod.Builder.newInstance()
                 .id(URI.create(did + Constants.HASH_SEPARATOR + keyId).toString())
                 .controller(did)
@@ -96,21 +96,24 @@ public class DidDocumentServiceImpl implements DidDocumentService {
                 .publicKeyJwk(jwk.toPublicJWK().toJSONObject())
                 .build();
 
+        //create services
+        org.eclipse.edc.iam.did.spi.document.Service issuerService = new org.eclipse.edc.iam.did.spi.document.Service(did + "#"+Constants.ISSUER_SERVICE,
+                Constants.ISSUER_SERVICE, CommonUtils.getIssuerServiceUrl(walletStubSettings.stubUrl(), bpn));
 
-        //create service
-        org.eclipse.edc.iam.did.spi.document.Service service = new org.eclipse.edc.iam.did.spi.document.Service(walletStubSettings.stubUrl() + "#credential-service",
-                Constants.CREDENTIAL_SERVICE, walletStubSettings.stubUrl() + "/api");
+        org.eclipse.edc.iam.did.spi.document.Service credentialService = new org.eclipse.edc.iam.did.spi.document.Service(did + "#"+Constants.CREDENTIAL_SERVICE,
+                Constants.CREDENTIAL_SERVICE, CommonUtils.getCredentialServiceUrl(walletStubSettings.stubUrl()));
 
-
-        //create document
+        //create a did document
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id(did)
-                .service(List.of(service))
+                .service(List.of(credentialService, issuerService))
+                //We need to change once we have separate keys for authentication and assertion
                 .authentication(List.of(verificationMethod.getId()))
+                .assertionMethod(List.of(verificationMethod.getId()))
                 .verificationMethod(List.of(verificationMethod))
                 .context(walletStubSettings.didDocumentContextUrls().stream().map(URL::toString).toList())
                 .build();
-        storage.saveDidDocument(issuerBpn, didDocument);
+        storage.saveDidDocument(bpn, didDocument);
         return didDocument;
     }
 
