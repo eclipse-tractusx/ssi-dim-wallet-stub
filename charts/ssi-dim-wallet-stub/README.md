@@ -95,7 +95,7 @@ helm install wallet-stub -n wallet charts/ssi-dim-wallet-stub
 | `wallet.postgresql.password`                  | The password to access the database                                                    | `postgrespassword`                                |
 | `wallet.service.type`                         | Kubernetes service type                                                                | `ClusterIP`                                       |
 | `wallet.service.port`                         | Kubernetes service port                                                                | `8080`                                            |
-| `keycloak.enabled`                            | Enable Keycloak configuration                                                          | `false`                                           |
+| `keycloak.enabled`                            | Enable centralidp for testing                                                          | `false`                                           |
 | `postgresql.fullnameOverride`                 | Overrides the default PostgreSQL release name with a custom name                       | `wallet-postgres`                                 |
 | `postgresql.enabled`                          | Enables the deployment of the PostgreSQL instance                                      | `true`                                            |
 | `postgresql.image.tag`                        | Specifies the PostgreSQL Docker image version to use                                   | `15-debian-11`                                    |
