@@ -12,8 +12,8 @@ servers:
   - url: 'http://localhost:8080'
     description: Generated server url
 security:
-  - Authenticate using VP for BDRS directory API: []
-  - Authenticate using access_token: []
+  - AuthenticateUsingVPForBDRS: []
+  - AuthenticateUsingAccessToken: []
 paths:
   /oauth/token:
     post:
@@ -1050,7 +1050,7 @@ components:
         payload:
           $ref: '#/components/schemas/Payload'
   securitySchemes:
-    Authenticate using access_token:
+    AuthenticateUsingAccessToken:
       type: apiKey
       description: |
         **Bearer (apiKey)**
@@ -1059,7 +1059,7 @@ components:
         Example: Bearer access_token
       name: Authorization
       in: header
-    Authenticate using VP for BDRS directory API:
+    AuthenticateUsingVPForBDRS:
       type: apiKey
       description: >
         **Bearer Token**
