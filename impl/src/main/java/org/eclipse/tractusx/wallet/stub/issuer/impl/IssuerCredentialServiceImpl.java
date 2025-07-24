@@ -317,8 +317,8 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
 
         //validate token
         String callerBpn = tokenService.verifyTokenAndGetClaims(token).getClaim(Constants.BPN).toString();
-        if(!Objects.equals(callerBpn, walletStubSettings.baseWalletBPN())){
-            throw new IllegalArgumentException("Caller BPN does not match the base wallet BPN");
+        if(!requestCredential.getHolderDid().endsWith(callerBpn)){
+            throw new IllegalArgumentException("Caller BPN does not match the holder wallet DID");
         }
 
         String holderBpn = CommonUtils.getBpnFromDid(requestCredential.getHolderDid());

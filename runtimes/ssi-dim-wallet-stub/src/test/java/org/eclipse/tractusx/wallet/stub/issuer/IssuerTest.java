@@ -547,7 +547,7 @@ class IssuerTest {
     private IssueCredentialResponse issueCredential(String type, String holderBpn) {
         String baseWalletBPN = walletStubSettings.baseWalletBPN();
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(baseWalletBPN, restTemplate, tokenService, tokenSettings));
+        headers.add(HttpHeaders.AUTHORIZATION, TestUtils.createAOauthToken(holderBpn, restTemplate, tokenService, tokenSettings));
         String holderDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn);
         String issuerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN());
 

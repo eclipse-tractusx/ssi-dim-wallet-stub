@@ -353,7 +353,7 @@ class IssuerCredentialServiceTest {
                 .subject("1")
                 .issuer("")
                 .expirationTime(new Date(System.currentTimeMillis() + 60))
-                .claim(Constants.BPN, "BPNL000000000000")
+                .claim(Constants.BPN, "BPNL000000000001")
                 .build();
         when(tokenService.verifyTokenAndGetClaims(anyString())).thenReturn(jwtClaimsSet);
         when(walletStubSettings.baseWalletBPN()).thenReturn("BPNL000000000000");
