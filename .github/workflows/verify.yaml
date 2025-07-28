@@ -121,9 +121,12 @@ jobs:
           fi
   unit-tests:
     runs-on: ubuntu-latest
-    needs: [ Review-Allowed-Licenses, Dash-Verify-Licenses ]
+    #needs: [ Review-Allowed-Licenses, Dash-Verify-Licenses ] # We need to fix this workflow or we can utilize gradle task to check license
     steps:
       - uses: actions/checkout@v3.5.2
       - uses: ./.github/actions/setup-java
-      - name: Run Unit tests
-        run: ./gradlew test jacocoRootReport --continue
+      - name: Run Unit tests and sonar scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: ./gradlew build jacocoRootReport sonar --continue
