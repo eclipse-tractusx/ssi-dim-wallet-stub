@@ -1,20 +1,94 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: SSI DIM Wallet Stub API
   description: SSI DIM Wallet Stub API
-  termsOfService: 'https://www.eclipse.org/legal/termsofuse.php'
+  termsOfService: https://www.eclipse.org/legal/termsofuse.php
   contact:
     name: Eclipse Tractus-X
-    url: 'https://projects.eclipse.org/projects/automotive.tractusx'
+    url: https://projects.eclipse.org/projects/automotive.tractusx
     email: tractusx-dev@eclipse.org
   version: 0.0.1
 servers:
-  - url: 'http://localhost:8080'
+  - url: http://localhost:8080
     description: Generated server url
 security:
-  - AuthenticateUsingVPForBDRS: []
-  - AuthenticateUsingAccessToken: []
+  - Authenticate using VP for BDRS directory API: []
+  - Authenticate using access_token: []
 paths:
+  /api/v1.0.0/dcp/did-document/services:
+    put:
+      tags:
+        - Add/Update DiD Document Service
+      summary: Add/Update the service in the DID document
+      description: |+
+        Add/Update the service in the DID document.
+
+      operationId: updateDidDocumentService
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Service'
+            examples:
+              Add/update Update Did document service:
+                description: Add/update Update Did document service
+                value:
+                  type: DataService
+                  serviceEndpoint: >-
+                    https://subdomain.provider-domain.com/subpath/.well-known/dspace-version
+                  id: did:web:provider-domain.com#dsp-agent-1
+        required: true
+      responses:
+        '200':
+          description: DID document
+          content:
+            application/json:
+              examples:
+                DID document:
+                  description: DID document
+                  value:
+                    service:
+                      - id: https://localhost#credential-service
+                        type: CredentialService
+                        serviceEndpoint: https://localhost/api
+                      - type: DataService
+                        serviceEndpoint: >-
+                          https://subdomain.provider-domain.com/subpath/.well-known/dspace-version
+                        id: did:web:provider-domain.com#dsp-agent-1
+                    verificationMethod:
+                      - id: >-
+                          did:web:localhost:BPNL000000000000#c3932ff5-8da4-3de9-a942-62125f394e41
+                        type: JsonWebKey2020
+                        controller: did:web:localhost:BPNL000000000000
+                        publicKeyJwk:
+                          kty: EC
+                          use: sig
+                          crv: secp256k1
+                          x: NytYgtL_rte4EIXpb46e7pntJiPjH4l_pN1j1PVxkO8
+                          'y': 99JkYiCOkBfb8qCncv_YWdHy3eZGAQojWbmaEDFwSlU
+                    authentication:
+                      - >-
+                        did:web:localhost:BPNL000000000000#c3932ff5-8da4-3de9-a942-62125f394e41
+                    id: did:web:localhost:BPNL000000000000
+                    '@context':
+                      - https://www.w3.org/ns/did/v1
+                      - https://w3c.github.io/vc-jws-2020/contexts/v1
+                      - https://w3id.org/did-resolution/v1
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              examples:
+                Internal Error Exception:
+                  description: Internal Error Exception
+                  value:
+                    type: about:blank
+                    title: Internal Server Error
+                    status: 500
+                    detail: 'InternalErrorException: ...'
+                    instance: /BPNL12121221/did.json
+                    properties:
+                      timestamp: 1743062000750
   /oauth/token:
     post:
       tags:
@@ -53,7 +127,7 @@ paths:
                 'Error: response status is 422':
                   description: 'Error: response status is 422'
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Unprocessable Entity: Authorization header invalid'
                     status: 422
                     detail: >-
@@ -70,13 +144,103 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: 'InternalErrorException: Internal Error: **'
                     instance: /oauth/token
                     properties:
                       timestamp: 1743160775200
+  /api/v2.0.0/dcp/requestCredentials/{applicationKey}:
+    post:
+      tags:
+        - APIs consumed by SSI Issuer component
+      summary: Request credential from issuer as per DCP flow
+      description: |
+        Request credential from issuer as per DCP flow.
+      operationId: requestCredentialFromIssuer
+      parameters:
+        - name: applicationKey
+          in: path
+          description: Application key, please pass catena-x-portal
+          required: true
+          schema:
+            type: string
+          example: catena-x-portal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestCredential'
+            examples:
+              Request credentials:
+                description: Request credentials
+                value:
+                  requestedCredentials:
+                    - credentialType: BpnCredential
+                      format: vcdm11_jwt
+                  issuerDid: did:web:localhost:BPNL000000000000
+                  holderDid: did:web:localhost:BPNL000000000001
+                  expirationDate: '2028-11-25T16:51:22.000Z'
+        required: true
+      responses:
+        '201':
+          description: JWT presentation
+          content:
+            application/json:
+              examples:
+                Create a new credential:
+                  description: Create a new credential
+                  value:
+                    id: 1f36af58-0fc0-4b24-9b1c-e37d59668089
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              examples:
+                Illegal Argument Exception:
+                  description: Illegal Argument Exception
+                  value:
+                    type: about:blank
+                    title: 'Bad request: Invalid token -> token'
+                    status: 400
+                    detail: 'IllegalArgumentException: Invalid token -> token'
+                    instance: /api/v2.0.0/dcp/requestCredentials/{applicationKey}
+                    properties:
+                      timestamp: 1743154190590
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              examples:
+                Missing Request Header Exception:
+                  description: Missing Request Header Exception
+                  value:
+                    type: about:blank
+                    title: 'Please provide the required header: Authorization'
+                    status: 401
+                    detail: >-
+                      MissingRequestHeaderException: Required request header
+                      'Authorization' for method parameter type String is not
+                      present
+                    instance: /api/v2.0.0/dcp/requestCredentials/{applicationKey}
+                    properties:
+                      timestamp: 1743085396772
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              examples:
+                Internal Error Exception:
+                  description: Internal Error Exception
+                  value:
+                    type: about:blank
+                    title: Internal Server Error
+                    status: 500
+                    detail: 'InternalErrorException: ...'
+                    instance: /api/v2.0.0/credentials
+                    properties:
+                      timestamp: 1743062000750
   /api/v2.0.0/credentials:
     post:
       tags:
@@ -101,21 +265,21 @@ paths:
                     issueWithSignature:
                       content:
                         '@context':
-                          - 'https://www.w3.org/2018/credentials/v1'
+                          - https://www.w3.org/2018/credentials/v1
                           - >-
                             https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json
-                          - 'https://w3id.org/security/suites/jws-2020/v1'
+                          - https://w3id.org/security/suites/jws-2020/v1
                         id: >-
                           did:web:localhost:BPNL000000000000#a1f8ae36-9919-4ed8-8546-535280acc5bf
                         type:
                           - VerifiableCredential
                           - BpnCredential
-                        issuer: 'did:web:localhost:BPNL000000000000'
+                        issuer: did:web:localhost:BPNL000000000000
                         issuanceDate: '2023-07-19T09:14:45Z'
                         expirationDate: '2023-09-30T18:30:00Z'
                         credentialSubject:
                           bpn: BPNL000000000001
-                          id: 'did:web:localhost:BPNL000000000001'
+                          id: did:web:localhost:BPNL000000000001
                           type: BpnCredential
                       signature:
                         proofMechanism: external
@@ -128,21 +292,21 @@ paths:
                   payload:
                     issue:
                       '@context':
-                        - 'https://www.w3.org/2018/credentials/v1'
+                        - https://www.w3.org/2018/credentials/v1
                         - >-
                           https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json
-                        - 'https://w3id.org/security/suites/jws-2020/v1'
+                        - https://w3id.org/security/suites/jws-2020/v1
                       id: >-
                         did:web:localhost:BPNL000000000000#a1f8ae36-9919-4ed8-8546-535280acc5bf
                       type:
                         - VerifiableCredential
                         - BpnCredential
-                      issuer: 'did:web:localhost:BPNL000000000000'
+                      issuer: did:web:localhost:BPNL000000000000
                       issuanceDate: '2023-07-19T09:14:45Z'
                       expirationDate: '2023-09-30T18:30:00Z'
                       credentialSubject:
                         bpn: BPNL000000000001
-                        id: 'did:web:localhost:BPNL000000000001'
+                        id: did:web:localhost:BPNL000000000001
                         type: BpnCredential
               Store credential for a holder:
                 description: Store credential for a holder
@@ -181,7 +345,7 @@ paths:
                 Illegal Argument Exception:
                   description: Illegal Argument Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Bad request: Invalid token -> token'
                     status: 400
                     detail: 'IllegalArgumentException: Invalid token -> token'
@@ -191,7 +355,7 @@ paths:
                 Parse Stub Exception:
                   description: Parse Stub Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: >-
                       Invalid serialized unsecured/JWS/JWE object: Missing
                       second delimiter
@@ -210,7 +374,7 @@ paths:
                 Missing Request Header Exception:
                   description: Missing Request Header Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Please provide the required header: Authorization'
                     status: 401
                     detail: >-
@@ -228,7 +392,7 @@ paths:
                 No VC Type Found Exception:
                   description: No VC Type Found Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Unprocessable Entity: No type found in VC'
                     status: 422
                     detail: 'NoVCTypeFoundException: No type found in VC'
@@ -243,7 +407,7 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: 'InternalErrorException: ...'
@@ -264,8 +428,7 @@ paths:
           application/json:
             schema:
               type: object
-              additionalProperties:
-                type: object
+              additionalProperties: {}
             examples:
               Create token with scope:
                 description: Create token With scope
@@ -275,6 +438,7 @@ paths:
                     credentialTypes:
                       - MembershipCredential
                       - DataExchangeGovernanceCredential
+                      - UsagePurposeCredential
                     consumerDid: >-
                       did:web:c464-203-129-213-107.ngrok-free.app:BPNL000000000000
                     providerDid: >-
@@ -310,7 +474,7 @@ paths:
                 Illegal Argument Exception:
                   description: Illegal Argument Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Bad request: Invalid token request'
                     status: 400
                     detail: 'IllegalArgumentException: Invalid token request'
@@ -320,7 +484,7 @@ paths:
                 Parse Stub Exception:
                   description: Parse Stub Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: >-
                       Invalid serialized unsecured/JWS/JWE object: Missing
                       second delimiter
@@ -339,7 +503,7 @@ paths:
                 Missing Request Header Exception:
                   description: Missing Request Header Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Please provide the required header: Authorization'
                     status: 401
                     detail: >-
@@ -357,7 +521,7 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: >-
@@ -383,11 +547,11 @@ paths:
                 description: Create VP access token for membership VC
                 value:
                   scope:
-                    - 'org.eclipse.tractusx.vc.type:MembershipCredential:read'
+                    - org.eclipse.tractusx.vc.type:MembershipCredential:read
                   '@context':
                     - >-
                       https://identity.foundation/presentation-exchange/submission/v1
-                    - 'https://w3id.org/tractusx-trust/v0.8'
+                    - https://w3id.org/tractusx-trust/v0.8
                   '@type': PresentationQueryMessage
               Create VP access token for Membership Credential and DataExchange Governance Credential:
                 description: >-
@@ -395,13 +559,28 @@ paths:
                   DataExchange Governance Credential
                 value:
                   scope:
-                    - 'org.eclipse.tractusx.vc.type:MembershipCredential:read'
+                    - org.eclipse.tractusx.vc.type:MembershipCredential:read
                     - >-
                       org.eclipse.tractusx.vc.type:DataExchangeGovernanceCredential:read
                   '@context':
                     - >-
                       https://identity.foundation/presentation-exchange/submission/v1
-                    - 'https://w3id.org/tractusx-trust/v0.8'
+                    - https://w3id.org/tractusx-trust/v0.8
+                  '@type': PresentationQueryMessage
+              Create VP access token for Membership Credential, UsagePurposeCredential and DataExchange Governance Credential:
+                description: >-
+                  Create VP access token for Membership Credential,
+                  UsagePurposeCredential and DataExchange Governance Credential
+                value:
+                  scope:
+                    - org.eclipse.tractusx.vc.type:MembershipCredential:read
+                    - >-
+                      org.eclipse.tractusx.vc.type:DataExchangeGovernanceCredential:read
+                    - org.eclipse.tractusx.vc.type:UsagePurposeCredential:read
+                  '@context':
+                    - >-
+                      https://identity.foundation/presentation-exchange/submission/v1
+                    - https://w3id.org/tractusx-trust/v0.8
                   '@type': PresentationQueryMessage
         required: true
       responses:
@@ -417,7 +596,7 @@ paths:
                       - >-
                         eyJraWQiOiJkaWQ6d2ViOmM0NjQtMjAzLTEyOS0yMTMtMTA3Lm5ncm9rLWZyZWUuYXBwOkJQTkwwMDAwMDAwMDAwMDAjYzM5MzJmZjUtOGRhNC0zZGU5LWE5NDItNjIxMjVmMzk0ZTQxIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTZLIn0.eyJhdWQiOlsiZGlkOndlYjpjNDY0LTIwMy0xMjktMjEzLTEwNy5uZ3Jvay1mcmVlLmFwcDpCUE5MMDAwMDAwMDAwMDAwIiwiZGlkOndlYjpjNDY0LTIwMy0xMjktMjEzLTEwNy5uZ3Jvay1mcmVlLmFwcDpCUE5MMDAwMDAwMDAwMDAwIl0sImJwbiI6IkJQTkwwMDAwMDAwMDAwMDAiLCJzdWIiOiJkaWQ6d2ViOmM0NjQtMjAzLTEyOS0yMTMtMTA3Lm5ncm9rLWZyZWUuYXBwOkJQTkwwMDAwMDAwMDAwMDAiLCJpc3MiOiJkaWQ6d2ViOmM0NjQtMjAzLTEyOS0yMTMtMTA3Lm5ncm9rLWZyZWUuYXBwOkJQTkwwMDAwMDAwMDAwMDAiLCJ2cCI6eyJpZCI6ImRpZDp3ZWI6YzQ2NC0yMDMtMTI5LTIxMy0xMDcubmdyb2stZnJlZS5hcHA6QlBOTDAwMDAwMDAwMDAwMCNjNDAyYmRhOC0zMTEwLTQ5MGYtOWRkOS1lZjI3ZjFmNDEwM2UiLCJwcm9vZiI6eyJwcm9vZlB1cnBvc2UiOiJhc3NlcnRpb25NZXRob2QiLCJ0eXBlIjoiSnNvbldlYlNpZ25hdHVyZTIwMjAiLCJ2ZXJpZmljYXRpb25NZXRob2QiOiJkaWQ6d2ViOmM0NjQtMjAzLTEyOS0yMTMtMTA3Lm5ncm9rLWZyZWUuYXBwOkJQTkwwMDAwMDAwMDAwMDAjYzM5MzJmZjUtOGRhNC0zZGU5LWE5NDItNjIxMjVmMzk0ZTQxIiwiY3JlYXRlZCI6IjIwMjQtMDYtMjdUMDk6NTM6NDlaIiwiandzIjoiZXlKaGJHY2lPaUpGVXpJMU5rc2lmUS4ub0lmYWNXbU5kSDBpMVo0UzQ3MlBkczBTYkpBSGxSek90U2pGMTV1QWM3NHFaWVhkemZRRnZhcHFKT2xSMTFrblVDYkRjbFI3RDJJaUVBTjB0VUFTN2cifSwidHlwZSI6WyJWZXJpZmlhYmxlUHJlc2VudGF0aW9uIl0sIkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93M2lkLm9yZy9zZWN1cml0eS9zdWl0ZXMvandzLTIwMjAvdjEiXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKcmFXUWlPaUprYVdRNmQyVmlPbU0wTmpRdE1qQXpMVEV5T1MweU1UTXRNVEEzTG01bmNtOXJMV1p5WldVdVlYQndPa0pRVGt3d01EQXdNREF3TURBd01EQWpZek01TXpKbVpqVXRPR1JoTkMwelpHVTVMV0U1TkRJdE5qSXhNalZtTXprMFpUUXhJaXdpZEhsd0lqb2lTbGRVSWl3aVlXeG5Jam9pUlZNeU5UWkxJbjAuZXlKaGRXUWlPbHNpWkdsa09uZGxZanBqTkRZMExUSXdNeTB4TWprdE1qRXpMVEV3Tnk1dVozSnZheTFtY21WbExtRndjRHBDVUU1TU1EQXdNREF3TURBd01EQXdJaXdpWkdsa09uZGxZanBqTkRZMExUSXdNeTB4TWprdE1qRXpMVEV3Tnk1dVozSnZheTFtY21WbExtRndjRHBDVUU1TU1EQXdNREF3TURBd01EQXdJbDBzSW1Kd2JpSTZJa0pRVGt3d01EQXdNREF3TURBd01EQWlMQ0p6ZFdJaU9pSmthV1E2ZDJWaU9tTTBOalF0TWpBekxURXlPUzB5TVRNdE1UQTNMbTVuY205ckxXWnlaV1V1WVhCd09rSlFUa3d3TURBd01EQXdNREF3TURBaUxDSnBjM01pT2lKa2FXUTZkMlZpT21NME5qUXRNakF6TFRFeU9TMHlNVE10TVRBM0xtNW5jbTlyTFdaeVpXVXVZWEJ3T2tKUVRrd3dNREF3TURBd01EQXdNREFpTENKbGVIQWlPakUzTVRrME9ESXpNamtzSW1saGRDSTZNVGN4T1RRNE1qQXlPU3dpZG1NaU9uc2lRR052Ym5SbGVIUWlPbHNpYUhSMGNITTZMeTkzZDNjdWR6TXViM0puTHpJd01UZ3ZZM0psWkdWdWRHbGhiSE12ZGpFaUxDSm9kSFJ3Y3pvdkwzY3phV1F1YjNKbkwyTmhkR1Z1WVhndlkzSmxaR1Z1ZEdsaGJITXZkakV1TUM0d0lsMHNJbWxrSWpvaVpHbGtPbmRsWWpwak5EWTBMVEl3TXkweE1qa3RNakV6TFRFd055NXVaM0p2YXkxbWNtVmxMbUZ3Y0RwQ1VFNU1NREF3TURBd01EQXdNREF3SXpreVpHSXlOamRoTFRZM056SXRNMkZrTUMwNE16ZGhMVEprWVdFM1ptVmtPR013TnlJc0luUjVjR1VpT2xzaVZtVnlhV1pwWVdKc1pVTnlaV1JsYm5ScFlXd2lMQ0pOWlcxaVpYSnphR2x3UTNKbFpHVnVkR2xoYkNKZExDSnBjM04xWlhJaU9pSmthV1E2ZDJWaU9tTTBOalF0TWpBekxURXlPUzB5TVRNdE1UQTNMbTVuY205ckxXWnlaV1V1WVhCd09rSlFUa3d3TURBd01EQXdNREF3TURBaUxDSmpjbVZrWlc1MGFXRnNVM1ZpYW1WamRDSTZXM3NpYUc5c1pHVnlTV1JsYm5ScFptbGxjaUk2SWtKUVRrd3dNREF3TURBd01EQXdNREFpTENKcFpDSTZJbVJwWkRwM1pXSTZZelEyTkMweU1ETXRNVEk1TFRJeE15MHhNRGN1Ym1keWIyc3RabkpsWlM1aGNIQTZRbEJPVERBd01EQXdNREF3TURBd01DSjlYU3dpWTNKbFpHVnVkR2xoYkZOMFlYUjFjeUk2Ym5Wc2JDd2lhWE56ZFdGdVkyVkVZWFJsSWpvaU1qQXlOQzB3TmkweU4xUXdPVG8xTXpvME4xb2lMQ0psZUhCcGNtRjBhVzl1UkdGMFpTSTZJakl3TWpVdE1EWXRNamRVTURrNk5UTTZORGRhSWl3aWNISnZiMllpT25zaWNISnZiMlpRZFhKd2IzTmxJam9pWVhOelpYSjBhVzl1VFdWMGFHOWtJaXdpZEhsd1pTSTZJa3B6YjI1WFpXSlRhV2R1WVhSMWNtVXlNREl3SWl3aWRtVnlhV1pwWTJGMGFXOXVUV1YwYUc5a0lqb2laR2xrT25kbFlqcGpORFkwTFRJd015MHhNamt0TWpFekxURXdOeTV1WjNKdmF5MW1jbVZsTG1Gd2NEcENVRTVNTURBd01EQXdNREF3TURBd0kyTXpPVE15Wm1ZMUxUaGtZVFF0TTJSbE9TMWhPVFF5TFRZeU1USTFaak01TkdVME1TSXNJbU55WldGMFpXUWlPaUl5TURJMExUQTJMVEkzVkRBNU9qVXpPalEzV2lJc0ltcDNjeUk2SW1WNVNtaGlSMk5wVDJsS1JsVjZTVEZPYTNOcFpsRXVMbkI0V2xKQ2NYRkNjWGh5VVU1d1JtUk5Ua2RPVjJGRVZFSkZia3BLTTBaQ2MzcFlYMWhzVUdzMVJIaEllRjlhVTJka01sSXhUbXRIWW5kUGRXaG1TM0J6YXpoNVlVcGZOVzFJWlhoNFFuUmZWVWcyWlc1UkluMTlMQ0pxZEdraU9pSXhNV0ptWTJJM1pDMDJZV016TFRSbVptTXRZV1JsTXkwd00yWTNaR0V3T0daak1XSWlmUS5ud0pWNFlNYnlnLW1DUVRsaTd5cE1CaVZlRFRuUmE2bElzTlY1alluZXhLbzV2RGk2TEdsLXllR3ZiOF9pWkRqOHdvVlU5aGgwRF9tX1U3OXRtVVlwUSJdfSwiZXhwIjoxNzE5NDgyMzI5LCJpYXQiOjE3MTk0ODIwMjksImp0aSI6IjI1MjcyYjgxLWYxNDktNGNjZS05M2IwLWU5Mzg2MWIxNGY0MSJ9.ZGFfP1jhlRAmDxGcuyqpGq8j80-HhUgPcsyvavZzyFrSj7Zjwvssm7eMc6Poo7voUEHFfv2YG1K8hc_9XBm3Cg
                     '@context':
-                      - 'https://w3id.org/tractusx-trust/v0.8'
+                      - https://w3id.org/tractusx-trust/v0.8
                     '@type': PresentationResponseMessage
         '400':
           description: Bad request
@@ -427,7 +606,7 @@ paths:
                 Illegal Argument Exception:
                   description: Illegal Argument Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: >-
                       Bad request: Invalid VC types in scope ,
                       vcTypesFromSIToken -> [MembershipCredential,
@@ -445,7 +624,7 @@ paths:
                 Parse Stub Exception:
                   description: Parse Stub Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: >-
                       Invalid serialized unsecured/JWS/JWE object: Missing
                       second delimiter
@@ -464,7 +643,7 @@ paths:
                 Missing Request Header Exception:
                   description: Missing Request Header Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Please provide the required header: Authorization'
                     status: 401
                     detail: >-
@@ -482,7 +661,7 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: >-
@@ -492,7 +671,7 @@ paths:
                     instance: /api/presentations/query
                     properties:
                       timestamp: 1743160775200
-  '/api/dim/technical-user/{bpn}':
+  /api/dim/technical-user/{bpn}:
     post:
       tags:
         - APIs consumed by Portal backend
@@ -523,7 +702,7 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: 'InternalErrorException: Internal Error: **'
@@ -567,14 +746,14 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: 'InternalErrorException: **'
                     instance: /api/dim/setup-dim
                     properties:
                       timestamp: 1743160775200
-  '/api/v2.0.0/credentials/{credentialId}':
+  /api/v2.0.0/credentials/{credentialId}:
     patch:
       tags:
         - APIs consumed by SSI Issuer component
@@ -629,7 +808,7 @@ paths:
                 Credential Not Found Exception:
                   description: Credential Not Found Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Not Found: No credential found for credentialId -> S'
                     status: 404
                     detail: >-
@@ -646,14 +825,14 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: 'InternalErrorException: ...'
                     instance: /api/v2.0.0/credentials/a
                     properties:
                       timestamp: 1743062000750
-  '/{bpn}/did.json':
+  /{bpn}/did.json:
     get:
       tags:
         - Resolve DID Document
@@ -678,14 +857,14 @@ paths:
                   description: DID document
                   value:
                     service:
-                      - id: 'https://localhost#credential-service'
+                      - id: https://localhost#credential-service
                         type: CredentialService
-                        serviceEndpoint: 'https://localhost/api'
+                        serviceEndpoint: https://localhost/api
                     verificationMethod:
                       - id: >-
                           did:web:localhost:BPNL000000000000#c3932ff5-8da4-3de9-a942-62125f394e41
                         type: JsonWebKey2020
-                        controller: 'did:web:localhost:BPNL000000000000'
+                        controller: did:web:localhost:BPNL000000000000
                         publicKeyJwk:
                           kty: EC
                           use: sig
@@ -695,11 +874,11 @@ paths:
                     authentication:
                       - >-
                         did:web:localhost:BPNL000000000000#c3932ff5-8da4-3de9-a942-62125f394e41
-                    id: 'did:web:localhost:BPNL000000000000'
+                    id: did:web:localhost:BPNL000000000000
                     '@context':
-                      - 'https://www.w3.org/ns/did/v1'
-                      - 'https://w3c.github.io/vc-jws-2020/contexts/v1'
-                      - 'https://w3id.org/did-resolution/v1'
+                      - https://www.w3.org/ns/did/v1
+                      - https://w3c.github.io/vc-jws-2020/contexts/v1
+                      - https://w3id.org/did-resolution/v1
         '500':
           description: Internal Server Error
           content:
@@ -708,14 +887,202 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: 'InternalErrorException: ...'
                     instance: /BPNL12121221/did.json
                     properties:
                       timestamp: 1743062000750
-  '/api/v2.0.0/credentials/{externalCredentialId}':
+  /api/v2.0.0/dcp/credentialRequestsReceived:
+    get:
+      tags:
+        - APIs consumed by SSI Issuer component
+      summary: Get requested credentials
+      description: |
+        Get requested credentials.
+      operationId: getRequestedCredential
+      parameters:
+        - name: filter
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Credential details
+          content:
+            application/json:
+              examples:
+                Credential details:
+                  description: Credential details
+                  value:
+                    count: 1
+                    data:
+                      - id: f15a7272-dd6c-4721-bd6b-43258096932a
+                        expirationDate: '2025-06-24T08:36:05.000Z'
+                        requestedCredentials:
+                          - format: vcdm11_jwt
+                            credentialType: BpnCredential
+                        holderDid: did:web:localhost:BPNL000000000000
+                        issuerDid: did:web:localhost:BPNL000000000000
+                        status: ISSUED
+                        approvedCredentials:
+                          - 45836ee5-a6e4-4a50-8216-d3231c523a8f
+                        deliveryStatus: COMPLETED
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              examples:
+                Missing Request Header Exception:
+                  description: Missing Request Header Exception
+                  value:
+                    type: about:blank
+                    title: 'Please provide the required header: Authorization'
+                    status: 401
+                    detail: >-
+                      MissingRequestHeaderException: Required request header
+                      'Authorization' for method parameter type String is not
+                      present
+                    instance: /api/v2.0.0/dcp/credentialRequestsReceived
+                    properties:
+                      timestamp: 1743085396772
+        '404':
+          description: Bad request
+          content:
+            application/json:
+              examples:
+                Illegal Argument Exception:
+                  description: Illegal Argument Exception
+                  value:
+                    type: about:blank
+                    title: Invalid holder did
+                    status: 400
+                    detail: Credential details
+                    instance: /api/v2.0.0/dcp/credentialRequestsReceived
+                    properties:
+                      timestamp: 1743154190590
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              examples:
+                Internal Error Exception:
+                  description: Internal Error Exception
+                  value:
+                    type: about:blank
+                    title: Internal Server Error
+                    status: 500
+                    detail: 'InternalErrorException: ...'
+                    instance: /api/v2.0.0/dcp/credentialRequestsReceived
+                    properties:
+                      timestamp: 1743062000750
+  /api/v2.0.0/dcp/credentialRequestsReceived/{requestId}:
+    get:
+      tags:
+        - APIs consumed by SSI Issuer component
+      summary: Check requested credential status
+      description: |
+        Check requested credential status .
+      operationId: getCredentialRequestStatus
+      parameters:
+        - name: requestId
+          in: path
+          description: The credential request id
+          required: true
+          schema:
+            type: string
+          example: 7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f
+      responses:
+        '200':
+          description: Credential details
+          content:
+            application/json:
+              examples:
+                Credential details:
+                  description: Credential details
+                  value:
+                    id: 7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f
+                    expirationDate: '2028-08-31T00:00:00.000Z'
+                    issuerDid: did:web:localhost:BPNL000000000000
+                    holderDid: did:web:localhost:BPNL000000000000
+                    requestedCredentials:
+                      - credentialType: BpnCredential
+                        format: vcdm11_jwt
+                    status: RECEIVED
+                    matchingCredentials:
+                      - id: 7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f
+                        name: BpnCredential
+                        description: BpnCredential
+                        verifiableCredential: >-
+                          eyJraWQiOiJkaWQ6d2ViOmxvY2FsaG9zdDpCUE5MMDAwMDAwMDAwMDAwI2MzOTMyZmY1LThkYTQtM2RlOS1hOTQyLTYyMTI1ZjM5NGU0MSIsInR5cCI6IkpXVCIsImFsZyI6IkVTMjU2SyJ9.eyJhdWQiOlsiZGlkOndlYjpsb2NhbGhvc3Q6QlBOTDAwMDAwMDAwMDAwMCIsImRpZDp3ZWI6bG9jYWxob3N0OkJQTjEyMyJdLCJicG4iOiJCUE4xMjMiLCJzdWIiOiJkaWQ6d2ViOmxvY2FsaG9zdDpCUE5MMDAwMDAwMDAwMDAwIiwiaXNzIjoiZGlkOndlYjpsb2NhbGhvc3Q6QlBOTDAwMDAwMDAwMDAwMCIsImV4cCI6MTc1MjY0NTU1NSwiaWF0IjoxNzUyNjQ1MjU1LCJ2YyI6eyJjcmVkZW50aWFsU3ViamVjdCI6eyJicG4iOiJCUE4xMjMiLCJob2xkZXJJZGVudGlmaWVyIjoiQlBOMTIzIiwiaWQiOiJkaWQ6d2ViOmxvY2FsaG9zdDpCUE4xMjMifSwiaXNzdWFuY2VEYXRlIjoiMjAyNS0wNy0xNlQwNTo1NDoxNVoiLCJpZCI6ImRpZDp3ZWI6bG9jYWxob3N0OkJQTkwwMDAwMDAwMDAwMDAjN2VmM2RkOGQtMDFjNS0zN2ZlLWI0YzYtYjk2YzBiNjgwMzFmIiwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIkJwbkNyZWRlbnRpYWwiXSwiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCJodHRwczovL3czaWQub3JnL2NhdGVuYXgvY3JlZGVudGlhbHMvdjEuMC4wIl0sImlzc3VlciI6ImRpZDp3ZWI6bG9jYWxob3N0OkJQTkwwMDAwMDAwMDAwMDAiLCJleHBpcmF0aW9uRGF0ZSI6IjIwMjYtMDctMTZUMDU6NTQ6MTVaIn0sImp0aSI6ImI2ZWY4ZmZjLWM4OWEtNDllMi1hYTE5LWI0ZDgxYmUyYTA3YSJ9.jihODuZer8PkjXK-XvZU_jcv0b9GC2cQG1i2ZDQfcFFxpmv1rQnHkWk3Z8swhaKN0iMY5WxzKAWZmCKAcz3zTw
+                        credential:
+                          credentialSubject:
+                            bpn: BPN123
+                            holderIdentifier: BPN123
+                            id: did:web:localhost:BPN123
+                          issuanceDate: '2025-07-16T05:54:15Z'
+                          id: >-
+                            did:web:localhost:BPNL000000000000#7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f
+                          type:
+                            - VerifiableCredential
+                            - BpnCredential
+                          '@context':
+                            - https://www.w3.org/2018/credentials/v1
+                            - https://w3id.org/catenax/credentials/v1.0.0
+                          issuer: did:web:localhost:BPNL000000000000
+                          expirationDate: '2026-07-16T05:54:15Z'
+                        application: catena-x-portal
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              examples:
+                Missing Request Header Exception:
+                  description: Missing Request Header Exception
+                  value:
+                    type: about:blank
+                    title: 'Please provide the required header: Authorization'
+                    status: 401
+                    detail: >-
+                      MissingRequestHeaderException: Required request header
+                      'Authorization' for method parameter type String is not
+                      present
+                    instance: /api/v2.0.0/dcp/credentialRequestsReceived/{requestId}
+                    properties:
+                      timestamp: 1743085396772
+        '404':
+          description: Bad request
+          content:
+            application/json:
+              examples:
+                Illegal Argument Exception:
+                  description: Illegal Argument Exception
+                  value:
+                    type: about:blank
+                    title: Invalid request id
+                    status: 400
+                    detail: Credential details
+                    instance: /api/v2.0.0/dcp/credentialRequestsReceived/{requestId}
+                    properties:
+                      timestamp: 1743154190590
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              examples:
+                Internal Error Exception:
+                  description: Internal Error Exception
+                  value:
+                    type: about:blank
+                    title: Internal Server Error
+                    status: 500
+                    detail: 'InternalErrorException: ...'
+                    instance: /api/v2.0.0/dcp/credentialRequestsReceived/{requestId}
+                    properties:
+                      timestamp: 1743062000750
+  /api/v2.0.0/credentials/{externalCredentialId}:
     get:
       tags:
         - APIs consumed by SSI Issuer component
@@ -745,7 +1112,7 @@ paths:
                       issuanceDate: '2023-07-19T09:14:45Z'
                       credentialSubject:
                         bpn: BPNL000000000001
-                        id: 'did:web:localhost:BPNL000000000001'
+                        id: did:web:localhost:BPNL000000000001
                         type: BpnCredential
                       id: >-
                         did:web:localhost:BPNL000000000000#19cb6562-bac7-3dc3-aaf6-4612e349a011
@@ -753,11 +1120,11 @@ paths:
                         - VerifiableCredential
                         - BpnCredential
                       '@context':
-                        - 'https://www.w3.org/2018/credentials/v1'
+                        - https://www.w3.org/2018/credentials/v1
                         - >-
                           https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json
-                        - 'https://w3id.org/security/suites/jws-2020/v1'
-                      issuer: 'did:web:localhost:BPNL000000000000'
+                        - https://w3id.org/security/suites/jws-2020/v1
+                      issuer: did:web:localhost:BPNL000000000000
                       expirationDate: '2023-09-30T18:30:00Z'
                     revocationStatus: 'false'
                     signing_key_id: >-
@@ -770,7 +1137,7 @@ paths:
                 Credential Not Found Exception:
                   description: Credential Not Found Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Not Found: No credential found for credentialId -> s'
                     status: 404
                     detail: >-
@@ -787,7 +1154,7 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: 'InternalErrorException: ...'
@@ -817,7 +1184,7 @@ paths:
                 DID document:
                   description: DID document
                   value:
-                    BPNL000000000000: 'did:web:some.host.name:BPNL000000000000'
+                    BPNL000000000000: did:web:some.host.name:BPNL000000000000
         '400':
           description: Illegal Argument
           content:
@@ -826,7 +1193,7 @@ paths:
                 Illegal Argument Exception:
                   description: Illegal Argument Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Bad request: Invalid token -> Bearer token'
                     status: 400
                     detail: 'IllegalArgumentException: Invalid token -> Bearer token'
@@ -836,7 +1203,7 @@ paths:
                 Parse Stub Exception:
                   description: Parse Stub Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: >-
                       Invalid serialized unsecured/JWS/JWE object: Missing part
                       delimiters
@@ -855,7 +1222,7 @@ paths:
                 Missing Request Header Exception:
                   description: Missing Request Header Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Please provide the required header: Authorization'
                     status: 401
                     detail: >-
@@ -873,7 +1240,7 @@ paths:
                 VP Validation Failed Exception:
                   description: VP Validation Failed Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Invalid Verifiable Presentation
                     status: 422
                     detail: 'VPValidationFailedException: Invalid VP token: e...'
@@ -888,14 +1255,72 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: 'InternalErrorException: ...'
                     instance: /api/v1/directory/bpn-directory
                     properties:
                       timestamp: 1743062000750
-  '/api/dim/status-list/{bpn}/{vcId}':
+  /api/v1.0.0/dcp/{walletIdentifier}/metadata:
+    get:
+      tags:
+        - APIs consumed by SSI Issuer component for DCP flow
+      summary: Get Issuer Metadata
+      description: >
+        Get issuer metadata as per DCP issuance flow. It will return supported
+        credentials and credential issuer
+      operationId: getIssuerMetadata
+      parameters:
+        - name: walletIdentifier
+          in: path
+          description: Wallet identifier, this will be a BPN
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Issuer metadata
+          content:
+            application/json:
+              examples:
+                Sample issuer metadata:
+                  description: Sample issuer metadata
+                  value:
+                    '@context':
+                      - https://w3id.org/dspace-dcp/v1.0/dcp.jsonld
+                      - https://www.w3.org/2018/credentials/v1
+                      - https://www.w3.org/2018/credentials/examples/v1
+                    type: IssuerMetadata
+                    credentialIssuer: did:web:wallet-stub-host:BPNL000000000001
+                    credentialsSupported:
+                      - type: CredentialObject
+                        profiles:
+                          - vc20-bssl/jwt
+                          - vc10-sl2021/jwt
+                        offerReason: reissue
+                        bindingMethods:
+                          - did:web
+                        credentialType:
+                          - BpnCredential
+                          - MembershipCredential
+                        issuancePolicy: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              examples:
+                Internal Error Exception:
+                  description: Internal Error Exception
+                  value:
+                    type: about:blank
+                    title: Internal Server Error
+                    status: 500
+                    detail: 'InternalErrorException: ...'
+                    instance: /api/v1.0.0/dcp/{wallet identifier}/metadata
+                    properties:
+                      timestamp: 1743062000750
+  /api/dim/status-list/{bpn}/{vcId}:
     get:
       tags:
         - Status list credential
@@ -935,9 +1360,9 @@ paths:
                       - VerifiableCredential
                       - StatusList2021Credential
                     '@context':
-                      - 'https://www.w3.org/2018/credentials/v1'
-                      - 'https://w3id.org/catenax/credentials/v1.0.0'
-                    issuer: 'did:web:localhost:BPNL000000000000'
+                      - https://www.w3.org/2018/credentials/v1
+                      - https://w3id.org/catenax/credentials/v1.0.0
+                    issuer: did:web:localhost:BPNL000000000000
                     expirationDate: '2025-07-01T05:03:16Z'
         '404':
           description: Not Found
@@ -947,7 +1372,7 @@ paths:
                 No Status List Found Exception:
                   description: No Status List Found Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: 'Not Found: No status list credential found for bpn -> sda'
                     status: 404
                     detail: >-
@@ -964,7 +1389,7 @@ paths:
                 Internal Error Exception:
                   description: Internal Error Exception
                   value:
-                    type: 'about:blank'
+                    type: about:blank
                     title: Internal Server Error
                     status: 500
                     detail: 'InternalErrorException: Internal Error: **'
@@ -973,6 +1398,15 @@ paths:
                       timestamp: 1743160775200
 components:
   schemas:
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        serviceEndpoint:
+          type: string
     TokenRequest:
       type: object
       properties:
@@ -982,19 +1416,50 @@ components:
           type: string
         grant_type:
           type: string
+    RequestCredential:
+      type: object
+      properties:
+        issuerDid:
+          type: string
+        id:
+          type: string
+        holderDid:
+          type: string
+          minLength: 1
+        expirationDate:
+          type: string
+        requestedCredentials:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestedCredential'
+        approvedCredentials:
+          type: array
+          items:
+            type: string
+        deliveryStatus:
+          type: string
+        status:
+          type: string
+      required:
+        - holderDid
+    RequestedCredential:
+      type: object
+      properties:
+        credentialType:
+          type: string
+        format:
+          type: string
     CredentialPayload:
       type: object
       properties:
         issue:
           type: object
-          additionalProperties:
-            type: object
+          additionalProperties: {}
         derive:
           $ref: '#/components/schemas/StoreRequestDerive'
         issueWithSignature:
           type: object
-          additionalProperties:
-            type: object
+          additionalProperties: {}
     IssueCredentialRequest:
       type: object
       properties:
@@ -1050,7 +1515,7 @@ components:
         payload:
           $ref: '#/components/schemas/Payload'
   securitySchemes:
-    AuthenticateUsingAccessToken:
+    Authenticate using access_token:
       type: apiKey
       description: |
         **Bearer (apiKey)**
@@ -1059,7 +1524,7 @@ components:
         Example: Bearer access_token
       name: Authorization
       in: header
-    AuthenticateUsingVPForBDRS:
+    Authenticate using VP for BDRS directory API:
       type: apiKey
       description: >
         **Bearer Token**
