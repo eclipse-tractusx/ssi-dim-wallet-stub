@@ -175,6 +175,7 @@ tasks.register('dashDependencies') { dashDependencies ->
                             def moduleId = dep.selected.moduleVersion.module
                             moduleId.group != rootProject.group
                         })
+                        .findAll(dep-> dep.constraint)
                         .collect { dep -> "${dep.selected}" }
                 )
             }
