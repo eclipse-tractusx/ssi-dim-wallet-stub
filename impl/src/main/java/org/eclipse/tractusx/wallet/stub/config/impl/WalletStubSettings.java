@@ -1,7 +1,7 @@
 /*
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
- *
+ *  Copyright (c) 2025 Cofinity-X
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
  *
@@ -23,6 +23,7 @@ package org.eclipse.tractusx.wallet.stub.config.impl;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.net.URL;
 import java.util.List;
 
 
@@ -34,5 +35,5 @@ import java.util.List;
 @ConfigurationProperties(prefix = "stub")
 public record WalletStubSettings(String env, String didHost, String stubUrl,
                                  List<String> seedWalletsBPN,
-                                 String baseWalletBPN, String statusListVcId) {
+                                 String baseWalletBPN, String statusListVcId, List<URL> didDocumentContextUrls, List<URL> issuerMetadataContextUrls) {
 }

@@ -52,6 +52,9 @@ public class HolderCredentialEntity {
     @Column(name = "\"key\"", nullable = false)
     private String key;
 
+    @Column(nullable = false)
+    private String holderBpn;
+
     @JdbcTypeCode(Types.LONGNVARCHAR)
     @Convert(converter = CustomCredentialConverter.class)
     @Column(name = "credential", nullable = false)

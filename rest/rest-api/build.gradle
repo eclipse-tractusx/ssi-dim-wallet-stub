@@ -48,6 +48,9 @@ dependencies {
 
     // SPRING DOC - SWAGGER
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui"
+
+    // EDC
+    implementation "org.eclipse.edc:crypto-common-lib"
 }
 
 test {

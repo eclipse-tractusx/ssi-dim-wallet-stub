@@ -41,6 +41,12 @@ public class HolderCredentialAsJWTEntity {
     @Column(name = "\"key\"", nullable = false)
     private String key;
 
+    @Column(nullable = false)
+    private String vcId;
+
+    @Column(nullable = false)
+    private String holderBpn;
+
     @Column(name = "jwt", columnDefinition = "TEXT", nullable = false)
     private String jwt;
 }

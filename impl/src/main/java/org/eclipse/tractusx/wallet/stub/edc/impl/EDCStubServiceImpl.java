@@ -46,7 +46,7 @@ import org.eclipse.tractusx.wallet.stub.exception.api.ParseStubException;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
-import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomVerifiablePresentation;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.jetbrains.annotations.NotNull;
@@ -253,8 +253,8 @@ public class EDCStubServiceImpl implements EDCStubService {
             log.debug("Requested VC -> types : {}, caller bpn ->{}", StringEscapeUtils.escapeJava(StringUtils.join(requestedTypes, ",")), StringEscapeUtils.escapeJava(callerBpn));
 
             //here we will create request VC if not already issued
-            //in real world scenario it will give error if requested VC not issued to holder
-            List<String> vsAsJwt = requestedTypes.stream().map(type -> credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(callerBpn, type)).toList();
+            //in a real world scenario it will give error if requested VC not issued to holder
+            List<String> vsAsJwt = requestedTypes.stream().map(type -> credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(callerBpn, type).getRight()).toList();
 
             //create VP as JsonLD
             //time config

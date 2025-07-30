@@ -26,6 +26,7 @@ import com.nimbusds.jose.crypto.ECDSAVerifier;
 import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
 import org.eclipse.tractusx.wallet.stub.credential.impl.internal.api.InternalCredentialService;
@@ -100,18 +101,18 @@ class CredentialServiceTest {
     private void setupCommonMocks(String holderBpn, String type, String baseWalletBpn, String issuerId, String holderId) {
         // Mock WalletStubSettings
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
-        
+
         // Mock Storage to return empty
         when(storage.getCredentialsByHolderBpnAndType(holderBpn, type))
                 .thenReturn(Optional.empty());
-        
+
         // Mock DidDocumentService with proper VerificationMethod
         DidDocument issuerDidDoc = createDidDocument(issuerId);
 
         DidDocument holderDidDoc = DidDocument.Builder.newInstance()
                 .id(holderId)
                 .build();
-        
+
         when(didDocumentService.getOrCreateDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
         when(didDocumentService.getOrCreateDidDocument(holderBpn)).thenReturn(holderDidDoc);
     }
@@ -129,10 +130,10 @@ class CredentialServiceTest {
         String expectedJwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...";
 
         when(storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type))
-                .thenReturn(Optional.of(expectedJwt));
+                .thenReturn(Optional.of(Pair.of("id", expectedJwt)));
 
         // When
-        String actualJwt = credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(holderBpn, type);
+        String actualJwt = credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(holderBpn, type).getRight();
 
         // Then
         assertEquals(expectedJwt, actualJwt);
@@ -157,31 +158,31 @@ class CredentialServiceTest {
 
         // Mock WalletStubSettings
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
-        
+
         // Mock Storage to return empty for JWT
         when(storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type))
                 .thenReturn(Optional.empty());
-        
+
         // Mock Storage to return empty for credentials to trigger new credential creation
         when(storage.getCredentialsByHolderBpnAndType(holderBpn, type))
                 .thenReturn(Optional.empty());
-        
+
         // Mock void methods using doNothing()
         doNothing().when(storage).saveCredentials(
-            org.mockito.ArgumentMatchers.anyString(), 
-            org.mockito.ArgumentMatchers.any(CustomCredential.class), 
-            org.mockito.ArgumentMatchers.anyString(), 
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.any(CustomCredential.class),
+            org.mockito.ArgumentMatchers.anyString(),
             org.mockito.ArgumentMatchers.anyString());
-                
+
         doNothing().when(storage).saveCredentialAsJwt(
-            org.mockito.ArgumentMatchers.anyString(), 
-            org.mockito.ArgumentMatchers.anyString(), 
-            org.mockito.ArgumentMatchers.anyString(), 
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.anyString(),
             org.mockito.ArgumentMatchers.anyString());
 
         // Use DeterministicECKeyPairGenerator to get an ECDSA key pair
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair(baseWalletBpn, "test");
-        
+
         // Mock KeyService to return our test key pair
         when(keyService.getKeyPair(baseWalletBpn)).thenReturn(testKeyPair);
 
@@ -191,7 +192,7 @@ class CredentialServiceTest {
         DidDocument holderDidDoc = DidDocument.Builder.newInstance()
                 .id(holderId)
                 .build();
-        
+
         when(didDocumentService.getOrCreateDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
         when(didDocumentService.getOrCreateDidDocument(holderBpn)).thenReturn(holderDidDoc);
 
@@ -199,20 +200,20 @@ class CredentialServiceTest {
         when(tokenSettings.tokenExpiryTime()).thenReturn(60);
 
         // When
-        String actualJwt = credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(holderBpn, type);
+        String actualJwt = credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(holderBpn, type).getRight();
 
         // Then
         assertTrue(actualJwt != null && !actualJwt.isEmpty(), "JWT should not be null or empty");
-        
+
         // Verify the JWT can be parsed and contains expected claims
         SignedJWT parsedJwt = SignedJWT.parse(actualJwt);
         JWTClaimsSet claims = parsedJwt.getJWTClaimsSet();
-        
+
         assertEquals(issuerId, claims.getIssuer());
         assertEquals(issuerId, claims.getSubject());
         assertEquals(holderBpn, claims.getClaim(Constants.BPN));
         assertTrue(claims.getAudience().containsAll(List.of(issuerId, holderId)));
-        
+
         // Verify signature
         ECPublicKey publicKey = (ECPublicKey) testKeyPair.getPublic();
         ECDSAVerifier verifier = new ECDSAVerifier(publicKey);
@@ -295,7 +296,7 @@ class CredentialServiceTest {
         assertEquals(holderBpn, credentialSubject.get("bpn"));
         assertEquals(holderId, credentialSubject.get("id"));
         assertEquals(holderBpn, credentialSubject.get("holderIdentifier"));
-        
+
         // Verify storage was called
         verify(storage).saveCredentials(anyString(), any(CustomCredential.class), eq(holderBpn), eq(type));
     }
@@ -332,7 +333,7 @@ class CredentialServiceTest {
         assertEquals("DataExchangeGovernance", credentialSubject.get("useCase"));
         assertEquals("https://example.org/temp-1", credentialSubject.get("contractTemplate"));
         assertEquals("1.0", credentialSubject.get("contractVersion"));
-        
+
         // Verify storage was called
         verify(storage).saveCredentials(anyString(), any(CustomCredential.class), eq(holderBpn), eq(type));
     }
@@ -391,7 +392,7 @@ class CredentialServiceTest {
             IllegalArgumentException.class,
             () -> internalCredentialService.getVerifiableCredentialByHolderBpnAndType(holderBpn, type)
         );
-        
+
         assertEquals("vc type -> " + type + " is not supported", exception.getMessage());
     }
 
@@ -409,7 +410,7 @@ class CredentialServiceTest {
         String type = "MembershipCredential";
         CustomCredential existingCredential = new CustomCredential();
         existingCredential.put("test", "value");
-        
+
         // Mock Storage to return existing credential
         when(storage.getCredentialsByHolderBpnAndType(holderBpn, type))
                 .thenReturn(Optional.of(existingCredential));
@@ -420,7 +421,7 @@ class CredentialServiceTest {
         // Then
         assertSame(existingCredential, result);
         assertEquals("value", result.get("test"));
-        
+
         // Verify no other interactions
         verifyNoMoreInteractions(keyService, didDocumentService);
     }

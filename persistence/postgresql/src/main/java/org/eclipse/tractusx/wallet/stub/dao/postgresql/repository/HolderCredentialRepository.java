@@ -25,13 +25,19 @@ package org.eclipse.tractusx.wallet.stub.dao.postgresql.repository;
 import feign.Param;
 
 import org.eclipse.tractusx.wallet.stub.dao.postgresql.entity.HolderCredentialEntity;
+import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface HolderCredentialRepository extends JpaRepository<HolderCredentialEntity, Long> {
 
     @Query("SELECT h FROM HolderCredentialEntity h WHERE h.key = :key")
     HolderCredentialEntity findByKey(@Param("key") String key);
+
+    @Query("SELECT h FROM HolderCredentialEntity h WHERE h.holderBpn = :holderBpn")
+    List<HolderCredentialEntity> getCredentialByHolderBpn(@Param("holderBpn") String holderBpn);
 }

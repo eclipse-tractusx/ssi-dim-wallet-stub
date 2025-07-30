@@ -42,9 +42,16 @@ public class DidDocument {
 
     private final List<Service> service = new ArrayList<>();
     @JsonProperty("@context")
-    private final List<Object> context = new ArrayList<>();
+    private final List<String> context = new ArrayList<>();
     private final List<VerificationMethod> verificationMethod = new ArrayList<>();
     private final List<String> authentication = new ArrayList<>();
+    private final List<String> assertionMethod = new ArrayList<>();
+
+    //ref: https://www.w3.org/TR/did-1.0/#capability-invocation
+    //ref: https://www.w3.org/TR/did-1.0/#key-agreement
+    private final List<VerificationMethod> keyAgreement = new ArrayList<>();
+    private final List<VerificationMethod> capabilityInvocation = new ArrayList<>();
+
     private String id;
 
     @Override
@@ -71,7 +78,7 @@ public class DidDocument {
         }
 
         @JsonProperty("@context")
-        public DidDocument.Builder context(List<Object> context) {
+        public DidDocument.Builder context(List<String> context) {
             document.context.addAll(context);
             return this;
         }
@@ -88,6 +95,20 @@ public class DidDocument {
 
         public Builder authentication(List<String> authentication) {
             document.authentication.addAll(authentication);
+            return this;
+        }
+        public Builder assertionMethod(List<String> assertionMethod) {
+            document.assertionMethod.addAll(assertionMethod);
+            return this;
+        }
+
+        public Builder keyAgreement(List<VerificationMethod> keyAgreement) {
+            document.keyAgreement.addAll(keyAgreement);
+            return this;
+        }
+
+        public Builder capabilityInvocation(List<VerificationMethod> capabilityInvocation) {
+            document.capabilityInvocation.addAll(capabilityInvocation);
             return this;
         }
 
