@@ -40,6 +40,7 @@ class MemoryStorageTest {
         MemoryStorage storage = new MemoryStorage();
         String holderBpn = "BPNL000000000001";
         String type = "TestCredential";
+        String type1 = "TestCredential1";
 
         // Create test credentials
         CustomCredential matchingCredential = new CustomCredential();
@@ -57,7 +58,7 @@ class MemoryStorageTest {
         // Store credentials
         storage.saveCredentials("vc1", matchingCredential, holderBpn, type);
         storage.saveCredentials("vc2", nonMatchingCredential, "BPNL000000000002", type);
-        storage.saveCredentials("vc3", invalidCredential, holderBpn, type);
+        storage.saveCredentials("vc3", invalidCredential, holderBpn, type1);
 
         // Act
         List<CustomCredential> result = storage.getVcIdAndTypesByHolderBpn(holderBpn);
