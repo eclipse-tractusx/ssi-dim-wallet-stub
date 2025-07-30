@@ -128,7 +128,6 @@ subprojects {
     }
 
 
-
     build {
         archivesBaseName = "wallet"
         version = "${version}"
@@ -172,14 +171,11 @@ tasks.register('dashDependencies') { dashDependencies ->
             proj.configurations.findAll { it.canBeResolved && it.name != 'archives' && it.name != 'default' }.each { conf ->
                 deps.addAll(conf.incoming.resolutionResult.allDependencies
                         .findAll { it instanceof ResolvedDependencyResult }
-                        .findAll { dep -> 
-                            // Filter out internal project dependencies (those starting with ':')
-                            // and only include external dependencies
-                            def id = dep.selected.id
-                            return !id.toString().startsWith(':') && 
-                                   !id.toString().startsWith('project :') &&
-                                   id.toString().contains(':')  // External dependencies have group:name:version format
-                        }
+                        .findAll(dep -> { //Skip internal project module
+                            def moduleId = dep.selected.moduleVersion.module
+                            moduleId.group != rootProject.group
+                        })
+                        .findAll(dep-> dep.constraint)
                         .collect { dep -> "${dep.selected}" }
                 )
             }
