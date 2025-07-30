@@ -26,9 +26,11 @@ import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.SneakyThrows;
+import org.eclipse.tractusx.wallet.stub.exception.api.NoVCTypeFoundException;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
+import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
-import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -137,5 +139,31 @@ class CommonUtilsTest {
         Map<String, Object> map = (Map<String, Object>) credential.get("credentialSubject");
         assertEquals(name, map.get("name"));
         assertEquals(email, map.get("email"));
+    }
+
+    @Test
+    @DisplayName("Test getTypeFromCustomCredential with various type configurations")
+    void testGetTypeFromCustomCredential() {
+        // Test with two types (standard case)
+        CustomCredential credentialWithTwoTypes = new CustomCredential();
+        credentialWithTwoTypes.put(Constants.TYPE, List.of("VerifiableCredential", Constants.MEMBERSHIP_CREDENTIAL));
+        assertEquals( Constants.MEMBERSHIP_CREDENTIAL, CommonUtils.getTypeFromCustomCredential(credentialWithTwoTypes));
+
+        // Test with single type
+        CustomCredential credentialWithOneType = new CustomCredential();
+        credentialWithOneType.put(Constants.TYPE, List.of("SingleType"));
+        assertEquals("SingleType", CommonUtils.getTypeFromCustomCredential(credentialWithOneType));
+
+        // Test invalid type format (empty list)
+        CustomCredential credentialWithEmptyList = new CustomCredential();
+        credentialWithEmptyList.put(Constants.TYPE, List.of());
+        assertThrows(NoVCTypeFoundException.class, () ->
+                CommonUtils.getTypeFromCustomCredential(credentialWithEmptyList));
+
+        // Test invalid type format (not a list)
+        CustomCredential credentialWithInvalidType = new CustomCredential();
+        credentialWithInvalidType.put(Constants.TYPE, "InvalidType");
+        assertThrows(NoVCTypeFoundException.class, () ->
+                CommonUtils.getTypeFromCustomCredential(credentialWithInvalidType));
     }
 }

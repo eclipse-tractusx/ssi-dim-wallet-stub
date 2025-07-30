@@ -1,6 +1,7 @@
 /*
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *  Copyright (c) 2025 Cofinity-X
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -25,16 +26,20 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
+import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.edc.api.dto.CreateCredentialWithoutScopeRequest;
 import org.eclipse.tractusx.wallet.stub.edc.api.dto.QueryPresentationRequest;
 import org.eclipse.tractusx.wallet.stub.edc.api.dto.QueryPresentationResponse;
 import org.eclipse.tractusx.wallet.stub.edc.api.dto.StsTokeResponse;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.CredentialsSupported;
+import org.eclipse.tractusx.wallet.stub.issuer.api.dto.IssuerMetadataResponse;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
-import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -55,6 +60,10 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UtilityClass
 public class TestUtils {
@@ -136,6 +145,43 @@ public class TestUtils {
 
         QueryPresentationResponse responseBody = validateResponseFormat(response);
         return responseBody.getPresentation().get(0);
+    }
+
+
+    public static void validateIssuerMetadataResponse(IssuerMetadataResponse issuerMetadata, DidDocument didDocument, WalletStubSettings walletStubSettings) {
+
+        assertNotNull(issuerMetadata);
+        assertEquals(didDocument.getId(), issuerMetadata.getCredentialIssuer());
+        assertEquals(Constants.CREDENTIAL_ISSUER, issuerMetadata.getType());
+
+        //validate context
+        assertNotNull(issuerMetadata.getContext());
+        walletStubSettings.issuerMetadataContextUrls().forEach(contextUrl -> {
+            assertTrue(issuerMetadata.getContext().contains(contextUrl));
+        });
+
+        assertNotNull(issuerMetadata.getCredentialsSupported());
+        assertEquals(1, issuerMetadata.getCredentialsSupported().size());
+        CredentialsSupported credentialsSupported = issuerMetadata.getCredentialsSupported().getFirst();
+
+        assertEquals(1, credentialsSupported.getProfiles().size());
+        assertTrue(credentialsSupported.getProfiles().contains(Constants.VC_10_SL_2021_JWT));
+
+        //validate supported credential types
+        assertEquals(Constants.SUPPORTED_VC_TYPES.size(), credentialsSupported.getCredentialType().size());
+        for (String type : Constants.SUPPORTED_VC_TYPES) {
+            assertTrue(credentialsSupported.getCredentialType().contains(type));
+        }
+
+        //validate binding method
+        assertEquals(Constants.DID_WEB, credentialsSupported.getBindingMethods().getFirst());
+
+        //validate offer reason
+        assertEquals(Constants.OFFER_REASON, credentialsSupported.getOfferReason());
+
+        //validate issuance policy
+        assertNotNull(credentialsSupported.getIssuancePolicy());
+
     }
 
     private String createStsWithoutScope(TestRestTemplate restTemplate, TokenService tokenService, TokenSettings tokenSettings, String consumerDid, String providerDid, String consumerBpn, String token) {

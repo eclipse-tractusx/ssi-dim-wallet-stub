@@ -24,6 +24,7 @@ package org.eclipse.tractusx.wallet.stub.token.rest.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
@@ -37,9 +38,11 @@ public class TokenController implements TokenApi {
 
     private final TokenService tokenService;
 
+    private final DidDocumentService didDocumentService;
+
     @Override
     public ResponseEntity<TokenResponse> createAccessToken(TokenRequest request, String token) {
         tokenService.setClientInfo(request, token);
-        return ResponseEntity.ok(tokenService.createAccessTokenResponse(request));
+        return ResponseEntity.ok(tokenService.createAccessTokenResponse(request, didDocumentService.getOrCreateDidDocument(request.getClientId())));
     }
 }

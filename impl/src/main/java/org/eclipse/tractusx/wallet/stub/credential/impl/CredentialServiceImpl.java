@@ -27,6 +27,7 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
 import org.eclipse.tractusx.wallet.stub.credential.impl.internal.api.InternalCredentialService;
@@ -36,7 +37,7 @@ import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
-import org.eclipse.tractusx.wallet.stub.utils.impl.CommonUtils;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.stereotype.Service;
@@ -63,11 +64,19 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
 
 
     @Override
-    public String getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type) {
+    public Pair<String, String> getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type) {
         try {
-            Optional<String> optionalVC = storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type);
+            Optional<Pair<String, String>> optionalVC = storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type);
             if (optionalVC.isPresent()) {
-                return optionalVC.get();
+                //if Id is URI, we need to extract the id part
+                String vcId = optionalVC.get().getLeft();
+                if(vcId.contains("#")){
+                    String[] parts = vcId.split("#");
+                    if (parts.length > 1) {
+                        vcId = parts[1];
+                    }
+                }
+                return Pair.of(vcId, optionalVC.get().getRight());
             }
 
             CustomCredential verifiableCredential = getVerifiableCredentialByHolderBpnAndType(holderBpn, type);
@@ -94,8 +103,9 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
             SignedJWT vcJWT = CommonUtils.signedJWT(tokenBody, issuerKeyPair, issuerDocument.getVerificationMethod().getFirst().getId());
 
             String vcAsJwt = vcJWT.serialize();
-            storage.saveCredentialAsJwt(verifiableCredential.get(Constants.ID).toString(), vcAsJwt, holderBpn, type);
-            return vcAsJwt;
+            String vcIdUri = verifiableCredential.get(Constants.ID).toString();
+            storage.saveCredentialAsJwt(vcIdUri, vcAsJwt, holderBpn, type);
+            return Pair.of(vcIdUri.split("#")[1] ,vcAsJwt);
         } catch (IllegalArgumentException | InternalErrorException e) {
             throw e;
         } catch (Exception e) {
@@ -178,7 +188,7 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
             subject.put(Constants.MEMBER_OF, "Catena-X");
             CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                     vcIdUri.toString(), Constants.MEMBERSHIP_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
-            storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.MEMBERSHIP_CREDENTIAL);
+            storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, Constants.MEMBERSHIP_CREDENTIAL);
             return credentialWithoutProof;
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
@@ -194,7 +204,7 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
             CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                     vcIdUri.toString(), Constants.BPN_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-            storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.BPN_CREDENTIAL);
+            storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, Constants.BPN_CREDENTIAL);
             return credentialWithoutProof;
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
@@ -213,7 +223,7 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
         CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                 vcIdUri.toString(), Constants.USAGE_PURPOSE_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-        storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.USAGE_PURPOSE_CREDENTIAL);
+        storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, Constants.USAGE_PURPOSE_CREDENTIAL);
         return credentialWithoutProof;
     }
 
@@ -229,7 +239,7 @@ public class CredentialServiceImpl implements CredentialService, InternalCredent
             CustomCredential credentialWithoutProof = CommonUtils.createCredential(issuerDocument.getId(),
                     vcIdUri.toString(), Constants.DATA_EXCHANGE_CREDENTIAL, DateUtils.addYears(new Date(), 1), subject);
 
-            storage.saveCredentials(vcId, credentialWithoutProof, holderBpn, Constants.DATA_EXCHANGE_CREDENTIAL);
+            storage.saveCredentials(vcIdUri.toString(), credentialWithoutProof, holderBpn, Constants.DATA_EXCHANGE_CREDENTIAL);
             return credentialWithoutProof;
         } catch (IllegalArgumentException | InternalErrorException e) {
             throw e;

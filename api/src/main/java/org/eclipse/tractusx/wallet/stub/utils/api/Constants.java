@@ -25,10 +25,13 @@ package org.eclipse.tractusx.wallet.stub.utils.api;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.List;
+
 @UtilityClass
 public class Constants {
 
     public static final String BPN = "bpn";
+    public static final String CAPITAL_BPN = "BPN";
     public static final String TOKEN_TYPE_BEARER = "Bearer";
     public static final String TOKEN = "token";
     public static final String HOLDER_IDENTIFIER = "holderIdentifier";
@@ -38,9 +41,26 @@ public class Constants {
     public static final String GROUP = "group";
     public static final String USE_CASE = "useCase";
     public static final String BASIC = "Basic";
+
+    //Supported VC types
     public static final String MEMBERSHIP_CREDENTIAL = "MembershipCredential";
     public static final String BPN_CREDENTIAL = "BpnCredential";
     public static final String DATA_EXCHANGE_CREDENTIAL = "DataExchangeGovernanceCredential";
+
+    public static final List<String> SUPPORTED_VC_TYPES = List.of(
+            MEMBERSHIP_CREDENTIAL,
+            BPN_CREDENTIAL,
+            DATA_EXCHANGE_CREDENTIAL
+    );
+
+    public static final String VC_10_SL_2021_JWT = "vc10-sl2021/jwt";
+    public static final List<String> CREDENTIAL_PROFILE =   List.of(VC_10_SL_2021_JWT);
+    public static final String OFFER_REASON = "reissue";
+    public static final String DID_WEB = "did:web";
+    public static final String CREDENTIAL_OBJECT = "CredentialObject";
+    public static final String CREDENTIAL_ISSUER = "credentialIssuer";
+    public static final String ISSUER_METADATA = "IssuerMetadata";
+    public static final String WALLET_IDENTIFIER = "walletIdentifier";
     public static final String USAGE_PURPOSE_CREDENTIAL = "UsagePurposeCredential";
     public static final String STATUS_LIST_2021_CREDENTIAL = "StatusList2021Credential";
     public static final String ENCODED_LIST = "encodedList";
@@ -54,6 +74,8 @@ public class Constants {
     public static final String TYPE = "type";
     public static final String SCOPE = "scope";
     public static final String CREDENTIAL_SERVICE = "CredentialService";
+    public static final String ISSUER_SERVICE = "IssuerService";
+
     public static final String JSON_WEB_KEY_2020 = "JsonWebKey2020";
     public static final String STATUS_PURPOSE = "statusPurpose";
     public static final String REVOCATION = "revocation";
@@ -70,4 +92,11 @@ public class Constants {
     public static final String PROVIDER_DID = "providerDid";
     public static final String CONTENT = "content";
     public static final String JWT = "jwt";
+    public static final String CREDENTIAL_STATUS_ISSUED = "ISSUED";
+    public static final String EXPIRATION_DATE = "expirationDate";
+    public static final String ISSUER = "issuer";
+    public static final String CATENA_X_PORTAL = "catena-x-portal";
+
+    public static final String VCDM_11_JWT = "vcdm11_jwt";
+    public static final String DELIVERY_STATUS_COMPLETED = "COMPLETED";
 }

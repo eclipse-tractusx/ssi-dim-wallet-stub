@@ -21,12 +21,19 @@
 
 package org.eclipse.tractusx.wallet.stub.storage.memory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
+import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
+import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,8 +42,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * The in-memory storage
  */
 @Service
+@Slf4j
 public class MemoryStorage implements Storage {
 
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     //To store KeyPair: BPN as a key and keypair as value
     private static final Map<String, KeyPair> KEY_STORE = new ConcurrentHashMap<>();
@@ -90,9 +100,29 @@ public class MemoryStorage implements Storage {
         return Optional.ofNullable(HOLDER_CREDENTIAL_STORE.get(getMapKey(holderBpn, type)));
     }
 
+    @SneakyThrows
     @Override
-    public Optional<String> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type) {
-        return Optional.ofNullable(HOLDER_CREDENTIAL_AS_JWT_STORE.get(getMapKey(holderBpn, type)));
+    public Optional<Pair<String, String>> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type) {
+        String jwtString = HOLDER_CREDENTIAL_AS_JWT_STORE.get(getMapKey(holderBpn, type));
+        if(jwtString == null) {
+            return Optional.empty();
+        }else {
+            String[] parts = jwtString.split("\\.");
+            if (parts.length < 2) {
+                return Optional.empty();
+            }
+            try {
+                String payload = new String(Base64.getDecoder().decode(parts[1]));
+                Map<String, Object> vcMap = objectMapper.readValue(payload, Map.class);
+                Map<String, Object> vc = (Map<String, Object>) vcMap.get(Constants.VC);
+                String id = (String) vc.get(Constants.ID);
+                String vcId = id.split("#")[1];
+                return Optional.of(Pair.of(vcId, jwtString));
+            } catch (Exception e) {
+                log.error("Error decoding JWT for holderBpn: {}, type: {}", holderBpn, type, e);
+                return Optional.empty();
+            }
+        }
     }
 
     @Override
@@ -118,5 +148,18 @@ public class MemoryStorage implements Storage {
     @Override
     public Optional<DidDocument> getDidDocument(String bpn) {
         return Optional.ofNullable(DID_DOCUMENT_STORE.get(bpn));
+    }
+
+    @Override
+    public List<CustomCredential> getVcIdAndTypesByHolderBpn(String holderBpn) {
+        return HOLDER_CREDENTIAL_STORE.values().stream().filter(credential -> {
+            Map<String, String> credentialSubject = (Map<String, String>) credential.get(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE);
+            if (!credentialSubject.containsKey(Constants.ID)) {
+                return false;
+            } else {
+                //id will be holder did i.e. did:web:example.com:bpn123
+                return credentialSubject.get(Constants.ID).endsWith(holderBpn);
+            }
+        }).toList();
     }
 }

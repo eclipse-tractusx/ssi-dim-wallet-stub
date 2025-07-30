@@ -427,9 +427,9 @@ The project handles the following exceptions, mapping them to appropriate HTTP r
 
 # **Interfaces**
 
-Wallet stub service offers external interfaces for issuer component, portal, and EDC.
+Wallet stub service offers external interfaces for an issuer component, portal, and EDC.
 
-![interfaces.png.png](./images/interfaces.png)
+Please refer API specification here: [openAPI.json](../api/openAPI.json)
 
 **POST Token**
 
@@ -567,6 +567,8 @@ Request Parameter:
 
 Response Body:
 200 Success with no content
+
+
 
 ### POST Credentials - Issuer Component
 
@@ -803,6 +805,177 @@ Response Body:
 
 **Note**: `credentialID == externalCredentialId`
 
+
+### POST Request Credentials - Issuer Component
+
+![request_credential.png](images/request_credential.png)
+Request credential from the issuer as per DCP flow.
+
+Path Parameter:
+
+```
+"applicationKey": "catena-x-portal"
+```
+
+Request Body:
+
+```json
+{
+    "requestedCredentials": [
+        {
+            "credentialType": "BpnCredential",
+            "format": "vcdm11_jwt"
+        }
+    ],
+    "issuerDid": "did:web:localhost:BPNL000000000000",
+    "holderDid": "did:web:localhost:BPNL000000000001",
+    "expirationDate": "2028-11-25T16:51:22.000Z"
+}
+```
+
+Response Body:
+
+200 OK
+
+```json
+{
+    "id": "1f36af58-0fc0-4b24-9b1c-e37d59668089"
+}
+```
+
+
+
+### Get Requested Credentials - Issuer Component
+
+![get_requested_credentials.png](images/get_requested_credentials.png)
+
+Get requested credentials by the issuer. This will return all request received from holder
+
+Note: OData format is not supported in the query parameter. Only filter with holderDid is supported.
+
+Query Parameter:
+
+```
+"filter": "holderDid eq 'did:web:localhost:BPNL000000000000'"
+```
+
+Response Body:
+
+200 OK
+
+```json
+{
+    "count": 1,
+    "data": [
+        {
+            "id": "f15a7272-dd6c-4721-bd6b-43258096932a",
+            "expirationDate": "2025-06-24T08:36:05.000Z",
+            "requestedCredentials": [
+                {
+                    "format": "vcdm11_jwt",
+                    "credentialType": "BpnCredential"
+                }
+            ],
+            "holderDid": "did:web:localhost:BPNL000000000000",
+            "issuerDid": "did:web:localhost:BPNL000000000000",
+            "status": "ISSUED",
+            "approvedCredentials": [
+                "45836ee5-a6e4-4a50-8216-d3231c523a8f"
+            ],
+            "deliveryStatus": "COMPLETED"
+        }
+    ]
+}
+```
+
+
+### GET Requested Credentials status - Issuer Component
+
+![get_status_of_requested_credentials.png](images/get_status_of_requested_credentials.png)
+
+Check the requested credential status by the holder.
+
+Path Parameter:
+
+```
+"requestId": "7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f"
+```
+
+Response Body:
+
+200 OK
+
+```json
+{
+    "id": "7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f",
+    "expirationDate": "2028-08-31T00:00:00.000Z",
+    "issuerDid": "did:web:localhost:BPNL000000000000",
+    "holderDid": "did:web:localhost:BPNL000000000000",
+    "requestedCredentials": [
+        {
+            "credentialType": "BpnCredential",
+            "format": "vcdm11_jwt"
+        }
+    ],
+    "status": "RECEIVED",
+    "matchingCredentials": [
+        {
+            "id": "7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f",
+            "name": "BpnCredential",
+            "description": "BpnCredential",
+            "verifiableCredential": "eyJraWQiOiJkaWQ6d2ViOmxvY2FsaG9zdDpCUE5MMDAwMDAwMDAwMDAwI2MzOTMyZmY1LThkYTQtM2RlOS1hOTQyLTYyMTI1ZjM5NGU0MSIsInR5cCI6IkpXVCIsImFsZyI6IkVTMjU2SyJ9.eyJhdWQiOlsiZGlkOndlYjpsb2NhbGhvc3Q6QlBOTDAwMDAwMDAwMDAwMCIsImRpZDp3ZWI6bG9jYWxob3N0OkJQTjEyMyJdLCJicG4iOiJCUE4xMjMiLCJzdWIiOiJkaWQ6d2ViOmxvY2FsaG9zdDpCUE5MMDAwMDAwMDAwMDAwIiwiaXNzIjoiZGlkOndlYjpsb2NhbGhvc3Q6QlBOTDAwMDAwMDAwMDAwMCIsImV4cCI6MTc1MjY0NTU1NSwiaWF0IjoxNzUyNjQ1MjU1LCJ2YyI6eyJjcmVkZW50aWFsU3ViamVjdCI6eyJicG4iOiJCUE4xMjMiLCJob2xkZXJJZGVudGlmaWVyIjoiQlBOMTIzIiwiaWQiOiJkaWQ6d2ViOmxvY2FsaG9zdDpCUE4xMjMifSwiaXNzdWFuY2VEYXRlIjoiMjAyNS0wNy0xNlQwNTo1NDoxNVoiLCJpZCI6ImRpZDp3ZWI6bG9jYWxob3N0OkJQTkwwMDAwMDAwMDAwMDAjN2VmM2RkOGQtMDFjNS0zN2ZlLWI0YzYtYjk2YzBiNjgwMzFmIiwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIkJwbkNyZWRlbnRpYWwiXSwiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCJodHRwczovL3czaWQub3JnL2NhdGVuYXgvY3JlZGVudGlhbHMvdjEuMC4wIl0sImlzc3VlciI6ImRpZDp3ZWI6bG9jYWxob3N0OkJQTkwwMDAwMDAwMDAwMDAiLCJleHBpcmF0aW9uRGF0ZSI6IjIwMjYtMDctMTZUMDU6NTQ6MTVaIn0sImp0aSI6ImI2ZWY4ZmZjLWM4OWEtNDllMi1hYTE5LWI0ZDgxYmUyYTA3YSJ9.jihODuZer8PkjXK-XvZU_jcv0b9GC2cQG1i2ZDQfcFFxpmv1rQnHkWk3Z8swhaKN0iMY5WxzKAWZmCKAcz3zTw",
+            "credential": {
+                "credentialSubject": {
+                    "bpn": "BPN123",
+                    "holderIdentifier": "BPN123",
+                    "id": "did:web:localhost:BPN123"
+                },
+                "issuanceDate": "2025-07-16T05:54:15Z",
+                "id": "did:web:localhost:BPNL000000000000#7ef3dd8d-01c5-37fe-b4c6-b96c0b68031f",
+                "type": [
+                    "VerifiableCredential",
+                    "BpnCredential"
+                ],
+                "@context": [
+                    "https://www.w3.org/2018/credentials/v1",
+                    "https://w3id.org/catenax/credentials/v1.0.0"
+                ],
+                "issuer": "did:web:localhost:BPNL000000000000",
+                "expirationDate": "2026-07-16T05:54:15Z"
+            },
+            "application": "catena-x-portal"
+        }
+    ]
+}
+
+```
+
+**Revoke Credential**
+
+The following query parameter and request body results in revoking a VC
+
+Query Parameter:
+
+```
+"credentialId": "string"
+```
+
+Request Body:
+
+```json
+{
+    "payload": {
+        "revoke": true
+    }
+}
+```
+
+Response Body:
+
+200 OK
+
+
+
 ### POST STS - EDC
 
 ![sts.png](./images/sts.png)
@@ -1015,6 +1188,115 @@ Response Body:
         "https://www.w3.org/ns/did/v1",
         "https://w3c.github.io/vc-jws-2020/contexts/v1",
         "https://w3id.org/did-resolution/v1"
+    ]
+}
+```
+
+
+
+### PUT Add/Update the service in the DID document - General
+
+![update_did_document_service.png](images/update_did_document_service.png)
+
+Add/Update service in the Did Document
+
+Request Body:
+
+```json
+{
+    "type": "DataService",
+    "serviceEndpoint": "https://subdomain.provider-domain.com/subpath/.well-known/dspace-version",
+    "id": "did:web:provider-domain.com#dsp-agent-1"
+}
+```
+
+Response Body: The updated did document
+
+200 OK
+
+```json
+{
+    "service": [
+        {
+            "id": "https://localhost#credential-service",
+            "type": "CredentialService",
+            "serviceEndpoint": "https://localhost/api"
+        },
+        {
+            "type": "DataService",
+            "serviceEndpoint": "https://subdomain.provider-domain.com/subpath/.well-known/dspace-version",
+            "id": "did:web:provider-domain.com#dsp-agent-1"
+        }
+    ],
+    "verificationMethod": [
+        {
+            "id": "did:web:localhost:BPNL000000000000#c3932ff5-8da4-3de9-a942-62125f394e41",
+            "type": "JsonWebKey2020",
+            "controller": "did:web:localhost:BPNL000000000000",
+            "publicKeyJwk": {
+                "kty": "EC",
+                "use": "sig",
+                "crv": "secp256k1",
+                "x": "NytYgtL_rte4EIXpb46e7pntJiPjH4l_pN1j1PVxkO8",
+                "y": "99JkYiCOkBfb8qCncv_YWdHy3eZGAQojWbmaEDFwSlU"
+            }
+        }
+    ],
+    "authentication": [
+        "did:web:localhost:BPNL000000000000#c3932ff5-8da4-3de9-a942-62125f394e41"
+    ],
+    "id": "did:web:localhost:BPNL000000000000",
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://w3c.github.io/vc-jws-2020/contexts/v1",
+        "https://w3id.org/did-resolution/v1"
+    ]
+}
+```
+
+
+### Get Issuer wallet metadata - General
+
+![issuer_metadata.png](images/issuer_metadata.png)
+
+Add/Update service in the Did Document
+
+Path parameter:
+
+```
+"walletIdentifier" : "BPNL000000000000"
+```
+
+Response Body: Metadata as per DCP flow
+
+200 OK
+
+```json
+{
+    "@context": [
+        "https://w3id.org/dspace-dcp/v1.0/dcp.jsonld",
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/2018/credentials/examples/v1"
+    ],
+    "type": "IssuerMetadata",
+    "credentialIssuer": "did:web:wallet-stub-host:BPNL000000000001",
+    "credentialsSupported": [
+        {
+            "type": "CredentialObject",
+            "profiles": [
+                "vc20-bssl/jwt",
+                "vc10-sl2021/jwt"
+            ],
+            "offerReason": "reissue",
+            "bindingMethods": [
+                "did:web"
+            ],
+            "credentialType": [
+                "BpnCredential",
+                "MembershipCredential"
+            ],
+            "issuancePolicy": {}
+        }
     ]
 }
 ```
