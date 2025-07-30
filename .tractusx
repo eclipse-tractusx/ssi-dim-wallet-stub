@@ -24,3 +24,5 @@ repositories:
   - name: "ssi-dim-wallet-stub"
     usage: "The repository is the SSI DIM wallet stub application"
     url: "https://github.com/eclipse-tractusx/ssi-dim-wallet-stub"
+openApiSpecs:
+  - "https://eclipse-tractusx.github.io/ssi-dim-wallet-stub/api/openAPI.yaml"
