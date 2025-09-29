@@ -24,7 +24,7 @@ name: ssi-dim-wallet-stub
 description: |
   A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster
 type: application
-version: 0.1.11
+version: 0.1.12
 appVersion: "0.0.7"
 home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
 sources:
@@ -36,5 +36,5 @@ dependencies:
     condition: keycloak.enabled
   - name: postgresql
     repository: https://charts.bitnami.com/bitnami
-    version: 12.x.x
+    version: 12.12.x
     condition: postgresql.enabled

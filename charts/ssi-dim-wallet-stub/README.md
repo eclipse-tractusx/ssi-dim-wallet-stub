@@ -9,7 +9,7 @@
 | Repository                         | Name       | Version |
 |------------------------------------|------------|---------|
 | https://charts.bitnami.com/bitnami | keycloak   | 22.1.0  |
-| https://charts.bitnami.com/bitnami | postgresql | 16.4.8  |
+| https://charts.bitnami.com/bitnami | postgresql | 15.4.0  |
 
 ### Prerequisites
 
