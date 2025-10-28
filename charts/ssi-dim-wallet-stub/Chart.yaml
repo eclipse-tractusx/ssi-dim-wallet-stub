@@ -34,7 +34,8 @@ dependencies:
     version: 3.0.0
     repository: https://eclipse-tractusx.github.io/charts/dev
     condition: keycloak.enabled
-  - name: postgresql
-    repository: https://charts.bitnami.com/bitnami
-    version: 12.12.x
+  - name: postgres
+    repository: oci://registry-1.docker.io/cloudpirates
+    version: 0.11.0
     condition: postgresql.enabled
+    alias: postgresql
