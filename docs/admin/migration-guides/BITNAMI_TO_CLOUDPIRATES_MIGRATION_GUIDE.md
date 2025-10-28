@@ -153,7 +153,7 @@ kubectl exec -n wallet wallet-postgres-0 -- bash -c \
 
 ```bash
 # Check application health
-APP_POD=$(kubectl get pod -n wallet -l app.kubernetes.io/name=ssi-dim-wallet-stub -o jsonpath='{.items[0].metadata.name}')
+APP_POD=$(kubectl get pod -n wallet -l app=ssi-dim-wallet-stub -o jsonpath='{.items[0].metadata.name}')
 kubectl exec -n wallet $APP_POD -- curl -s http://localhost:8080/actuator/health
 
 # Check logs
