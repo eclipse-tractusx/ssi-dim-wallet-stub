@@ -172,6 +172,7 @@ postgresql:
     password: postgrespassword
     username: postgres
   persistence:
-    enabled: true
+    # -- Enable for persistance
+    enabled: false
     size: 10Gi
     storageClass: standard
