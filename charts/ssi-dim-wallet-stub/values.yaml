@@ -166,8 +166,6 @@ postgresql:
     registry: docker.io
     # -- PostgreSQL image repository
     repository: postgres
-    # -- PostgreSQL image tag
-    tag: "18.0@sha256:1ffc019dae94eca6b09a49ca67d37398951346de3c3d0cfe23d8d4ca33da83fb"
   configmap:
     name: wallet-postgres-configmap
   auth:
