@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
@@ -80,6 +81,8 @@ public class EDCStubServiceImpl implements EDCStubService {
     private final TokenService tokenService;
 
     private final CredentialService credentialService;
+
+    private final WalletStubSettings walletStubSettings;
 
     private static @NotNull Set<String> validateRequestedVcAndScope(QueryPresentationRequest request, List<String> vcTypesFromSIToken, String scopeFromSiToken) {
         try {
@@ -289,7 +292,7 @@ public class EDCStubServiceImpl implements EDCStubService {
             log.debug("VP as JWT is created token -> {}", vpAccessToken);
             QueryPresentationResponse response = new QueryPresentationResponse();
             response.setPresentation(List.of(vpAccessToken));
-            response.setContexts(List.of("https://w3id.org/tractusx-trust/v0.8"));
+            response.setContexts(walletStubSettings.presentationCotextUrls());
             response.setType(Constants.PRESENTATION_RESPONSE_MESSAGE);
             return response;
         } catch (IllegalArgumentException | InternalErrorException | ParseStubException e) {
