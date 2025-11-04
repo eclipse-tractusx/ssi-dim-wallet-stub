@@ -45,6 +45,7 @@ The DIM Wallet is part of the Self-Sovereign Identity (SSI) Flow of Eclipse Trac
 | APP_LOG_LEVEL                | Log level of application                                                         | DEBUG                                                                                                                                                                  |
 | DID_DOCUMENT_CONTEXT_URLS    | Did document context URLs                                                        | https://www.w3.org/ns/did/v1, https://w3id.org/security/suites/jws-2020/v1, https://w3id.org/dspace-dcp/v1.0/dcp.jsonld, https://w3id.org/dspace/2025/1/context.jsonld |
 | ISSUER_METADATA_CONTEXT_URLS | Issuer metadata context URLs                                                     | https://w3id.org/dspace-dcp/v1.0/dcp.jsonld, https://www.w3.org/2018/credentials/v1, https://w3id.org/catenax/credentials/v1.0.0                                       |
+| PRESENTATION_CONTEXT_URLS    | Presentation context URLs                                                        | https://w3id.org/dspace-dcp/v1.0/dcp.jsonld                                                                                                                            |      
 
 2. Run application using Gradle:
 
@@ -86,6 +87,7 @@ Please refer [deploy using helm](charts/ssi-dim-wallet-stub-memory/README.md)
 | SPRING_DATASOURCE_DRIVER_CLASS_NAME | The driver used for the database                                                 | org.h2.Driver                                                                                                                                                          |
 | DID_DOCUMENT_CONTEXT_URLS           | Did document context URLs                                                        | https://www.w3.org/ns/did/v1, https://w3id.org/security/suites/jws-2020/v1, https://w3id.org/dspace-dcp/v1.0/dcp.jsonld, https://w3id.org/dspace/2025/1/context.jsonld |
 | ISSUER_METADATA_CONTEXT_URLS        | Issuer metadata context URLs                                                     | https://w3id.org/dspace-dcp/v1.0/dcp.jsonld, https://www.w3.org/2018/credentials/v1, https://w3id.org/catenax/credentials/v1.0.0                                       |
+| PRESENTATION_CONTEXT_URLS           | Presentation context URLs                                                        | https://w3id.org/dspace-dcp/v1.0/dcp.jsonld                                                                                                                            |      
 
 
 2. Run application using Gradle:

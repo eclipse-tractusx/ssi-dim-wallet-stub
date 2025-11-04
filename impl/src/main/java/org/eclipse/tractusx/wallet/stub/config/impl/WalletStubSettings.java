@@ -35,5 +35,6 @@ import java.util.List;
 @ConfigurationProperties(prefix = "stub")
 public record WalletStubSettings(String env, String didHost, String stubUrl,
                                  List<String> seedWalletsBPN,
-                                 String baseWalletBPN, String statusListVcId, List<URL> didDocumentContextUrls, List<URL> issuerMetadataContextUrls) {
+                                 String baseWalletBPN, String statusListVcId, List<URL> didDocumentContextUrls, List<URL> issuerMetadataContextUrls,
+                                 List<String> presentationCotextUrls) {
 }
