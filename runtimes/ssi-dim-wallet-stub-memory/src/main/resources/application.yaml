@@ -21,7 +21,7 @@
 #
 
 server:
-  port: ${APPLICATION_PORT:8081}
+  port: ${APPLICATION_PORT:8080}
 
 spring:
   threads:
