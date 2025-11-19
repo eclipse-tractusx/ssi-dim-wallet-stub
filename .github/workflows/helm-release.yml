@@ -51,7 +51,7 @@ jobs:
       - name: Update helm SSI-DIM-WALLET-STUB-DATABASE dependencies
         run: |
           cd charts/ssi-dim-wallet-stub
-          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add cloudpirates oci://registry-1.docker.io/cloudpirates
           helm repo add tractusx-dev https://eclipse-tractusx.github.io/charts/dev
           helm dependency update
 
@@ -62,6 +62,6 @@ jobs:
           helm dependency update
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.6.0
+        uses: helm/chart-releaser-action@v1.4.1
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
