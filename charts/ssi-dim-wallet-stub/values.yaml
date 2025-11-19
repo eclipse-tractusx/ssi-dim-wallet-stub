@@ -162,17 +162,17 @@ postgresql:
   # -- Enable to deploy Postgresql
   enabled: true
   image:
-    # -- workaround to use bitnamilegacy chart for version 12.12.x till committers align on new postgresql charts
-    repository: bitnamilegacy/postgresql
-    # -- workaround to use bitnamilegacy chart for version 12.12.x till committers align on new postgresql charts
-    tag: 15.4.0-debian-11-r45
+    # -- PostgreSQL image registry
+    registry: docker.io
+    # -- PostgreSQL image repository
+    repository: postgres
   configmap:
     name: wallet-postgres-configmap
   auth:
     password: postgrespassword
     username: postgres
-  primary:
-    persistence:
-      enabled: false
-      size: 10Gi
-      storageClass: standard
+  persistence:
+    # -- Enable for persistance
+    enabled: false
+    size: 10Gi
+    storageClass: standard

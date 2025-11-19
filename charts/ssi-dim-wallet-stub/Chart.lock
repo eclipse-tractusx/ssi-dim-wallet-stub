@@ -2,8 +2,8 @@ dependencies:
 - name: centralidp
   repository: https://eclipse-tractusx.github.io/charts/dev
   version: 3.0.0
-- name: postgresql
-  repository: https://charts.bitnami.com/bitnami
-  version: 12.12.10
-digest: sha256:bb3919921638120aee12aa97b5026a0b3e6c1dbdeed83aac5f3e80734a123b02
-generated: "2025-09-26T15:24:32.867799088+02:00"
+- name: postgres
+  repository: oci://registry-1.docker.io/cloudpirates
+  version: 0.11.0
+digest: sha256:9bf28885ada10c1acb2e38a35b0c10034212ee8a1815ff6a0bec84be10e6bf18
+generated: "2025-10-28T09:43:52.81862857+01:00"
