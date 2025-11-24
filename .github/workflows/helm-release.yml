@@ -48,6 +48,29 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Pre-pull OCI dependencies
+        run: |
+          export HELM_EXPERIMENTAL_OCI=1
+
+          chart="charts/ssi-dim-wallet-stub/Chart.yaml"
+
+          repo=$(yq '.dependencies[] | select(.repository|startswith("oci://")) | .repository' "$chart")
+          version=$(yq '.dependencies[] | select(.repository|startswith("oci://")) | .version' "$chart")
+          alias=$(yq '.dependencies[] | select(.repository|startswith("oci://")) | .alias' "$chart")
+
+          if [[ -n "$repo" ]]; then
+            echo "Found OCI dependency: $alias $version from $repo"
+
+            mkdir -p charts/ssi-dim-wallet-stub/charts
+
+            helm pull "$repo/$alias" \
+              --version "$version" \
+              --untar \
+              --untardir charts/ssi-dim-wallet-stub/charts
+          else
+            echo "No OCI dependencies found."
+          fi
+
       - name: Update helm SSI-DIM-WALLET-STUB-DATABASE dependencies
         run: |
           cd charts/ssi-dim-wallet-stub
