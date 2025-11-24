@@ -67,7 +67,7 @@ jobs:
 
             mkdir -p charts/ssi-dim-wallet-stub/charts
 
-            helm pull "$repo/$alias" \
+            helm pull "$repo/postgres" \
               --version "$version" \
               --untar \
               --untardir charts/ssi-dim-wallet-stub/charts  \
