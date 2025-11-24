@@ -21,8 +21,6 @@ on:
   push:
     paths:
       - 'charts/**'
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -95,6 +93,7 @@ jobs:
           helm dependency update
 
       - name: Run chart-releaser
+        if: github.ref == 'refs/heads/main'
         uses: helm/chart-releaser-action@v1.4.1
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
