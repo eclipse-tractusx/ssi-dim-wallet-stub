@@ -48,11 +48,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Helm OCI login
-        run: |
-          export HELM_EXPERIMENTAL_OCI=1
-          helm registry login -u ${{ secrets.DOCKER_HUB_USER }} -p ${{ secrets.DOCKER_HUB_TOKEN }} docker.io
-
       - name: Pre-pull OCI dependencies
         run: |
           export HELM_EXPERIMENTAL_OCI=1
@@ -74,10 +69,12 @@ jobs:
 
             mkdir -p charts/ssi-dim-wallet-stub/charts
 
-            helm pull "$repo/$alias" \
+            helm pull "$repo/postgres" \
               --version "$version" \
               --untar \
-              --untardir charts/ssi-dim-wallet-stub/charts
+              --untardir charts/ssi-dim-wallet-stub/charts \
+              --username ${{ secrets.DOCKER_HUB_USER }} \
+              --password ${{ secrets.DOCKER_HUB_TOKEN }}
           else
             echo "No OCI dependencies found."
           fi
