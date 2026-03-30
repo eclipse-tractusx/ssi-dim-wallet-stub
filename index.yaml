@@ -2,6 +2,29 @@ apiVersion: v1
 entries:
   ssi-dim-wallet-stub:
   - apiVersion: v2
+    appVersion: 0.0.10
+    created: "2026-03-30T15:19:46.268980799Z"
+    dependencies:
+    - condition: keycloak.enabled
+      name: centralidp
+      repository: https://eclipse-tractusx.github.io/charts/dev
+      version: 3.0.0
+    - alias: postgresql
+      condition: postgresql.enabled
+      name: postgres
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.11.0
+    description: 'A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster '
+    digest: 9179f4941e54481bca5233b58a21ae030096747a53061119a07eb1b3797f1878
+    home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+    name: ssi-dim-wallet-stub
+    sources:
+    - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/releases/download/ssi-dim-wallet-stub-0.1.16/ssi-dim-wallet-stub-0.1.16.tgz
+    version: 0.1.16
+  - apiVersion: v2
     appVersion: 0.0.9
     created: "2026-02-17T04:25:27.615704247Z"
     dependencies:
@@ -295,6 +318,24 @@ entries:
     version: 0.1.0
   ssi-dim-wallet-stub-memory:
   - apiVersion: v2
+    appVersion: 0.0.10
+    created: "2026-03-30T15:19:46.570125967Z"
+    dependencies:
+    - condition: keycloak.enabled
+      name: centralidp
+      repository: https://eclipse-tractusx.github.io/charts/dev
+      version: 3.0.0
+    description: 'A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster '
+    digest: e5506650ef6c1ebf7b8437c9991b7027b6cd54e1acfe3a4b63598e72e27d118b
+    home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+    name: ssi-dim-wallet-stub-memory
+    sources:
+    - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/releases/download/ssi-dim-wallet-stub-memory-0.1.16/ssi-dim-wallet-stub-memory-0.1.16.tgz
+    version: 0.1.16
+  - apiVersion: v2
     appVersion: 0.0.8
     created: "2025-11-24T16:39:49.990531004Z"
     dependencies:
@@ -366,4 +407,4 @@ entries:
     urls:
     - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/releases/download/ssi-dim-wallet-stub-memory-0.1.10/ssi-dim-wallet-stub-memory-0.1.10.tgz
     version: 0.1.10
-generated: "2026-02-17T04:25:27.615839704Z"
+generated: "2026-03-30T15:19:46.570274444Z"
