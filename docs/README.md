@@ -7,7 +7,7 @@ The following table links you to the respective documentations.
 | Documentation                                                         | Purpose                                                                                    |
 |-----------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
 | [Arc42](architecture/main.md)                                         | Architecture Documentation.                                                                |
-| [Open API doc](api/openAPI.json)                                      | Open API specification.                                                                    |
+| [Open API doc](api/openAPI.yaml)                                      | Open API specification.                                                                    |
 | [Integration Documentation](admin%2Fintegration%2Fintegration.md)     | Information about what configs need to be done in other component for integration testing. |
 | [How to contribute](admin%2FDev%20Process%2FHow%20to%20contribute.md) | Explanation of the views and how to use them.                                              |
 
