@@ -25,7 +25,7 @@ metadata:
   name: {{.Values.wallet.ingressName}}
   namespace: {{.Values.wallet.nameSpace}}
   annotations:
-  {{.Values.wallet.ingress.annotations | toYaml | indent 4}}
+    {{- .Values.wallet.ingress.annotations | toYaml | nindent 4 }}
 spec:
   ingressClassName: {{.Values.wallet.ingress.className}}
   {{- if .Values.wallet.ingress.tls.enabled}}
