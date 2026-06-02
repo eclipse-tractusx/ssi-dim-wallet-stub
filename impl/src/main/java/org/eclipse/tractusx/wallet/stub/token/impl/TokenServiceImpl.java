@@ -70,24 +70,6 @@ public class TokenServiceImpl implements TokenService {
 
     private final WalletStubSettings walletStubSettings;
 
-
-    @SneakyThrows
-    @Override
-    public Optional<String> getBpnFromToken(String token) {
-        JWTClaimsSet jwtClaimsSet = this.verifyTokenAndGetClaims(token);
-
-        String bpn = jwtClaimsSet.getClaimAsString(Constants.BPN);
-        if(StringUtils.isBlank(bpn)){
-            bpn = jwtClaimsSet.getClaimAsString(Constants.CAPITAL_BPN);
-        }
-        if (StringUtils.isBlank(bpn)) {
-            log.error("BPN not found in token claims: {}", jwtClaimsSet.toString());
-            return Optional.empty();
-        }else{
-            return Optional.of(bpn);
-        }
-    }
-
     @Override
     public JWTClaimsSet verifyTokenAndGetClaims(String token) {
         try {
@@ -106,8 +88,8 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public TokenResponse createAccessTokenResponse(TokenRequest request, DidDocument didDocument) {
         try {
-            //here clientId will be BPN
-            KeyPair keyPair = keyService.getKeyPair(request.getClientId());
+            String did = CommonUtils.getDidWeb(walletStubSettings.didHost(), request.getClientId());
+            KeyPair keyPair = keyService.getKeyPair(did);
 
             //time config
             Date time = new Date();
@@ -119,7 +101,6 @@ public class TokenServiceImpl implements TokenService {
                     .jwtID(UUID.randomUUID().toString())
                     .audience(didDocument.getId())
                     .expirationTime(expiryTime)
-                    .claim(Constants.BPN, request.getClientId())
                     .issuer(didDocument.getId())
                     .notBeforeTime(time)
                     .subject(didDocument.getId())

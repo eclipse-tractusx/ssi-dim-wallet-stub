@@ -120,9 +120,10 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
     @SuppressWarnings("unchecked")
     private Map<String, String> issueCredential(IssueCredentialRequest request, String issuerBPN) {
         try {
-            KeyPair issuerKeypair = keyService.getKeyPair(walletStubSettings.baseWalletBPN());
+            String issuerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), issuerBPN);
+            KeyPair issuerKeypair = keyService.getKeyPair(issuerDid);
 
-            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(issuerBPN);
+            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(issuerDid);
 
             CustomCredential verifiableCredential = new CustomCredential();
 
@@ -133,8 +134,9 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
                 verifiableCredential.putAll((Map<String, Object>) request.getCredentialPayload().getIssueWithSignature().get(Constants.CONTENT));
             }
             String holderBpn = getHolderBpn(verifiableCredential);
+            String holderDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn);
 
-            DidDocument holderDidDocument = didDocumentService.getOrCreateDidDocument(holderBpn);
+            DidDocument holderDidDocument = didDocumentService.getOrCreateDidDocument(holderDid);
 
             String type = CommonUtils.getTypeFromCustomCredential(verifiableCredential);
 
@@ -175,10 +177,10 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
             String vcAsJwt = vcJWT.serialize();
 
             //save JWT
-            storage.saveCredentialAsJwt(vcIdUri.toString(), vcAsJwt, holderBpn, type);
+            storage.saveCredentialAsJwt(vcIdUri.toString(), vcAsJwt, holderDid, type);
 
             //save JSON-LD
-            storage.saveCredentials(vcIdUri.toString(), verifiableCredential, holderBpn, type);
+            storage.saveCredentials(vcIdUri.toString(), verifiableCredential, holderDid, type);
 
             if (!CollectionUtils.isEmpty(request.getCredentialPayload().getIssueWithSignature())) {
                 return Map.of(Constants.ID, vcId, Constants.JWT, vcAsJwt);
@@ -195,7 +197,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
 
     private Optional<String> signCredential(String credentialId) {
         try {
-            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
+            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
             URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + credentialId);
             return storage.getCredentialAsJwt(vcIdUri.toString());
         } catch (InternalErrorException e) {
@@ -208,7 +210,7 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
     @Override
     public GetCredentialsResponse getCredential(String externalCredentialId) {
         try {
-            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
+            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
             URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + externalCredentialId);
             Optional<String> jwtVc = storage.getCredentialAsJwt(vcIdUri.toString());
             if (jwtVc.isEmpty()) {
@@ -316,17 +318,18 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
         }
 
         //validate token
-        String callerBpn = tokenService.verifyTokenAndGetClaims(token).getClaim(Constants.BPN).toString();
-        if(!requestCredential.getHolderDid().endsWith(callerBpn)){
-            throw new IllegalArgumentException("Caller BPN does not match the holder wallet DID");
+        JWTClaimsSet callerClaims = tokenService.verifyTokenAndGetClaims(token);
+        String callerDid = callerClaims.getSubject() != null ? callerClaims.getSubject() : CommonUtils.getSingleAudience(callerClaims);
+        if (!requestCredential.getHolderDid().equals(callerDid)) {
+            throw new IllegalArgumentException("Caller DID does not match the holder wallet DID");
         }
 
         String holderBpn = CommonUtils.getBpnFromDid(requestCredential.getHolderDid());
 
         //create did document if not exists
-        didDocumentService.getOrCreateDidDocument(holderBpn);
+        didDocumentService.getOrCreateDidDocument(requestCredential.getHolderDid());
 
-        Pair<String, String> pair = credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(holderBpn, requestCredential.getRequestedCredentials().get(0).getCredentialType());
+        Pair<String, String> pair = credentialService.getVerifiableCredentialByHolderDidAndTypeAsJwt(requestCredential.getHolderDid(), requestCredential.getRequestedCredentials().get(0).getCredentialType());
         return IssueCredentialResponse.builder()
                 .id(pair.getLeft())
                 .jwt(pair.getRight())
@@ -365,8 +368,8 @@ public class IssuerCredentialServiceImpl implements IssuerCredentialService {
 
     @Override
     public RequestedCredentialResponse getRequestedCredential(String holderDid, String token) {
+        List<CustomCredential> credentials = storage.getVcIdAndTypesByHolderDid(holderDid);
         String holderBpn = CommonUtils.getBpnFromDid(holderDid);
-        List<CustomCredential> credentials = storage.getVcIdAndTypesByHolderBpn(holderBpn);
 
         List<RequestCredential> requestedCredentials = new ArrayList<>(credentials.size());
 

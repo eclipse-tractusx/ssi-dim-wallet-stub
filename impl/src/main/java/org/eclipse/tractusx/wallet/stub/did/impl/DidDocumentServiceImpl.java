@@ -26,6 +26,7 @@ package org.eclipse.tractusx.wallet.stub.did.impl;
 
 
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
@@ -62,18 +63,19 @@ public class DidDocumentServiceImpl implements DidDocumentService {
     private final TokenService tokenService;
 
     @Override
-    public DidDocument getOrCreateDidDocument(String bpn) {
+    public DidDocument getOrCreateDidDocument(String did) {
         try {
-            Optional<DidDocument> optionalDidDocument = storage.getDidDocument(bpn);
+            Optional<DidDocument> optionalDidDocument = storage.getDidDocument(did);
             if (optionalDidDocument.isPresent()) {
                 return optionalDidDocument.get();
             }
 
             try {
-                return createDidDocument(bpn);
+                String bpn = CommonUtils.getBpnFromDid(did);
+                return createDidDocument(did, bpn);
             } catch (Exception e) {
                 // Handle race condition: another thread may have created the document concurrently
-                Optional<DidDocument> existing = storage.getDidDocument(bpn);
+                Optional<DidDocument> existing = storage.getDidDocument(did);
                 if (existing.isPresent()) {
                     return existing.get();
                 }
@@ -86,11 +88,9 @@ public class DidDocumentServiceImpl implements DidDocumentService {
         }
     }
 
-    private DidDocument createDidDocument(String bpn) {
-        String did = CommonUtils.getDidWeb(walletStubSettings.didHost(), bpn);
-
+    private DidDocument createDidDocument(String did, String bpn) {
         String keyId = CommonUtils.getUuid(bpn, walletStubSettings.env());
-        KeyPair keyPair = keyService.getKeyPair(bpn);
+        KeyPair keyPair = keyService.getKeyPair(did);
 
         Map<String, Object> jsonObject = CryptoConverter.createJwk(keyPair).toJSONObject();
         jsonObject.put(Constants.ID, keyId);
@@ -123,15 +123,15 @@ public class DidDocumentServiceImpl implements DidDocumentService {
                 .verificationMethod(List.of(verificationMethod))
                 .context(walletStubSettings.didDocumentContextUrls().stream().map(URL::toString).toList())
                 .build();
-        storage.saveDidDocument(bpn, didDocument);
+        storage.saveDidDocument(did, didDocument);
         return didDocument;
     }
 
     @Override
-    public Optional<DidDocument> getDidDocument(String bpn) {
+    public Optional<DidDocument> getDidDocument(String did) {
         try {
-            log.debug("Did document requested for bpn ->{}", bpn);
-            return storage.getDidDocument(bpn);
+            log.debug("Did document requested for did ->{}", did);
+            return storage.getDidDocument(did);
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
@@ -140,21 +140,25 @@ public class DidDocumentServiceImpl implements DidDocumentService {
     @Override
     public DidDocument updateDidDocumentService(org.eclipse.edc.iam.did.spi.document.Service service, String token) {
 
-        // Validate the token and extract BPN
-        String bpn = tokenService.getBpnFromToken(token).orElseThrow(() -> new SecurityException("Invalid token: BPN not found"));
+        // Validate the token and extract DID
+        JWTClaimsSet claims = tokenService.verifyTokenAndGetClaims(token);
+        String did = claims.getSubject() != null ? claims.getSubject() : CommonUtils.getSingleAudience(claims);
+        if (did == null || did.isBlank()) {
+            throw new SecurityException("Invalid token: DID not found");
+        }
 
-        DidDocument didDocument = getOrCreateDidDocument(bpn);
+        DidDocument didDocument = getOrCreateDidDocument(did);
         List<org.eclipse.edc.iam.did.spi.document.Service> existingServices = didDocument.getService();
 
         // Check if the service already exists in the DID document, remove it if it does, and then add the new or updated service
         boolean serviceExists = existingServices.removeIf(s -> s.getType().equals(service.getType()));
         if (serviceExists) {
-            log.debug("Updated existing service in DID document for bpn: {}, Service type: {}", bpn, service.getType());
+            log.debug("Updated existing service in DID document for did: {}, Service type: {}", did, service.getType());
         } else {
-            log.debug("Added new service to DID document for bpn: {}, Service type: {}", bpn, service.getType());
+            log.debug("Added new service to DID document for did: {}, Service type: {}", did, service.getType());
         }
         existingServices.add(service);
-        storage.saveDidDocument(bpn, didDocument);
+        storage.saveDidDocument(did, didDocument);
         return didDocument;
     }
 }

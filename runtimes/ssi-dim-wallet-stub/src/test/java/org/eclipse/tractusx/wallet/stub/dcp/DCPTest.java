@@ -60,7 +60,7 @@ public class DCPTest {
         String baseWalletBPN = walletStubSettings.baseWalletBPN();
         HttpHeaders headers = new HttpHeaders();
         ResponseEntity<IssuerMetadataResponse> response = restTemplate.exchange("/api/v1.0.0/dcp/"+baseWalletBPN+"/metadata", HttpMethod.GET, new HttpEntity<>(headers), IssuerMetadataResponse.class);
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         IssuerMetadataResponse issuerMetadataResponse = response.getBody();
         Assertions.assertNotNull(issuerMetadataResponse);
         DidDocument didDocument = didDocumentService.getOrCreateDidDocument(baseWalletBPN);

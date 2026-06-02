@@ -50,7 +50,7 @@ public class DidDocumentEntity {
 
     @Id
     @Column(nullable = false)
-    private String bpn;
+    private String did;
 
     @JdbcTypeCode(Types.LONGNVARCHAR)
     @Convert(converter = DidDocumentConverter.class)

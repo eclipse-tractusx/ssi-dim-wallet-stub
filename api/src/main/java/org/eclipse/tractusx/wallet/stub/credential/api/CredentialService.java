@@ -28,15 +28,15 @@ import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 public interface CredentialService {
 
     /**
-     * Retrieves a verifiable credential in JWT format for the specified holder's BPN and type.
-     * If the credential already exists in memory, it is returned directly.
+     * Retrieves a verifiable credential in JWT format for the specified holder DID and type.
+     * If the credential already exists in storage, it is returned directly.
      * If not, a new verifiable credential is issued, signed with the issuer's key pair, and returned as a JWT.
      *
-     * @param holderBpn The BPN of the holder for whom the credential is issued.
+     * @param holderDid The DID of the holder for whom the credential is issued.
      * @param type      The type of the credential.
      * @return A pair containing the id of verifiable credential and JWT string.
      */
-    Pair<String, String> getVerifiableCredentialByHolderBpnAndTypeAsJwt(String holderBpn, String type);
+    Pair<String, String> getVerifiableCredentialByHolderDidAndTypeAsJwt(String holderDid, String type);
 
     /**
      * Issues a status list credential for the specified holder's BPN and VC ID.

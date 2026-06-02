@@ -33,6 +33,7 @@ import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
+import com.nimbusds.jwt.JWTClaimsSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,13 +73,14 @@ class DidDocumentServiceTest {
     @Test
     void getDidDocumentTest_returnExistingDidDocument() {
         String baseWalletBpn = "BPNL000000000000";
+        String did = CommonUtils.getDidWeb("test", baseWalletBpn);
         DidDocument didDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
                 .build();
 
-        when(storage.getDidDocument(anyString())).thenReturn(Optional.of(didDocument));
-        Optional<DidDocument> optBaseWalletBpn = didDocumentService.getDidDocument(baseWalletBpn);
+        when(storage.getDidDocument(did)).thenReturn(Optional.of(didDocument));
+        Optional<DidDocument> optBaseWalletBpn = didDocumentService.getDidDocument(did);
 
         Assertions.assertEquals(didDocument.getId(), optBaseWalletBpn.get().getId());
     }
@@ -86,13 +88,14 @@ class DidDocumentServiceTest {
     @Test
     void getOrCreateDidDocument_fromStorageTest() {
         String baseWalletBpn = "BPNL000000000000";
+        String did = CommonUtils.getDidWeb("test", baseWalletBpn);
         DidDocument baseDidDocument = DidDocument.Builder.newInstance()
                 .id("1")
                 .context(List.of("https://www.w3.org/ns/did/v1"))
                 .build();
 
-        when(storage.getDidDocument(anyString())).thenReturn(Optional.of(baseDidDocument));
-        DidDocument didDocument = didDocumentService.getOrCreateDidDocument(baseWalletBpn);
+        when(storage.getDidDocument(did)).thenReturn(Optional.of(baseDidDocument));
+        DidDocument didDocument = didDocumentService.getOrCreateDidDocument(did);
 
         Assertions.assertEquals(baseDidDocument.getId(), didDocument.getId());
     }
@@ -147,9 +150,10 @@ class DidDocumentServiceTest {
         service.setServiceEndpoint("http://localhost:8080/api");
         service.setType(DATA_SERVICE);
 
-        when(tokenService.getBpnFromToken(anyString())).thenReturn(Optional.of(baseWalletBpn));
+        String did = CommonUtils.getDidWeb("", baseWalletBpn);
+        JWTClaimsSet tokenClaims = new JWTClaimsSet.Builder().subject(did).build();
+        when(tokenService.verifyTokenAndGetClaims(anyString())).thenReturn(tokenClaims);
         DidDocument updatedDidDocument = didDocumentService.updateDidDocumentService(service, "token");
-
         Assertions.assertNotNull(updatedDidDocument);
 
         Assertions.assertTrue(updatedDidDocument.getService().stream()
@@ -184,7 +188,8 @@ class DidDocumentServiceTest {
         when(walletStubSettings.stubUrl()).thenReturn("");
         when(keyService.getKeyPair(anyString())).thenReturn(testKeyPair);
 
-        return didDocumentService.getOrCreateDidDocument(baseWalletBpn);
+        String did = CommonUtils.getDidWeb("", baseWalletBpn);
+        return didDocumentService.getOrCreateDidDocument(did);
     }
 
 

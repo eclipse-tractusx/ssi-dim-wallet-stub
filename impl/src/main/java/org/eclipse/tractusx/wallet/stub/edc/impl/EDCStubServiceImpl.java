@@ -29,7 +29,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -49,8 +48,8 @@ import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
 import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
-import org.eclipse.tractusx.wallet.stub.utils.api.CustomVerifiablePresentation;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
+import org.eclipse.tractusx.wallet.stub.utils.api.CustomVerifiablePresentation;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +60,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -86,7 +84,7 @@ public class EDCStubServiceImpl implements EDCStubService {
 
     private final WalletStubSettings walletStubSettings;
 
-    private static @NotNull Set<String> validateRequestedVcAndScope(QueryPresentationRequest request, List<String> vcTypesFromSIToken, String scopeFromSiToken) {
+    private static @NotNull Set<String> validateRequestedVcAndScope(QueryPresentationRequest request) {
         try {
             //Validate requested VC and scope with inner access token claim set
             List<Map<String, String>> requestedScopes = request.getScope().stream().map(s -> {
@@ -100,17 +98,6 @@ public class EDCStubServiceImpl implements EDCStubService {
                 requestedTypes.addAll(requestedScope.keySet());
             }
 
-            if (!new HashSet<>(vcTypesFromSIToken).containsAll(requestedTypes)) {
-                throw new IllegalArgumentException("Invalid VC types in scope , vcTypesFromSIToken -> " + vcTypesFromSIToken + " , requestedTypes->" + requestedTypes);
-            }
-
-            for (String requestedType : requestedTypes) {
-                for (Map<String, String> requestedScope : requestedScopes) {
-                    if (requestedScope.containsKey(requestedType) && !requestedScope.get(requestedType).equals(scopeFromSiToken)) {
-                        throw new IllegalArgumentException("VC " + requestedType + " requested with invalid scope -> " + requestedScope.get(requestedType) + " scope in si token ->" + scopeFromSiToken);
-                    }
-                }
-            }
             return requestedTypes;
         } catch (IllegalArgumentException e) {
             throw e;
@@ -119,32 +106,30 @@ public class EDCStubServiceImpl implements EDCStubService {
         }
     }
 
-    private static String createSTSWithoutScope(CreateCredentialWithoutScopeRequest withAccessTokenRequest, DidDocument selfDidDocument, Date expiryTime, String selfBpn, KeyPair selfKeyPair) throws ParseException {
+    private static String createSTSWithoutScope(CreateCredentialWithoutScopeRequest withAccessTokenRequest, DidDocument selfDidDocument, Date time, Date expiryTime, KeyPair selfKeyPair) throws ParseException {
         try {
             String partnerDid = withAccessTokenRequest.getSignToken().getAudience();
             String accessToken = CommonUtils.cleanToken(withAccessTokenRequest.getSignToken().getToken());
-            JWT jwt = JWTParser.parse(accessToken);
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .issuer(selfDidDocument.getId())
                     .jwtID(UUID.randomUUID().toString())
                     .audience(partnerDid)
                     .subject(selfDidDocument.getId())
                     .expirationTime(expiryTime)
-                    .claim(Constants.BPN, selfBpn)
-                    .claim(Constants.NONCE, jwt.getJWTClaimsSet().getStringClaim(Constants.NONCE))
+                    .issueTime(time)
                     .claim(Constants.TOKEN, accessToken).build();
             SignedJWT signedJWT = CommonUtils.signedJWT(claimsSet, selfKeyPair, selfDidDocument.getVerificationMethod().getFirst().getId());
             String serialize = signedJWT.serialize();
             log.debug("Token created with access_token -> {}", serialize);
             return serialize;
-        } catch (ParseException e) {
-            throw new ParseStubException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             throw new InternalErrorException("Internal Error: " + e.getMessage());
         }
     }
 
-    private static String createSTSWithScope(CreateCredentialWithScopeRequest withScopeRequest, DidDocument selfDidDocument, Date expiryTime, String selfBpn, KeyPair selfKeyPair, String partnerBpn) {
+    private static String createSTSWithScope(CreateCredentialWithScopeRequest withScopeRequest, DidDocument selfDidDocument, Date now, Date expiryTime, KeyPair selfKeyPair) {
         try {
             String consumerDid = withScopeRequest.getGrantAccess().getConsumerDid();
             String providerDid = withScopeRequest.getGrantAccess().getProviderDid();
@@ -155,12 +140,11 @@ public class EDCStubServiceImpl implements EDCStubService {
                     .audience(providerDid)
                     .subject(selfDidDocument.getId())
                     .expirationTime(expiryTime)
-                    .issueTime(Date.from(Instant.now()))
+                    .issueTime(now)
                     .claim(Constants.CREDENTIAL_TYPES, withScopeRequest.getGrantAccess().getCredentialTypes())
                     .claim(Constants.SCOPE, withScopeRequest.getGrantAccess().getScope())
                     .claim("consumerDid", consumerDid)
                     .claim("providerDid", providerDid)
-                    .claim(Constants.BPN, selfBpn)
                     .build();
 
             SignedJWT innerJwt = CommonUtils.signedJWT(tokeJwtClaimsSet, selfKeyPair, selfDidDocument.getVerificationMethod().getFirst().getId());
@@ -172,9 +156,9 @@ public class EDCStubServiceImpl implements EDCStubService {
                     .expirationTime(expiryTime)
                     .issueTime(Date.from(Instant.now()))
                     .jwtID(UUID.randomUUID().toString())
-                    .claim(Constants.BPN, Optional.ofNullable(partnerBpn).orElse( "null"))
                     .claim(Constants.NONCE, UUID.randomUUID().toString())
                     .claim(Constants.TOKEN, innerJwt.serialize()) //this claim is checked by EDC
+                    .claim(Constants.CREDENTIAL_TYPES, withScopeRequest.getGrantAccess().getCredentialTypes())
                     .claim(Constants.SCOPE, withScopeRequest.getGrantAccess().getScope()).build();
 
             SignedJWT signedJWT = CommonUtils.signedJWT(claimsSet, selfKeyPair, selfDidDocument.getVerificationMethod().getFirst().getId());
@@ -190,30 +174,27 @@ public class EDCStubServiceImpl implements EDCStubService {
     public String createStsToken(Map<String, Object> request, String token) {
         try {
             log.debug("Getting request to create STS with request -> {} and token ->{}", objectMapper.writeValueAsString(request), StringEscapeUtils.escapeJava(token));
-            String selfBpn = CommonUtils.getBpnFromToken(token, tokenService);
-            KeyPair selfKeyPair = keyService.getKeyPair(selfBpn);
-            DidDocument selfDidDocument = didDocumentService.getOrCreateDidDocument(selfBpn);
-            String partnerBpn;
+            JWTClaimsSet tokenClaims = tokenService.verifyTokenAndGetClaims(token);
+            String selfDid = CommonUtils.getSingleAudience(tokenClaims);
+            String partnerDid = tokenClaims.getSubject();
+
+            KeyPair selfKeyPair = keyService.getKeyPair(selfDid);
+            DidDocument selfDidDocument = didDocumentService.getOrCreateDidDocument(selfDid);
             boolean withScope = false;
             CreateCredentialWithScopeRequest withScopeRequest = null;
             CreateCredentialWithoutScopeRequest withAccessTokenRequest = null;
             if (request.containsKey(Constants.SIGN_TOKEN) && request.get(Constants.SIGN_TOKEN) != null) {
                 log.debug("Request with access token");
                 withAccessTokenRequest = objectMapper.convertValue(request, CreateCredentialWithoutScopeRequest.class);
-                partnerBpn = extractPartnerBpn(withAccessTokenRequest);
-                if (StringUtils.isEmpty(partnerBpn)) {
-                    throw new IllegalArgumentException("Partner BPN cannot be null or empty");
-                }
 
             } else if (request.containsKey(Constants.GRANT_ACCESS) && request.get(Constants.GRANT_ACCESS) != null) {
                 log.debug("Request with grantAccess ie. with scope");
                 withScope = true;
                 withScopeRequest = objectMapper.convertValue(request, CreateCredentialWithScopeRequest.class);
-                partnerBpn = CommonUtils.getBpnFromDid(withScopeRequest.getGrantAccess().getProviderDid());
             } else {
                 throw new IllegalArgumentException("Invalid token request");
             }
-            log.debug("self bpn ->{} and partner bpn ->{}", StringEscapeUtils.escapeJava(selfBpn), StringEscapeUtils.escapeJava(partnerBpn));
+            log.debug("self did ->{} and partner did ->{}", StringEscapeUtils.escapeJava(selfDid), StringEscapeUtils.escapeJava(partnerDid));
 
 
             //time config
@@ -221,9 +202,9 @@ public class EDCStubServiceImpl implements EDCStubService {
             Date expiryTime = DateUtils.addMinutes(time, tokenSettings.tokenExpiryTime());
 
             if (withScope) {
-                return createSTSWithScope(withScopeRequest, selfDidDocument, expiryTime, selfBpn, selfKeyPair, partnerBpn);
+                return createSTSWithScope(withScopeRequest, selfDidDocument, time, expiryTime, selfKeyPair);
             } else {
-                return createSTSWithoutScope(withAccessTokenRequest, selfDidDocument, expiryTime, selfBpn, selfKeyPair);
+                return createSTSWithoutScope(withAccessTokenRequest, selfDidDocument, time, expiryTime, selfKeyPair);
             }
         } catch (ParseStubException | IllegalArgumentException | InternalErrorException e) {
             throw e;
@@ -238,36 +219,25 @@ public class EDCStubServiceImpl implements EDCStubService {
         try {
             log.debug("getting request for query credential with body-> {} token -> {}", objectMapper.writeValueAsString(request), StringEscapeUtils.escapeJava(token));
             JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(token);
-            List<String> audience = jwtClaimsSet.getAudience();
+            String audience = CommonUtils.getSingleAudience(jwtClaimsSet);
 
-            //to check token type and identify caller
-            String innerAccessToken;
-            if (jwtClaimsSet.getClaim(Constants.ACCESS_TOKEN) != null) {
-                innerAccessToken = jwtClaimsSet.getClaim(Constants.ACCESS_TOKEN).toString();
-            } else {
-                innerAccessToken = jwtClaimsSet.getClaim(Constants.TOKEN).toString();
-            }
-            JWTClaimsSet innerClaimSet = tokenService.verifyTokenAndGetClaims(innerAccessToken);
-            String callerBpn = innerClaimSet.getClaim(Constants.BPN).toString();
-            List<String> vcTypesFromSIToken = innerClaimSet.getStringListClaim(Constants.CREDENTIAL_TYPES);
-            String scopeFromSiToken = innerClaimSet.getClaim(Constants.SCOPE).toString();
+            String callerDid = jwtClaimsSet.getSubject();
 
-            Set<String> requestedTypes = validateRequestedVcAndScope(request, vcTypesFromSIToken, scopeFromSiToken);
+            Set<String> requestedTypes = validateRequestedVcAndScope(request);
 
-            //get VC claim from inner token
-            KeyPair issuerKeypair = keyService.getKeyPair(callerBpn);
+            KeyPair issuerKeypair = keyService.getKeyPair(audience);
 
-            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(callerBpn);
+            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(audience);
 
 
-            log.debug("Requested VC -> types : {}, caller bpn ->{}", StringEscapeUtils.escapeJava(StringUtils.join(requestedTypes, ",")), StringEscapeUtils.escapeJava(callerBpn));
+            log.debug("Requested VC -> types : {}, caller did ->{}", StringEscapeUtils.escapeJava(StringUtils.join(requestedTypes, ",")), StringEscapeUtils.escapeJava(callerDid));
 
-            //here we will create request VC if not already issued
-            //in a real world scenario it will give error if requested VC not issued to holder
-            List<String> vsAsJwt = requestedTypes.stream().map(type -> credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(callerBpn, type).getRight()).toList();
+            // here we will create request VC if not already issued
+            // in a real world scenario it will give error if requested VC not issued to holder
+            List<String> vsAsJwt = requestedTypes.stream().map(type -> credentialService.getVerifiableCredentialByHolderDidAndTypeAsJwt(audience, type).getRight()).toList();
 
-            //create VP as JsonLD
-            //time config
+            // create VP as JsonLD
+            // time config
             Date time = new Date();
             Date expiryTime = DateUtils.addMinutes(time, tokenSettings.tokenExpiryTime());
 
@@ -284,12 +254,11 @@ public class EDCStubServiceImpl implements EDCStubService {
             JWTClaimsSet accessTokenBody = new JWTClaimsSet.Builder()
                     .issueTime(time)
                     .jwtID(UUID.randomUUID().toString())
-                    .audience(audience)
+                    .audience(callerDid)
                     .expirationTime(expiryTime)
-                    .claim(Constants.BPN, callerBpn)
                     .claim(Constants.VP, vp)
-                    .issuer(issuerDidDocument.getId())
-                    .subject(issuerDidDocument.getId())
+                    .issuer(audience)
+                    .subject(audience)
                     .build();
 
             //sign token
@@ -307,24 +276,6 @@ public class EDCStubServiceImpl implements EDCStubService {
         } catch (Exception e) {
             log.error("Internal Error while querying presentations", e);
             throw new InternalErrorException("Internal Error: " + e.getMessage());
-        }
-    }
-
-    @SneakyThrows
-    private String extractPartnerBpn(CreateCredentialWithoutScopeRequest withAccessTokenRequest) {
-        try {
-            //try first with verification
-            return CommonUtils.getBpnFromDid(CommonUtils.getAudienceFromToken(withAccessTokenRequest.getSignToken().getToken(), tokenService));
-        } catch (Exception e) {
-            log.debug("Token verification failed, extracting audience without verification with error {}", e.getMessage());
-            //fallback to getting audience without verification
-            String innerToken = CommonUtils.cleanToken(withAccessTokenRequest.getSignToken().getToken());
-            JWT jwt = JWTParser.parse(innerToken);
-            List<String> audience = jwt.getJWTClaimsSet().getAudience();
-            if (audience == null || audience.isEmpty()) {
-                throw new IllegalArgumentException("No audience found in token");
-            }
-            return CommonUtils.getBpnFromDid(audience.getFirst());
         }
     }
 }

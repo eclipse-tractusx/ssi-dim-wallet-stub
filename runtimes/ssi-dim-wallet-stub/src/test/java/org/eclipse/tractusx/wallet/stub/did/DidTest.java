@@ -84,7 +84,7 @@ class DidTest {
 
         didDocumentService.getOrCreateDidDocument(baseWalletBPN);
         ResponseEntity<DidDocument> response = restTemplate.exchange("/api/v1.0.0/dcp/did-document/services", HttpMethod.PUT, entity, DidDocument.class);
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 
         DidDocument updatedDidDocument = response.getBody();
         Assertions.assertNotNull(updatedDidDocument);
@@ -104,7 +104,7 @@ class DidTest {
         entity = new HttpEntity<>(updatedService, headers);
 
         response = restTemplate.exchange("/api/v1.0.0/dcp/did-document/services", HttpMethod.PUT, entity, DidDocument.class);
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 
         updatedDidDocument = response.getBody();
         Assertions.assertNotNull(updatedDidDocument);

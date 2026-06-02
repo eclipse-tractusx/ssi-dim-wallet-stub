@@ -29,12 +29,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.wallet.stub.bdrs.api.BDRSService;
+import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.exception.api.ParseStubException;
 import org.eclipse.tractusx.wallet.stub.exception.api.VPValidationFailedException;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +52,7 @@ public class BDRSServiceImpl implements BDRSService {
     private final Storage storage;
     private final DidDocumentService didDocumentService;
     private final TokenService tokenService;
+    private final WalletStubSettings walletStubSettings;
 
     @Override
     public Map<String, String> getBpnDirectory(String jwtToken, String bpnString) {
@@ -62,7 +65,7 @@ public class BDRSServiceImpl implements BDRSService {
 
             Map<String, String> response = new HashMap<>();
 
-            storage.getAllDidDocumentMap().forEach((bpn, didDocument) -> response.put(bpn, didDocument.getId()));
+            storage.getAllDidDocumentMap().forEach((did, didDocument) -> response.put(CommonUtils.getBpnFromDid(did), didDocument.getId()));
 
             //if bpnString is not empty, return only specific BPNs
             if (StringUtils.isNoneBlank(bpnString)) {
@@ -107,7 +110,7 @@ public class BDRSServiceImpl implements BDRSService {
             String holderBpn = vcSubject.get(Constants.HOLDER_IDENTIFIER);
 
             //create wallet if not created
-            didDocumentService.getOrCreateDidDocument(holderBpn);
+            didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn));
         } catch (IllegalArgumentException | InternalErrorException | ParseStubException e) {
             throw e;
         } catch (Exception e) {
@@ -121,7 +124,7 @@ public class BDRSServiceImpl implements BDRSService {
                 //create wallet if not exists
                 String[] split = StringUtils.split(bpnString, ",");
                 for (String bpn : split) {
-                    didDocumentService.getOrCreateDidDocument(bpn.trim());
+                    didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb(walletStubSettings.didHost(), bpn.trim()));
                 }
             }
         } catch (InternalErrorException e) {

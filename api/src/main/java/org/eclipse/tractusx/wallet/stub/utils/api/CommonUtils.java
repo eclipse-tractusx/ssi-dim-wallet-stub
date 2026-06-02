@@ -131,7 +131,8 @@ public class CommonUtils {
         try {
             SignedJWT signedJWT = SignedJWT.parse(cleanToken(token));
             JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(signedJWT.serialize());
-            return jwtClaimsSet.getClaim(Constants.BPN).toString();
+            String did = jwtClaimsSet.getSubject() != null ? jwtClaimsSet.getSubject() : getSingleAudience(jwtClaimsSet);
+            return getBpnFromDid(did);
         } catch (ParseException e) {
             throw new ParseStubException(e.getMessage());
         }
@@ -171,17 +172,6 @@ public class CommonUtils {
         }
     }
 
-
-    /**
-     * Extracts the business partner number (BPN) from a Decentralized Identifier (DID).
-     *
-     * @param did The DID string from which to extract the BPN.
-     * @return The extracted BPN from the DID.
-     */
-    public static String getBpnFromDid(String did) {
-        Matcher matcher = pattern.matcher(did);
-        return matcher.find() ? matcher.group() : null;
-    }
 
     /**
      * Extracts the type from a custom credential.
@@ -250,6 +240,19 @@ public class CommonUtils {
     }
 
     /**
+     * Extracts the BPN from a DID (did:web:{host}:{bpn}).
+     *
+     * @param did the DID string
+     * @return the BPN extracted from the DID
+     */
+    public static String getBpnFromDid(String did) {
+        String[] parts = did.split(":");
+        String last = parts[parts.length - 1];
+        int hashIdx = last.indexOf('#');
+        return hashIdx >= 0 ? last.substring(0, hashIdx) : last;
+    }
+
+    /**
      * This method creates a custom credential object with the provided parameters.
      *
      * @param issuerDid  The DID (Decentralized Identifier) of the issuer.
@@ -270,6 +273,19 @@ public class CommonUtils {
         credential.put("issuanceDate", DATE_TIME_FORMATER.format(date.toInstant()));
         credential.put("expirationDate", DATE_TIME_FORMATER.format(expiryDate.toInstant()));
         return credential;
+    }
+
+    /**
+     * Extracts the single audience value from a JWT claims set.
+     *
+     * @param claimsSet The JWT claims set.
+     * @return The audience string.
+     * @throws ParseStubException if the audience list is empty or absent.
+     */
+    public static String getSingleAudience(JWTClaimsSet claimsSet) {
+        return claimsSet.getAudience().stream()
+                .findFirst()
+                .orElseThrow(() -> new ParseStubException("token has no audience"));
     }
 
     public static String getCredentialServiceUrl(String stubUrl){

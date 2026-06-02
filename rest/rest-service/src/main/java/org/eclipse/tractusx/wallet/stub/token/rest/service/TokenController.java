@@ -23,26 +23,37 @@
 package org.eclipse.tractusx.wallet.stub.token.rest.service;
 
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.token.api.TokenService;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenRequest;
 import org.eclipse.tractusx.wallet.stub.token.api.dto.TokenResponse;
 import org.eclipse.tractusx.wallet.stub.token.rest.api.TokenApi;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
+@Slf4j
 public class TokenController implements TokenApi {
 
     private final TokenService tokenService;
-
     private final DidDocumentService didDocumentService;
+    private final String didHost;
+
+    public TokenController(TokenService tokenService,
+                           DidDocumentService didDocumentService,
+                           @Value("${stub.didHost}") String didHost) {
+        this.tokenService = tokenService;
+        this.didDocumentService = didDocumentService;
+        this.didHost = didHost;
+    }
 
     @Override
     public ResponseEntity<TokenResponse> createAccessToken(TokenRequest request, String token) {
         tokenService.setClientInfo(request, token);
-        return ResponseEntity.ok(tokenService.createAccessTokenResponse(request, didDocumentService.getOrCreateDidDocument(request.getClientId())));
+        String did = CommonUtils.getDidWeb(didHost, request.getClientId());
+        return ResponseEntity.ok(tokenService.createAccessTokenResponse(request, didDocumentService.getOrCreateDidDocument(did)));
     }
 }

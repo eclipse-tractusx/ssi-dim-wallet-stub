@@ -29,22 +29,31 @@ import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.did.rest.api.DidApi;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
 @RestController
-@RequiredArgsConstructor
 @Slf4j
 public class DidController implements DidApi {
 
     private final DidDocumentService didDocumentService;
+    private final String didHost;
+
+    public DidController(DidDocumentService didDocumentService,
+                         @Value("${stub.didHost}") String didHost) {
+        this.didDocumentService = didDocumentService;
+        this.didHost = didHost;
+    }
 
     @Override
     public ResponseEntity<DidDocument> getDocument(String bpn) {
-        Optional<DidDocument> didDocument = didDocumentService.getDidDocument(bpn);
-        return didDocument.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok(didDocumentService.getOrCreateDidDocument(bpn)));
+        String did = CommonUtils.getDidWeb(didHost, bpn);
+        Optional<DidDocument> didDocument = didDocumentService.getDidDocument(did);
+        return didDocument.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok(didDocumentService.getOrCreateDidDocument(did)));
     }
 
     @Override

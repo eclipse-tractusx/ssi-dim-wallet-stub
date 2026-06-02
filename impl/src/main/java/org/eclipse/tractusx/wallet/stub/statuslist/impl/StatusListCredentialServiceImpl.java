@@ -26,6 +26,7 @@ package org.eclipse.tractusx.wallet.stub.statuslist.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.credential.api.CredentialService;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocument;
 import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
@@ -33,8 +34,9 @@ import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
 import org.eclipse.tractusx.wallet.stub.exception.api.NoStatusListFoundException;
 import org.eclipse.tractusx.wallet.stub.statuslist.api.StatusListCredentialService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
-import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
+import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -51,10 +53,12 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
 
     private final CredentialService credentialService;
 
+    private final WalletStubSettings walletStubSettings;
+
     @Override
     public CustomCredential getStatusListCredential(String bpn, String vcId) {
         try {
-            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(bpn);
+            DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb(walletStubSettings.didHost(), bpn));
             URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + vcId);
             Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
             return verifiableCredentials.orElseGet(() -> credentialService.issueStatusListCredential(bpn, vcId));
@@ -69,7 +73,7 @@ public class StatusListCredentialServiceImpl implements StatusListCredentialServ
     public CustomCredential getCustomCredential(String bpn, String vcId) {
         try {
             //currently we are returning one VC
-            URI vcIdUri = URI.create(didDocumentService.getOrCreateDidDocument(bpn).getId() + Constants.HASH_SEPARATOR + vcId);
+            URI vcIdUri = URI.create(didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb(walletStubSettings.didHost(), bpn)).getId() + Constants.HASH_SEPARATOR + vcId);
             Optional<CustomCredential> verifiableCredentials = storage.getVerifiableCredentials(vcIdUri.toString());
             if (verifiableCredentials.isPresent()) {
                 return verifiableCredentials.get();

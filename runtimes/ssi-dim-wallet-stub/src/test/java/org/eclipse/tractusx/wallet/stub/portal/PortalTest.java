@@ -74,7 +74,7 @@ class PortalTest {
                 .queryParam("companyName", "Abc")
                 .queryParam("didDocumentLocation", didLocation);
         ResponseEntity<Void> response = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity, Void.class);
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.CREATED.value());
+        Assertions.assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
     }
 
 
@@ -90,6 +90,6 @@ class PortalTest {
         HttpEntity<CreateTechUserRequest> entity = new HttpEntity<>(createTechUserRequest, headers);
 
         ResponseEntity<Void> response = restTemplate.exchange("/api/dim/technical-user/{bpn}", HttpMethod.POST, entity, Void.class, holderBpn, holderBpn);
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
     }
 }

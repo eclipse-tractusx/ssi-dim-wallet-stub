@@ -36,6 +36,7 @@ import org.eclipse.tractusx.wallet.stub.portal.api.dto.AuthenticationDetails;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.CreateTechUserRequest;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.DidDocumentRequest;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.SetupDimRequest;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -65,7 +66,7 @@ public class PortalStubServiceImpl implements PortalStubService {
             Thread.sleep(portalSettings.portalWaitTime() * 1000);
 
             //create did a document
-            DidDocument didDocument = didDocumentService.getOrCreateDidDocument(request.getBpn());
+            DidDocument didDocument = didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb(walletStubSettings.didHost(), request.getBpn()));
 
             DidDocumentRequest didDocumentRequest = DidDocumentRequest.builder()
                     .didDocument(didDocument)

@@ -2,7 +2,6 @@
 <!--
   ~ /********************************************************************************
   ~  Copyright (c) 2025 Contributors to the Eclipse Foundation
-  ~  Copyright (c) 2025 LKS Next
   ~
   ~  See the NOTICE file(s) distributed with this work for additional
   ~  information regarding copyright ownership.
@@ -25,10 +24,22 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
-    <include file="/db/changelog/changes/init.sql"/>
-    <include file="/db/changelog/changes/add_vc_id_in_holder_credential_as_jwt.sql"/>
-    <include file="/db/changelog/changes/add_holder_bpn_in_credential_table.sql"/>
-    <include file="/db/changelog/changes/add_did_pk_to_key_pair.xml"/>
-    <include file="/db/changelog/changes/rename_holder_bpn_to_holder_did.sql"/>
-    <include file="/db/changelog/changes/use_did_as_pk_in_did_document.sql"/>
+
+    <changeSet id="arnoweiss:1" author="arnoweiss">
+        <addColumn tableName="key_pair">
+            <column name="did" type="VARCHAR(255)" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropPrimaryKey tableName="key_pair"/>
+        <addPrimaryKey tableName="key_pair" columnNames="did" constraintName="key_pair_pkey"/>
+        <dropNotNullConstraint tableName="key_pair" columnName="bpn" columnDataType="VARCHAR(255)"/>
+        <rollback>
+            <addNotNullConstraint tableName="key_pair" columnName="bpn" columnDataType="VARCHAR(255)"/>
+            <dropPrimaryKey tableName="key_pair"/>
+            <addPrimaryKey tableName="key_pair" columnNames="bpn" constraintName="key_pair_pkey"/>
+            <dropColumn tableName="key_pair" columnName="did"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

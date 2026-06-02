@@ -1,7 +1,6 @@
 /*
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
- *  Copyright (c) 2025 LKS Next
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -20,24 +19,12 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.dao.postgresql.repository;
+--liquibase formatted sql
 
-import feign.Param;
+--changeset arnoweiss:3
+ALTER TABLE holder_credential_as_jwt RENAME COLUMN holder_bpn TO holder_did;
+--rollback ALTER TABLE holder_credential_as_jwt RENAME COLUMN holder_did TO holder_bpn;
 
-import org.eclipse.tractusx.wallet.stub.dao.postgresql.entity.HolderCredentialEntity;
-import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-@Repository
-public interface HolderCredentialRepository extends JpaRepository<HolderCredentialEntity, Long> {
-
-    @Query("SELECT h FROM HolderCredentialEntity h WHERE h.key = :key")
-    HolderCredentialEntity findByKey(@Param("key") String key);
-
-    @Query("SELECT h FROM HolderCredentialEntity h WHERE h.holderDid = :holderDid")
-    List<HolderCredentialEntity> getCredentialByHolderDid(@Param("holderDid") String holderDid);
-}
+--changeset arnoweiss:4
+ALTER TABLE holder_credential RENAME COLUMN holder_bpn TO holder_did;
+--rollback ALTER TABLE holder_credential RENAME COLUMN holder_did TO holder_bpn;

@@ -169,7 +169,7 @@ class IssuerCredentialServiceTest {
 
         GetCredentialsResponse credentialsResponse = issuerCredentialService.getCredential("");
 
-        assertEquals(didDocument.getVerificationMethod().getFirst().getId(), credentialsResponse.getSigningKeyId());
+        assertEquals(credentialsResponse.getSigningKeyId(), didDocument.getVerificationMethod().getFirst().getId());
     }
 
     @Test
@@ -229,7 +229,7 @@ class IssuerCredentialServiceTest {
     @Test
     void getIssueCredentialResponse_storeCredential_returnIssueCredentialResponse() {
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject("1")
+                .subject("")
                 .issuer("")
                 .expirationTime(new Date(System.currentTimeMillis() + 60))
                 .claim(Constants.BPN, "")
@@ -350,14 +350,13 @@ class IssuerCredentialServiceTest {
 
         //plan
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject("1")
+                .subject("did:web:localhost:BPNL000000000001")
                 .issuer("")
                 .expirationTime(new Date(System.currentTimeMillis() + 60))
-                .claim(Constants.BPN, "BPNL000000000001")
                 .build();
         when(tokenService.verifyTokenAndGetClaims(anyString())).thenReturn(jwtClaimsSet);
         when(walletStubSettings.baseWalletBPN()).thenReturn("BPNL000000000000");
-        when(credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt("BPNL000000000001", "BpnCredential")).thenReturn(Pair.of("id", "jwt"));
+        when(credentialService.getVerifiableCredentialByHolderDidAndTypeAsJwt("did:web:localhost:BPNL000000000001", "BpnCredential")).thenReturn(Pair.of("id", "jwt"));
         RequestCredential requestCredential = RequestCredential.builder()
                 .issuerDid("did:web:localhost:BPNL000000000000")
                 .holderDid("did:web:localhost:BPNL000000000001")
@@ -376,7 +375,7 @@ class IssuerCredentialServiceTest {
         assertEquals("id", issueCredentialResponse.getId());
         assertEquals("jwt", issueCredentialResponse.getJwt());
         Mockito.verify(didDocumentService, Mockito.times(1))
-                .getOrCreateDidDocument("BPNL000000000001");
+                .getOrCreateDidDocument("did:web:localhost:BPNL000000000001");
     }
 
     @Test
@@ -533,7 +532,7 @@ class IssuerCredentialServiceTest {
 
         // Mock dependencies
         when(walletStubSettings.didHost()).thenReturn("localhost");
-        when(storage.getVcIdAndTypesByHolderBpn(holderBpn)).thenReturn(List.of(credential));
+        when(storage.getVcIdAndTypesByHolderDid(holderDid)).thenReturn(List.of(credential));
 
         // Act
         RequestedCredentialResponse response = issuerCredentialService.getRequestedCredential(holderDid, token);
