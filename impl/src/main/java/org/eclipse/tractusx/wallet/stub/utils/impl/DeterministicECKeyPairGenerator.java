@@ -43,16 +43,16 @@ public class DeterministicECKeyPairGenerator {
 
 
     /**
-     * Generates a KeyPair based on a provided business partner number (bpn) and environment (env).
+     * Generates a KeyPair based on a provided did and environment (env).
      *
-     * @param bpn the business partner number
+     * @param did the did
      * @param env the environment
      * @return a KeyPair containing the generated EC private and public keys
      */
     @SneakyThrows
-    public static KeyPair createKeyPair(String bpn, String env) {
+    public static KeyPair createKeyPair(String did, String env) {
 
-        String randomString = bpn + "_" + env;
+        String randomString = did + "_" + env;
 
         // Step 1: Hash the identification
         byte[] seed = hashIdentification(randomString);
@@ -65,7 +65,7 @@ public class DeterministicECKeyPairGenerator {
         KeyPair keyPair = generateECKeyPair(secureRandom);
 
 
-        log.debug("Keypair is generated for bpn -> {}", StringEscapeUtils.escapeJava(bpn));
+        log.debug("Keypair is generated for did -> {}", StringEscapeUtils.escapeJava(did));
 
         return keyPair;
     }

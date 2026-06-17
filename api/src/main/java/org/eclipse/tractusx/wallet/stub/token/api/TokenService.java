@@ -31,21 +31,7 @@ import java.util.Optional;
 
 public interface TokenService {
 
-    /**
-     * Extracts the BPN (Business Partner Number) from the provided JWT token.
-     *
-     * @param token The JWT token from which to extract the BPN.
-     * @return An Optional containing the BPN if it exists in the token, otherwise an empty Optional.
-     */
-    Optional<String> getBpnFromToken(String token);
 
-    /**
-     * Verifies the provided JWT token and returns the claims set if valid.
-     *
-     * @param token The JWT token to verify.
-     * @return The claims set extracted from the token if it is valid.
-     * @throws IllegalArgumentException if the token is invalid or cannot be parsed.
-     */
 
     JWTClaimsSet verifyTokenAndGetClaims(String token);
 

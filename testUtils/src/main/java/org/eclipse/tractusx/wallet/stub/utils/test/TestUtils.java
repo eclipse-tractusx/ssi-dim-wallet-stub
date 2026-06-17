@@ -106,8 +106,7 @@ public class TestUtils {
         Assertions.assertEquals(tokenResponse.getExpiresIn(), tokenSettings.tokenExpiryTime() * 60L);
 
         //verify token
-        JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(tokenResponse.getAccessToken());
-        Assertions.assertEquals(jwtClaimsSet.getStringClaim(Constants.BPN), bpn);
+        tokenService.verifyTokenAndGetClaims(tokenResponse.getAccessToken());
         return tokenResponse.getTokenType() + StringUtils.SPACE + tokenResponse.getAccessToken();
     }
 
@@ -156,8 +155,9 @@ public class TestUtils {
 
         //validate context
         assertNotNull(issuerMetadata.getContext());
+        List<String> responseContextStrings = issuerMetadata.getContext().stream().map(u -> u.toString()).toList();
         walletStubSettings.issuerMetadataContextUrls().forEach(contextUrl -> {
-            assertTrue(issuerMetadata.getContext().contains(contextUrl));
+            assertTrue(responseContextStrings.contains(contextUrl.toString()));
         });
 
         assertNotNull(issuerMetadata.getCredentialsSupported());
@@ -235,8 +235,7 @@ public class TestUtils {
                 .claim(Constants.SCOPE, scope)
                 .claim(Constants.CONSUMER_DID, consumerDid)
                 .claim(Constants.PROVIDER_DID, providerDid)
-                .claim(Constants.BPN, consumerBpn)
                 .build();
-        return CommonUtils.signedJWT(tokeJwtClaimsSet, keyService.getKeyPair(consumerBpn), didDocumentService.getOrCreateDidDocument(consumerBpn).getVerificationMethod().get(0).getId()).serialize();
+        return CommonUtils.signedJWT(tokeJwtClaimsSet, keyService.getKeyPair(consumerDid), didDocumentService.getOrCreateDidDocument(consumerDid).getVerificationMethod().get(0).getId()).serialize();
     }
 }

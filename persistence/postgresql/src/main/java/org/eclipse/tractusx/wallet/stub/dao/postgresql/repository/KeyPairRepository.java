@@ -30,8 +30,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface KeyPairRepository extends JpaRepository<KeyPairEntity, Long> {
+public interface KeyPairRepository extends JpaRepository<KeyPairEntity, String> {
 
     @Query("SELECT k FROM KeyPairEntity k WHERE k.bpn = :bpn")
     KeyPairEntity findByBpn(@Param("bpn") String bpn);
+
+    @Query("SELECT k FROM KeyPairEntity k WHERE k.did = :did")
+    KeyPairEntity findByDid(@Param("did") String did);
 }

@@ -35,6 +35,7 @@ import org.eclipse.tractusx.wallet.stub.did.api.DidDocumentService;
 import org.eclipse.tractusx.wallet.stub.key.api.KeyService;
 import org.eclipse.tractusx.wallet.stub.storage.api.Storage;
 import org.eclipse.tractusx.wallet.stub.token.impl.TokenSettings;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.utils.api.Constants;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 import org.eclipse.tractusx.wallet.stub.utils.impl.DeterministicECKeyPairGenerator;
@@ -98,12 +99,13 @@ class CredentialServiceTest {
                 .build();
     }
 
-    private void setupCommonMocks(String holderBpn, String type, String baseWalletBpn, String issuerId, String holderId) {
+    private void setupCommonMocks(String holderDid, String type, String baseWalletBpn, String issuerId, String holderId) {
         // Mock WalletStubSettings
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
+        when(walletStubSettings.didHost()).thenReturn("test");
 
         // Mock Storage to return empty
-        when(storage.getCredentialsByHolderBpnAndType(holderBpn, type))
+        when(storage.getCredentialsByHolderDidAndType(holderDid, type))
                 .thenReturn(Optional.empty());
 
         // Mock DidDocumentService with proper VerificationMethod
@@ -113,8 +115,8 @@ class CredentialServiceTest {
                 .id(holderId)
                 .build();
 
-        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
-        when(didDocumentService.getOrCreateDidDocument(holderBpn)).thenReturn(holderDidDoc);
+        when(didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb("test", baseWalletBpn))).thenReturn(issuerDidDoc);
+        when(didDocumentService.getOrCreateDidDocument(holderDid)).thenReturn(holderDidDoc);
     }
 
     /**
@@ -123,17 +125,17 @@ class CredentialServiceTest {
      * it is correctly retrieved and returned without creating a new one.
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndTypeAsJwt_returnsExistingJwt() {
+    void getVerifiableCredentialByHolderDidAndTypeAsJwt_returnsExistingJwt() {
         // Given
-        String holderBpn = "BPNL000000000001";
+        String holderDid = "did:web:test:BPNL000000000001";
         String type = "MembershipCredential";
         String expectedJwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...";
 
-        when(storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type))
+        when(storage.getCredentialsAsJwtByHolderDidAndType(holderDid, type))
                 .thenReturn(Optional.of(Pair.of("id", expectedJwt)));
 
         // When
-        String actualJwt = credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(holderBpn, type).getRight();
+        String actualJwt = credentialService.getVerifiableCredentialByHolderDidAndTypeAsJwt(holderDid, type).getRight();
 
         // Then
         assertEquals(expectedJwt, actualJwt);
@@ -148,8 +150,9 @@ class CredentialServiceTest {
      * 4. The signature can be verified
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndTypeAsJwt_createsNewJwt() throws ParseException, JOSEException {
+    void getVerifiableCredentialByHolderDidAndTypeAsJwt_createsNewJwt() throws ParseException, JOSEException {
         // Given
+        String holderDid = "did:web:test:BPNL000000000001";
         String holderBpn = "BPNL000000000001";
         String type = "MembershipCredential";
         String baseWalletBpn = "BPNL000000000000";
@@ -158,13 +161,14 @@ class CredentialServiceTest {
 
         // Mock WalletStubSettings
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
+        when(walletStubSettings.didHost()).thenReturn("test");
 
         // Mock Storage to return empty for JWT
-        when(storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type))
+        when(storage.getCredentialsAsJwtByHolderDidAndType(holderDid, type))
                 .thenReturn(Optional.empty());
 
         // Mock Storage to return empty for credentials to trigger new credential creation
-        when(storage.getCredentialsByHolderBpnAndType(holderBpn, type))
+        when(storage.getCredentialsByHolderDidAndType(holderDid, type))
                 .thenReturn(Optional.empty());
 
         // Mock void methods using doNothing()
@@ -184,7 +188,7 @@ class CredentialServiceTest {
         KeyPair testKeyPair = DeterministicECKeyPairGenerator.createKeyPair(baseWalletBpn, "test");
 
         // Mock KeyService to return our test key pair
-        when(keyService.getKeyPair(baseWalletBpn)).thenReturn(testKeyPair);
+        when(keyService.getKeyPair(CommonUtils.getDidWeb("test", baseWalletBpn))).thenReturn(testKeyPair);
 
         // Mock DidDocumentService
         DidDocument issuerDidDoc = createDidDocument(issuerId);
@@ -193,14 +197,14 @@ class CredentialServiceTest {
                 .id(holderId)
                 .build();
 
-        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
-        when(didDocumentService.getOrCreateDidDocument(holderBpn)).thenReturn(holderDidDoc);
+        when(didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb("test", baseWalletBpn))).thenReturn(issuerDidDoc);
+        when(didDocumentService.getOrCreateDidDocument(holderDid)).thenReturn(holderDidDoc);
 
         // Mock TokenSettings
         when(tokenSettings.tokenExpiryTime()).thenReturn(60);
 
         // When
-        String actualJwt = credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(holderBpn, type).getRight();
+        String actualJwt = credentialService.getVerifiableCredentialByHolderDidAndTypeAsJwt(holderDid, type).getRight();
 
         // Then
         assertTrue(actualJwt != null && !actualJwt.isEmpty(), "JWT should not be null or empty");
@@ -223,71 +227,59 @@ class CredentialServiceTest {
 
     /**
      * Tests that InternalErrorException is propagated correctly.
-     * This test verifies that when an InternalErrorException occurs,
-     * it is passed through without modification.
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndTypeAsJwt_propagatesInternalErrorException() {
+    void getVerifiableCredentialByHolderDidAndTypeAsJwt_propagatesInternalErrorException() {
         // Given
-        String holderBpn = "BPNL000000000001";
+        String holderDid = "did:web:test:BPNL000000000001";
         String type = Constants.MEMBERSHIP_CREDENTIAL;
 
-        // Mock Storage to throw InternalErrorException directly
-        when(storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type))
+        when(storage.getCredentialsAsJwtByHolderDidAndType(holderDid, type))
             .thenThrow(new InternalErrorException("Direct internal error"));
 
-        // When/Then
         InternalErrorException exception = assertThrows(
             InternalErrorException.class,
-            () -> credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(holderBpn, type)
+            () -> credentialService.getVerifiableCredentialByHolderDidAndTypeAsJwt(holderDid, type)
         );
         assertEquals("Direct internal error", exception.getMessage());
     }
 
     /**
      * Tests that other exceptions are wrapped in InternalErrorException.
-     * This test verifies that when an unexpected exception occurs,
-     * it is wrapped in an InternalErrorException with an appropriate message.
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndTypeAsJwt_wrapsUnexpectedException() {
+    void getVerifiableCredentialByHolderDidAndTypeAsJwt_wrapsUnexpectedException() {
         // Given
-        String holderBpn = "BPNL000000000001";
+        String holderDid = "did:web:test:BPNL000000000001";
         String type = Constants.MEMBERSHIP_CREDENTIAL;
 
-        // Mock Storage to throw RuntimeException
-        when(storage.getCredentialsAsJwtByHolderBpnAndType(holderBpn, type))
+        when(storage.getCredentialsAsJwtByHolderDidAndType(holderDid, type))
             .thenThrow(new RuntimeException("Unexpected runtime error"));
 
-        // When/Then
         InternalErrorException exception = assertThrows(
             InternalErrorException.class,
-            () -> credentialService.getVerifiableCredentialByHolderBpnAndTypeAsJwt(holderBpn, type)
+            () -> credentialService.getVerifiableCredentialByHolderDidAndTypeAsJwt(holderDid, type)
         );
         assertEquals("Internal Error: Unexpected runtime error", exception.getMessage());
     }
 
     /**
      * Tests the creation of a BPN credential.
-     * This test verifies that:
-     * 1. A new BPN credential is created with correct issuer information
-     * 2. The credential subject contains all required BPN-specific fields
-     * 3. The credential is properly saved in storage
-     * 4. The credential follows the expected structure for BPN credentials
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndType_createsBpnCredential() {
+    void getVerifiableCredentialByHolderDidAndType_createsBpnCredential() {
         // Given
+        String holderDid = "did:web:test:BPNL000000000001";
         String holderBpn = "BPNL000000000001";
         String type = Constants.BPN_CREDENTIAL;
         String baseWalletBpn = "BPNL000000000000";
         String issuerId = "did:web:test-issuer";
         String holderId = "did:web:test-holder";
 
-        setupCommonMocks(holderBpn, type, baseWalletBpn, issuerId, holderId);
+        setupCommonMocks(holderDid, type, baseWalletBpn, issuerId, holderId);
 
         // When
-        CustomCredential credential = internalCredentialService.getVerifiableCredentialByHolderBpnAndType(holderBpn, type);
+        CustomCredential credential = internalCredentialService.getVerifiableCredentialByHolderDidAndType(holderDid, type);
 
         // Then
         assertNotNull(credential);
@@ -297,31 +289,26 @@ class CredentialServiceTest {
         assertEquals(holderId, credentialSubject.get("id"));
         assertEquals(holderBpn, credentialSubject.get("holderIdentifier"));
 
-        // Verify storage was called
-        verify(storage).saveCredentials(anyString(), any(CustomCredential.class), eq(holderBpn), eq(type));
+        verify(storage).saveCredentials(anyString(), any(CustomCredential.class), eq(holderDid), eq(type));
     }
 
     /**
      * Tests the creation of a Data Exchange credential.
-     * This test verifies that:
-     * 1. A new Data Exchange credential is created with correct issuer information
-     * 2. The credential subject contains all required fields for data exchange
-     * 3. The correct group, use case, contract template and version are set
-     * 4. The credential is properly saved in storage
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndType_createsDataExchangeCredential() {
+    void getVerifiableCredentialByHolderDidAndType_createsDataExchangeCredential() {
         // Given
+        String holderDid = "did:web:test:BPNL000000000001";
         String holderBpn = "BPNL000000000001";
         String type = Constants.DATA_EXCHANGE_CREDENTIAL;
         String baseWalletBpn = "BPNL000000000000";
         String issuerId = "did:web:test-issuer";
         String holderId = "did:web:test-holder";
 
-        setupCommonMocks(holderBpn, type, baseWalletBpn, issuerId, holderId);
+        setupCommonMocks(holderDid, type, baseWalletBpn, issuerId, holderId);
 
         // When
-        CustomCredential credential = internalCredentialService.getVerifiableCredentialByHolderBpnAndType(holderBpn, type);
+        CustomCredential credential = internalCredentialService.getVerifiableCredentialByHolderDidAndType(holderDid, type);
 
         // Then
         assertNotNull(credential);
@@ -334,31 +321,26 @@ class CredentialServiceTest {
         assertEquals("https://example.org/temp-1", credentialSubject.get("contractTemplate"));
         assertEquals("1.0", credentialSubject.get("contractVersion"));
 
-        // Verify storage was called
-        verify(storage).saveCredentials(anyString(), any(CustomCredential.class), eq(holderBpn), eq(type));
+        verify(storage).saveCredentials(anyString(), any(CustomCredential.class), eq(holderDid), eq(type));
     }
 
     /**
      * Tests the creation of a Usage Purpose credential.
-     * This test verifies that:
-     * 1. A new Usage Purpose credential is created with correct issuer information
-     * 2. The credential subject contains all required fields for Usage Purpose
-     * 3. The credential is properly saved in storage
-     * 4. The credential follows the expected structure for Usage Purpose credentials
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndType_createsUsagePCredential() {
+    void getVerifiableCredentialByHolderDidAndType_createsUsagePCredential() {
         // Given
+        String holderDid = "did:web:test:BPNL000000000001";
         String holderBpn = "BPNL000000000001";
         String type = Constants.USAGE_PURPOSE_CREDENTIAL;
         String baseWalletBpn = "BPNL000000000000";
         String issuerId = "did:web:test-issuer";
         String holderId = "did:web:test-holder";
 
-        setupCommonMocks(holderBpn, type, baseWalletBpn, issuerId, holderId);
+        setupCommonMocks(holderDid, type, baseWalletBpn, issuerId, holderId);
 
         // When
-        CustomCredential credential = internalCredentialService.getVerifiableCredentialByHolderBpnAndType(holderBpn, type);
+        CustomCredential credential = internalCredentialService.getVerifiableCredentialByHolderDidAndType(holderDid, type);
 
         // Then
         assertNotNull(credential);
@@ -367,30 +349,26 @@ class CredentialServiceTest {
         assertEquals(holderId, credentialSubject.get("id"));
         assertEquals(holderBpn, credentialSubject.get("holderIdentifier"));
 
-        // Verify storage was called
-        verify(storage).saveCredentials(anyString(), any(CustomCredential.class), eq(holderBpn), eq(type));
+        verify(storage).saveCredentials(anyString(), any(CustomCredential.class), eq(holderDid), eq(type));
     }
 
     /**
      * Tests the error handling for unsupported credential types.
-     * This test verifies that when requesting a credential with an unsupported type,
-     * the service throws an IllegalArgumentException with an appropriate error message.
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndType_throwsExceptionForUnsupportedType() {
+    void getVerifiableCredentialByHolderDidAndType_throwsExceptionForUnsupportedType() {
         // Given
-        String holderBpn = "BPNL000000000001";
+        String holderDid = "did:web:test:BPNL000000000001";
         String type = "UnsupportedType";
         String baseWalletBpn = "BPNL000000000000";
         String issuerId = "did:web:test-issuer";
         String holderId = "did:web:test-holder";
 
-        setupCommonMocks(holderBpn, type, baseWalletBpn, issuerId, holderId);
+        setupCommonMocks(holderDid, type, baseWalletBpn, issuerId, holderId);
 
-        // When/Then
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> internalCredentialService.getVerifiableCredentialByHolderBpnAndType(holderBpn, type)
+            () -> internalCredentialService.getVerifiableCredentialByHolderDidAndType(holderDid, type)
         );
 
         assertEquals("vc type -> " + type + " is not supported", exception.getMessage());
@@ -398,54 +376,43 @@ class CredentialServiceTest {
 
     /**
      * Tests retrieving an existing credential.
-     * This test verifies that:
-     * 1. When a credential already exists in storage, it is returned as-is
-     * 2. No new credential is created
-     * 3. No interactions with key service or DID document service occur
      */
     @Test
-    void getVerifiableCredentialByHolderBpnAndType_returnsExistingCredential() {
+    void getVerifiableCredentialByHolderDidAndType_returnsExistingCredential() {
         // Given
-        String holderBpn = "BPNL000000000001";
+        String holderDid = "did:web:test:BPNL000000000001";
         String type = "MembershipCredential";
         CustomCredential existingCredential = new CustomCredential();
         existingCredential.put("test", "value");
 
-        // Mock Storage to return existing credential
-        when(storage.getCredentialsByHolderBpnAndType(holderBpn, type))
+        when(storage.getCredentialsByHolderDidAndType(holderDid, type))
                 .thenReturn(Optional.of(existingCredential));
 
         // When
-        CustomCredential result = internalCredentialService.getVerifiableCredentialByHolderBpnAndType(holderBpn, type);
+        CustomCredential result = internalCredentialService.getVerifiableCredentialByHolderDidAndType(holderDid, type);
 
         // Then
         assertSame(existingCredential, result);
         assertEquals("value", result.get("test"));
-
-        // Verify no other interactions
         verifyNoMoreInteractions(keyService, didDocumentService);
     }
 
     /**
      * Tests the successful creation of a Status List Credential.
-     * This test verifies that:
-     * 1. The credential is created with correct issuer information
-     * 2. The credential subject contains the required type and purpose
-     * 3. The encoded list is present in the credential
-     * 4. The credential is properly saved in storage
      */
     @Test
     void issueStatusListCredential_successful() {
         // Given
         String holderBpn = "BPNL000000000001";
+        String holderDid = "did:web:test:BPNL000000000001";
         String vcId = "test-vc-id";
         String baseWalletBpn = "BPNL000000000000";
         String issuerId = "did:web:test-issuer";
 
-        // Mock WalletStubSettings and DidDocumentService
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
+        when(walletStubSettings.didHost()).thenReturn("test");
         DidDocument issuerDidDoc = createDidDocument(issuerId);
-        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn)).thenReturn(issuerDidDoc);
+        when(didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb("test", baseWalletBpn))).thenReturn(issuerDidDoc);
 
         // When
         CustomCredential result = credentialService.issueStatusListCredential(holderBpn, vcId);
@@ -461,15 +428,13 @@ class CredentialServiceTest {
         verify(storage).saveCredentials(
             eq(issuerId + "#" + vcId),
             any(CustomCredential.class),
-            eq(holderBpn),
+            eq(holderDid),
             eq(Constants.STATUS_LIST_2021_CREDENTIAL)
         );
     }
 
     /**
-     * Tests the scenario where an InternalErrorException is thrown directly.
-     * This test verifies that when the DID document service throws an InternalErrorException,
-     * the same exception is propagated up through the service layer without modification.
+     * Tests that InternalErrorException is propagated correctly in issueStatusListCredential.
      */
     @Test
     void issueStatusListCredential_throwsInternalErrorException() {
@@ -478,12 +443,11 @@ class CredentialServiceTest {
         String vcId = "test-vc-id";
         String baseWalletBpn = "BPNL000000000000";
 
-        // Mock to throw InternalErrorException directly
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
-        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn))
+        when(walletStubSettings.didHost()).thenReturn("test");
+        when(didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb("test", baseWalletBpn)))
             .thenThrow(new InternalErrorException("Test error"));
 
-        // When/Then
         InternalErrorException exception = assertThrows(
             InternalErrorException.class,
             () -> credentialService.issueStatusListCredential(holderBpn, vcId)
@@ -492,9 +456,7 @@ class CredentialServiceTest {
     }
 
     /**
-     * Tests the scenario where a runtime exception is wrapped into an InternalErrorException.
-     * This test verifies that when an unexpected RuntimeException occurs,
-     * it is properly caught and wrapped into an InternalErrorException with an appropriate error message.
+     * Tests that runtime exceptions are wrapped into an InternalErrorException in issueStatusListCredential.
      */
     @Test
     void issueStatusListCredential_throwsWrappedInternalErrorException() {
@@ -503,12 +465,11 @@ class CredentialServiceTest {
         String vcId = "test-vc-id";
         String baseWalletBpn = "BPNL000000000000";
 
-        // Mock to throw a general exception that will be wrapped
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
-        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn))
+        when(walletStubSettings.didHost()).thenReturn("test");
+        when(didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb("test", baseWalletBpn)))
             .thenThrow(new RuntimeException("Unexpected error"));
 
-        // When/Then
         InternalErrorException exception = assertThrows(
             InternalErrorException.class,
             () -> credentialService.issueStatusListCredential(holderBpn, vcId)
@@ -522,22 +483,19 @@ class CredentialServiceTest {
     @Test
     void issueDataExchangeGovernanceCredential_propagatesInternalErrorException() {
         // Given
-        String holderBpn = "BPNL000000000001";
+        String holderDid = "did:web:test:BPNL000000000001";
         String baseWalletBpn = "BPNL000000000000";
 
-        // Mock base setup
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
-        when(storage.getCredentialsByHolderBpnAndType(holderBpn, Constants.DATA_EXCHANGE_CREDENTIAL))
+        when(walletStubSettings.didHost()).thenReturn("test");
+        when(storage.getCredentialsByHolderDidAndType(holderDid, Constants.DATA_EXCHANGE_CREDENTIAL))
                 .thenReturn(Optional.empty());
-
-        // Mock DidDocumentService to throw InternalErrorException
-        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn))
+        when(didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb("test", baseWalletBpn)))
             .thenThrow(new InternalErrorException("Direct internal error"));
 
-        // When/Then
         InternalErrorException exception = assertThrows(
             InternalErrorException.class,
-            () -> internalCredentialService.getVerifiableCredentialByHolderBpnAndType(holderBpn, Constants.DATA_EXCHANGE_CREDENTIAL)
+            () -> internalCredentialService.getVerifiableCredentialByHolderDidAndType(holderDid, Constants.DATA_EXCHANGE_CREDENTIAL)
         );
         assertEquals("Direct internal error", exception.getMessage());
     }
@@ -548,22 +506,19 @@ class CredentialServiceTest {
     @Test
     void issueDataExchangeGovernanceCredential_wrapsUnexpectedException() {
         // Given
-        String holderBpn = "BPNL000000000001";
+        String holderDid = "did:web:test:BPNL000000000001";
         String baseWalletBpn = "BPNL000000000000";
 
-        // Mock base setup
         when(walletStubSettings.baseWalletBPN()).thenReturn(baseWalletBpn);
-        when(storage.getCredentialsByHolderBpnAndType(holderBpn, Constants.DATA_EXCHANGE_CREDENTIAL))
+        when(walletStubSettings.didHost()).thenReturn("test");
+        when(storage.getCredentialsByHolderDidAndType(holderDid, Constants.DATA_EXCHANGE_CREDENTIAL))
                 .thenReturn(Optional.empty());
-
-        // Mock DidDocumentService to throw RuntimeException
-        when(didDocumentService.getOrCreateDidDocument(baseWalletBpn))
+        when(didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb("test", baseWalletBpn)))
             .thenThrow(new RuntimeException("Unexpected runtime error"));
 
-        // When/Then
         InternalErrorException exception = assertThrows(
             InternalErrorException.class,
-            () -> internalCredentialService.getVerifiableCredentialByHolderBpnAndType(holderBpn, Constants.DATA_EXCHANGE_CREDENTIAL)
+            () -> internalCredentialService.getVerifiableCredentialByHolderDidAndType(holderDid, Constants.DATA_EXCHANGE_CREDENTIAL)
         );
         assertEquals("Internal Error: Unexpected runtime error", exception.getMessage());
     }

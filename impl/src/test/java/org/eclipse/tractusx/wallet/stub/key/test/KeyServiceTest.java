@@ -37,6 +37,7 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,8 +63,8 @@ class KeyServiceTest {
 
         KeyPair keyPair = keyService.getKeyPair(baseWalletBpn);
 
-        Assertions.assertEquals(keyPair.getPublic(), testKeyPair.getPublic());
-        Assertions.assertEquals(keyPair.getPrivate(), testKeyPair.getPrivate());
+        Assertions.assertEquals(testKeyPair.getPublic(), keyPair.getPublic());
+        Assertions.assertEquals(testKeyPair.getPrivate(), keyPair.getPrivate());
     }
 
     @Test
@@ -76,7 +77,7 @@ class KeyServiceTest {
 
         KeyPair keyPair = keyService.getKeyPair(baseWalletBpn);
 
-        verify(storage, times(1)).saveKeyPair(anyString(), any());
+        verify(storage, times(1)).saveKeyPair(anyString(), isNull(), any());
         Assertions.assertNotNull(keyPair);
     }
 }

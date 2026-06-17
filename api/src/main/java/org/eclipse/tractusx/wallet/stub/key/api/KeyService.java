@@ -30,10 +30,10 @@ import java.security.KeyPair;
 public interface KeyService {
 
     /**
-     * Retrieves a KeyPair associated with the provided business partner number (bpn).
+     * Retrieves a KeyPair associated with the provided did.
      *
-     * @param bpn the business partner number
-     * @return the KeyPair associated with the provided bpn, or generates a new KeyPair and saves it if no KeyPair is found
+     * @param did the business partner number
+     * @return the KeyPair associated with the provided did, or generates a new KeyPair and saves it if no KeyPair is found
      */
-    KeyPair getKeyPair(String bpn);
+    KeyPair getKeyPair(String did);
 }

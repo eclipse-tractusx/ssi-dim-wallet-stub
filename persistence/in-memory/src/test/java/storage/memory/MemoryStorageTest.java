@@ -35,17 +35,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class MemoryStorageTest {
 
     @Test
-    void getVcIdAndTypesByHolderBpn_shouldReturnMatchingCredentials() {
+    void getVcIdAndTypesByHolderDid_shouldReturnMatchingCredentials() {
         // Arrange
         MemoryStorage storage = new MemoryStorage();
-        String holderBpn = "BPNL000000000001";
+        String holderDid = "did:web:test:BPNL000000000001";
         String type = "TestCredential";
         String type1 = "TestCredential1";
 
         // Create test credentials
         CustomCredential matchingCredential = new CustomCredential();
         matchingCredential.put(Constants.TYPE, List.of("VerifiableCredential", type));
-        matchingCredential.put(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE, Map.of("id", "did:web:test:" + holderBpn));
+        matchingCredential.put(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE, Map.of("id", holderDid));
 
         CustomCredential nonMatchingCredential = new CustomCredential();
         nonMatchingCredential.put(Constants.TYPE, List.of("VerifiableCredential", type));
@@ -56,19 +56,19 @@ class MemoryStorageTest {
         invalidCredential.put(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE, Map.of("someOtherId", "value"));
 
         // Store credentials
-        storage.saveCredentials("vc1", matchingCredential, holderBpn, type);
-        storage.saveCredentials("vc2", nonMatchingCredential, "BPNL000000000002", type);
-        storage.saveCredentials("vc3", invalidCredential, holderBpn, type1);
+        storage.saveCredentials("vc1", matchingCredential, holderDid, type);
+        storage.saveCredentials("vc2", nonMatchingCredential, "did:web:test:BPNL000000000002", type);
+        storage.saveCredentials("vc3", invalidCredential, "did:web:test:BPNL000000000002", type1);
 
         // Act
-        List<CustomCredential> result = storage.getVcIdAndTypesByHolderBpn(holderBpn);
+        List<CustomCredential> result = storage.getVcIdAndTypesByHolderDid(holderDid);
 
         // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         CustomCredential retrievedCredential = result.get(0);
         assertEquals(matchingCredential, retrievedCredential);
-        assertEquals("did:web:test:" + holderBpn,
+        assertEquals(holderDid,
                 ((Map<String, String>)retrievedCredential.get(Constants.CREDENTIAL_SUBJECT_CAMEL_CASE)).get(Constants.ID));
     }
 }

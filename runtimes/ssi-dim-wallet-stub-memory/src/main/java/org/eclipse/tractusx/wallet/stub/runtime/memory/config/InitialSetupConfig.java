@@ -27,6 +27,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.wallet.stub.config.impl.WalletStubSettings;
 import org.eclipse.tractusx.wallet.stub.exception.api.InternalErrorException;
+import org.eclipse.tractusx.wallet.stub.utils.api.CommonUtils;
 import org.eclipse.tractusx.wallet.stub.portal.api.PortalStubService;
 import org.eclipse.tractusx.wallet.stub.portal.api.dto.SetupDimRequest;
 import org.eclipse.tractusx.wallet.stub.statuslist.api.StatusListCredentialService;
@@ -62,7 +63,7 @@ public class InitialSetupConfig {
     @EventListener(ApplicationReadyEvent.class)
     public void setupBaseWallet() {
         try {
-            if (storage.getDidDocument(walletStubSettings.baseWalletBPN()).isEmpty()) {
+            if (storage.getDidDocument(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN())).isEmpty()) {
                 SetupDimRequest request = new SetupDimRequest();
                 request.setBpn(walletStubSettings.baseWalletBPN());
                 request.setCompanyName("Eclipse Tractus-x Operating Company");

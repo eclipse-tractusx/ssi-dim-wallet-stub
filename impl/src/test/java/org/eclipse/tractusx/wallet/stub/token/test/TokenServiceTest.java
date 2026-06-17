@@ -171,7 +171,6 @@ class TokenServiceTest {
                 .subject(did)
                 .audience(did)
                 .issueTime(Date.from(Instant.now()))
-                .claim(Constants.BPN, "BPNL000000000001")
                 .build();
         SignedJWT signedJWT = createSignedJWT(claims, keyPair, fullKeyId);
 
@@ -179,7 +178,7 @@ class TokenServiceTest {
                 .thenReturn(didDocument);
 
         JWTClaimsSet result = tokenService.verifyTokenAndGetClaims(signedJWT.serialize());
-        assertEquals("BPNL000000000001", result.getClaim(Constants.BPN));
+        assertEquals(did, result.getSubject());
     }
 
     @Test
@@ -360,34 +359,6 @@ class TokenServiceTest {
         assertEquals(did, result.getIssuer());
     }
 
-    // -------------------------------------------------------------------------
-    // getBpnFromToken
-    // -------------------------------------------------------------------------
-
-    @Test
-    void getBpnFromToken_shouldExtractBpn() {
-        String did = "did:web:example.com:BPNL00000001CRHK";
-        String expectedBpn = "BPNL00000001CRHK";
-        KeyPair keyPair = DeterministicECKeyPairGenerator.createKeyPair("BPNL00000001CRHK", "test");
-        String keyId = "key-1";
-        DidDocument didDocument = buildDidDocument(did, keyId, keyPair);
-
-        when(restTemplate.getForObject(eq(didToUrl(did)), eq(DidDocument.class)))
-                .thenReturn(didDocument);
-
-        List.of(Constants.BPN, Constants.CAPITAL_BPN).forEach(bpnKeyName -> {
-            JWTClaimsSet claims = new JWTClaimsSet.Builder()
-                    .issuer(did)
-                    .claim(bpnKeyName, expectedBpn)
-                    .build();
-            SignedJWT signedJWT = createSignedJWT(claims, keyPair, did + "#" + keyId);
-
-            Optional<String> result = tokenService.getBpnFromToken(signedJWT.serialize());
-
-            assertTrue(result.isPresent());
-            assertEquals(expectedBpn, result.get());
-        });
-    }
 
     // -------------------------------------------------------------------------
     // createAccessTokenResponse

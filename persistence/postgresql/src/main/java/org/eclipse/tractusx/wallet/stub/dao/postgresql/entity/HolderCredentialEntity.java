@@ -53,7 +53,7 @@ public class HolderCredentialEntity {
     private String key;
 
     @Column(nullable = false)
-    private String holderBpn;
+    private String holderDid;
 
     @JdbcTypeCode(Types.LONGNVARCHAR)
     @Convert(converter = CustomCredentialConverter.class)

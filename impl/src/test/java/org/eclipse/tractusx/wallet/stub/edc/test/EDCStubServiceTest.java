@@ -90,6 +90,7 @@ class EDCStubServiceTest {
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject("1")
                 .issuer("")
+                .audience(List.of("did:web:example:BPNL000000000000"))
                 .expirationTime(new Date(System.currentTimeMillis() + 60))
                 .claim(Constants.BPN, "")
                 .build();
@@ -137,6 +138,7 @@ class EDCStubServiceTest {
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject("1")
                 .issuer("")
+                .audience(List.of("1"))
                 .expirationTime(new Date(System.currentTimeMillis() + 60))
                 .claim(Constants.BPN, "")
                 .build();
@@ -171,6 +173,5 @@ class EDCStubServiceTest {
 
         assertEquals("1", claims.getIssuer());
         assertEquals("1", claims.getSubject());
-        assertEquals("BPNa", claims.getClaim(Constants.BPN));
     }
 }

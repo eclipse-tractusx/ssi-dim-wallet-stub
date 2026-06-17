@@ -56,7 +56,7 @@ class CommonUtilsTest {
     void testGetUuid() {
         String uuid1 = CommonUtils.getUuid("bpn", "local");
         String uuid2 = CommonUtils.getUuid("bpn", "local");
-        assertEquals(uuid2, uuid1);
+        assertEquals(uuid1, uuid2);
 
         uuid1 = CommonUtils.getUuid("bpn", "local");
         uuid2 = CommonUtils.getUuid("bpn", "dev");

@@ -68,8 +68,6 @@ class EDCTest {
     public static final String VERIFIABLE_CREDENTIAL = "verifiableCredential";
     public static final String CREDENTIAL_SUBJECT = "credentialSubject";
     public static final String ISSUER = "issuer";
-    public static final String CONSUMER_DID = "consumerDid";
-    public static final String PROVIDER_DID = "providerDid";
     @Autowired
     private WalletStubSettings walletStubSettings;
 
@@ -110,15 +108,14 @@ class EDCTest {
     @SuppressWarnings("unchecked")
     @SneakyThrows
     @Test
-    @DisplayName("Test Query presentation API  without scoped STS(ie. create STS without scope and query presentation)")
+    @DisplayName("Test Query presentation API without scoped STS(ie. create STS without scope and query presentation)")
     void testQueryPresentationWithoutScopedSTS() {
-        String readScope = "read";
         String consumerBpn = TestUtils.getRandomBpmNumber();
         String providerBpn = TestUtils.getRandomBpmNumber();
         String consumerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), consumerBpn);
         String providerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), providerBpn);
 
-        String requestedInnerToken = getToken(consumerDid, providerDid, consumerBpn, readScope, List.of(Constants.BPN_CREDENTIAL, Constants.DATA_EXCHANGE_CREDENTIAL));
+        String requestedInnerToken = getToken(consumerDid, providerDid, List.of(Constants.BPN_CREDENTIAL, Constants.DATA_EXCHANGE_CREDENTIAL));
         String jwt = createStsWithoutScope(consumerDid, providerDid, consumerBpn, requestedInnerToken);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, BEARER + jwt);
@@ -128,17 +125,15 @@ class EDCTest {
         HttpEntity<QueryPresentationRequest> entity = new HttpEntity<>(request, headers);
         ResponseEntity<QueryPresentationResponse> response = restTemplate.exchange("/api/presentations/query", HttpMethod.POST, entity, QueryPresentationResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 
         QueryPresentationResponse responseBody = validateResponseFormat(response);
         String vpToken = responseBody.getPresentation().getFirst();
         JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(vpToken);
 
         Assertions.assertTrue(jwtClaimsSet.getAudience().contains(consumerDid));
-        Assertions.assertEquals(jwtClaimsSet.getSubject(), consumerDid);
-        Assertions.assertEquals(jwtClaimsSet.getIssuer(), consumerDid);
-
-        Assertions.assertEquals(jwtClaimsSet.getStringClaim(Constants.BPN), consumerBpn);
+        Assertions.assertEquals(providerDid, jwtClaimsSet.getSubject());
+        Assertions.assertEquals(providerDid, jwtClaimsSet.getIssuer());
 
         Assertions.assertNotNull(jwtClaimsSet.getJSONObjectClaim(Constants.VP));
 
@@ -154,38 +149,38 @@ class EDCTest {
 
         JWTClaimsSet vcClaims = tokenService.verifyTokenAndGetClaims(vc);
 
-        Assertions.assertTrue(vcClaims.getAudience().contains(consumerDid));
-        Assertions.assertEquals(vcClaims.getSubject(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
-        Assertions.assertEquals(vcClaims.getIssuer(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
+        Assertions.assertTrue(vcClaims.getAudience().contains(providerDid));
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), vcClaims.getSubject());
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), vcClaims.getIssuer());
 
         Assertions.assertNotNull(vcClaims.getJSONObjectClaim(Constants.VC));
 
         Map<String, Object> jsonLdVc = vcClaims.getJSONObjectClaim(Constants.VC);
         Map<String, String> subject = (Map<String, String>) jsonLdVc.get(CREDENTIAL_SUBJECT);
-        Assertions.assertEquals(subject.get(Constants.HOLDER_IDENTIFIER), consumerBpn);
-        Assertions.assertEquals(subject.get(Constants.ID), consumerDid);
-        Assertions.assertEquals(jsonLdVc.get(ISSUER).toString(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
+        Assertions.assertEquals(providerBpn, subject.get(Constants.HOLDER_IDENTIFIER));
+        Assertions.assertEquals(providerDid, subject.get(Constants.ID));
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), jsonLdVc.get(ISSUER).toString());
 
 
         vc = vcs.getLast();
 
         vcClaims = tokenService.verifyTokenAndGetClaims(vc);
 
-        Assertions.assertTrue(vcClaims.getAudience().contains(consumerDid));
-        Assertions.assertEquals(vcClaims.getSubject(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
-        Assertions.assertEquals(vcClaims.getIssuer(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
+        Assertions.assertTrue(vcClaims.getAudience().contains(providerDid));
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), vcClaims.getSubject());
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), vcClaims.getIssuer());
 
         Assertions.assertNotNull(vcClaims.getJSONObjectClaim(Constants.VC));
 
         jsonLdVc = vcClaims.getJSONObjectClaim(Constants.VC);
         subject = (Map<String, String>) jsonLdVc.get(CREDENTIAL_SUBJECT);
-        Assertions.assertEquals(subject.get(Constants.HOLDER_IDENTIFIER), consumerBpn);
-        Assertions.assertEquals(subject.get(Constants.ID), consumerDid);
+        Assertions.assertEquals(providerBpn, subject.get(Constants.HOLDER_IDENTIFIER));
+        Assertions.assertEquals(providerDid, subject.get(Constants.ID));
         Assertions.assertNotNull(subject.get(Constants.GROUP));
         Assertions.assertNotNull(subject.get(Constants.USE_CASE));
         Assertions.assertNotNull(subject.get(Constants.CONTRACT_TEMPLATE));
         Assertions.assertNotNull(subject.get(Constants.CONTRACT_VERSION));
-        Assertions.assertEquals(jsonLdVc.get(ISSUER).toString(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), jsonLdVc.get(ISSUER).toString());
     }
 
     @SuppressWarnings("unchecked")
@@ -207,19 +202,16 @@ class EDCTest {
         HttpEntity<QueryPresentationRequest> entity = new HttpEntity<>(request, headers);
         ResponseEntity<QueryPresentationResponse> response = restTemplate.exchange("/api/presentations/query", HttpMethod.POST, entity, QueryPresentationResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 
         QueryPresentationResponse responseBody = validateResponseFormat(response);
 
         String vpToken = responseBody.getPresentation().getFirst();
         JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(vpToken);
 
-        // VP audience should be the issuer of the outer/wrapper token (the requesting party)
         Assertions.assertTrue(jwtClaimsSet.getAudience().contains(consumerDid));
-        Assertions.assertEquals(jwtClaimsSet.getSubject(), consumerDid);
-        Assertions.assertEquals(jwtClaimsSet.getIssuer(), consumerDid);
-
-        Assertions.assertEquals(jwtClaimsSet.getStringClaim(Constants.BPN), consumerBpn);
+        Assertions.assertEquals(providerDid, jwtClaimsSet.getSubject());
+        Assertions.assertEquals(providerDid, jwtClaimsSet.getIssuer());
 
         Assertions.assertNotNull(jwtClaimsSet.getJSONObjectClaim(Constants.VP));
 
@@ -235,54 +227,83 @@ class EDCTest {
 
         JWTClaimsSet vcClaims = tokenService.verifyTokenAndGetClaims(vc);
 
-        Assertions.assertTrue(vcClaims.getAudience().contains(consumerDid));
-        Assertions.assertEquals(vcClaims.getSubject(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
-        Assertions.assertEquals(vcClaims.getIssuer(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
+        Assertions.assertTrue(vcClaims.getAudience().contains(providerDid));
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), vcClaims.getSubject());
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), vcClaims.getIssuer());
 
         Assertions.assertNotNull(vcClaims.getJSONObjectClaim(Constants.VC));
 
         Map<String, Object> jsonLdVc = vcClaims.getJSONObjectClaim(Constants.VC);
         Map<String, String> subject = (Map<String, String>) jsonLdVc.get(CREDENTIAL_SUBJECT);
-        Assertions.assertEquals(subject.get(Constants.HOLDER_IDENTIFIER), consumerBpn);
-        Assertions.assertEquals(subject.get(Constants.ID), consumerDid);
-        Assertions.assertEquals(jsonLdVc.get(ISSUER).toString(), CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
+        Assertions.assertEquals(providerBpn, subject.get(Constants.HOLDER_IDENTIFIER));
+        Assertions.assertEquals(providerDid, subject.get(Constants.ID));
+        Assertions.assertEquals(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()), jsonLdVc.get(ISSUER).toString());
     }
 
     @SneakyThrows
     @Test
     @DisplayName("Create STS token without scope and validate")
     void testCreateStsWithoutScope() {
-        String readScope = "read";
         String consumerBpn = TestUtils.getRandomBpmNumber();
         String providerBpn = TestUtils.getRandomBpmNumber();
         String consumerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), consumerBpn);
         String providerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), providerBpn);
         //create token
-        String requestedInnerToken = getToken(consumerDid, providerDid, consumerBpn, readScope, List.of(Constants.MEMBERSHIP_CREDENTIAL));
+        String requestedInnerToken = getToken(consumerDid, providerDid, List.of(Constants.MEMBERSHIP_CREDENTIAL));
 
         String stsToken = createStsWithoutScope(consumerDid, providerDid, consumerBpn, requestedInnerToken);
         //validate STS
         JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(stsToken);
-        Assertions.assertEquals(jwtClaimsSet.getClaim(Constants.BPN).toString(), consumerBpn);
-        Assertions.assertEquals(jwtClaimsSet.getAudience().getFirst(), consumerDid);
-        Assertions.assertEquals(jwtClaimsSet.getIssuer(), consumerDid);
-        Assertions.assertEquals(jwtClaimsSet.getSubject(), consumerDid);
+        Assertions.assertEquals(providerDid, jwtClaimsSet.getAudience().getFirst());
+        Assertions.assertEquals(consumerDid, jwtClaimsSet.getIssuer());
+        Assertions.assertEquals(consumerDid, jwtClaimsSet.getSubject());
 
-        //validate inner token
-        Assertions.assertNotNull(jwtClaimsSet.getStringClaim(Constants.TOKEN));
-        String innerToken = jwtClaimsSet.getStringClaim(Constants.TOKEN);
-
-        Assertions.assertEquals(requestedInnerToken, innerToken);
-        JWTClaimsSet innerTokenClaim = tokenService.verifyTokenAndGetClaims(innerToken);
-        Assertions.assertEquals(innerTokenClaim.getClaim(Constants.BPN).toString(), consumerBpn);
-        Assertions.assertEquals(innerTokenClaim.getClaim(CONSUMER_DID).toString(), consumerDid);
-        Assertions.assertEquals(innerTokenClaim.getClaim(PROVIDER_DID).toString(), providerDid);
-        Assertions.assertEquals(innerTokenClaim.getClaim(Constants.SCOPE).toString(), readScope);
-        Assertions.assertEquals(innerTokenClaim.getAudience().getFirst(), consumerDid);
-        Assertions.assertEquals(innerTokenClaim.getSubject(), consumerDid);
-        Assertions.assertEquals(Constants.MEMBERSHIP_CREDENTIAL, innerTokenClaim.getStringListClaim(Constants.CREDENTIAL_TYPES).getFirst());
+        //query presentation with the STS token
+        queryPresentationAndValidate(stsToken, consumerBpn, consumerDid, providerDid, List.of(Constants.MEMBERSHIP_CREDENTIAL));
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("Create STS token without scope and validate with random inner token")
+    void testCreateStsWithoutScopeWithRandomInnerToken() {
+        String consumerBpn = TestUtils.getRandomBpmNumber();
+        String providerBpn = TestUtils.getRandomBpmNumber();
+        String consumerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), consumerBpn);
+        String providerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), providerBpn);
+
+        String requestedInnerToken = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 20);
+
+        String stsToken = createStsWithoutScope(consumerDid, providerDid, consumerBpn, requestedInnerToken);
+        //validate STS
+        JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(stsToken);
+        Assertions.assertEquals(providerDid, jwtClaimsSet.getAudience().getFirst());
+        Assertions.assertEquals(consumerDid, jwtClaimsSet.getIssuer());
+        Assertions.assertEquals(consumerDid, jwtClaimsSet.getSubject());
+
+        //query presentation with the STS token
+        queryPresentationAndValidate(stsToken, consumerBpn, consumerDid, providerDid, List.of(Constants.MEMBERSHIP_CREDENTIAL));
+    }
+
+    //CS-4559
+    @SneakyThrows
+    @Test
+    @DisplayName("Create STS token without scope and validate, try to add token which signature verification gets failed")
+    void testCreateStsWithoutScopeWhenInnerTokenValidationFailed() {
+        String consumerBpn = TestUtils.getRandomBpmNumber();
+        String providerBpn = "BPNL000000004OUP";
+        String consumerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), consumerBpn);
+        String providerDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), providerBpn);
+
+        //Sample inner token which signature verification gets failed
+        String requestedInnerToken = "eyJraWQiOiJ0cmFuc2Zlci1wcm94eS10b2tlbi1zaWduZXItcHVibGljLWtleSIsImFsZyI6IlJTMjU2In0.eyJpc3MiOiJCUE5MMDAwMDAwMDA0T1VQIiwiYXVkIjoiQlBOTDAwMDAwMDAwNE9VUCIsInN1YiI6IkJQTkwwMDAwMDAwMDRPVVAiLCJleHAiOjE3NjMzNzc1MTQsImlhdCI6MTc2MzM3NzIxNCwianRpIjoiYTY1NjNmOWMtZjk2ZC00N2YwLWE3YzAtNmEzNTFjMTcwMTcwIn0.IX_Yr1zsE0tQgFycxotWYG8gGg_7eW9cO9YS4QZJEyvW7ixmUehwukc1_o-1hc9_QKyCwGGctjtRKim4gJCwaYprRfwuNIWj98xMtsBIWPpe9aid8AWnuHp5eOXdgnx78KGAf2Btbu-2y4K8Y3Sug7jL5Kjnf88kahYwzR93np95VhVtkOezMkK5JSIv46D-JtBDQi3nr3FddcidrKogt3BwEMbG7rFlFhFyCedaRW4L8uUzqI3Q7W4oX6NirLRtaDN7WhQZKg4pgNLUEozGMOVSMtEx1ARdW56F8EeAD5K9pulG1Gl4QSq9O9BO-PEOfxzv9991aE8ylsAPxM3ctKuntjGvCRL28wAmZvy0P6tijBJxHbeaw6qDG-syXO45M9-qvx96tQCy2JniPzBjtYctlCJ86lpWHeghaf07IgWXwTcw-17RCzjnAGHj8aLjhiOV2GZCPAA2DfYn3uvU8syNez6nRzgJ8vwpQSpXyoOivfy5klRpB9csFBJesaBGQCJNDzPVcqydE2Kq44o2BzZRTC220hGru0-30fqQ-ORhzgXSybMxUzaN14AW-iaQHyJs4Paw0F_pdXpsfgUX2WIl6pDjqKi-f_DnIFK9G07t7uSa0WapKBcKb3tikQPiGdDdKais_JZJIZ27Hn9mFtdY_LrrOyVvMFNFfb05W3g";
+
+        String stsToken = createStsWithoutScope(consumerDid, providerDid, consumerBpn, requestedInnerToken);
+        //validate STS
+        JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(stsToken);
+        Assertions.assertEquals(providerDid, jwtClaimsSet.getAudience().getFirst());
+        Assertions.assertEquals(consumerDid, jwtClaimsSet.getIssuer());
+        Assertions.assertEquals(consumerDid, jwtClaimsSet.getSubject());
+    }
 
     @SneakyThrows
     @Test
@@ -297,21 +318,29 @@ class EDCTest {
 
         //validate STS
         JWTClaimsSet jwtClaimsSet = tokenService.verifyTokenAndGetClaims(jwt);
-        Assertions.assertEquals(jwtClaimsSet.getClaim(Constants.BPN).toString(), providerBpn);
-        Assertions.assertEquals(jwtClaimsSet.getAudience().getFirst(), providerDid);
-        Assertions.assertEquals(jwtClaimsSet.getIssuer(), consumerDid);
+        Assertions.assertEquals(providerDid, jwtClaimsSet.getAudience().getFirst());
+        Assertions.assertEquals(consumerDid, jwtClaimsSet.getIssuer());
+    }
 
-        //validate inner token
-        Assertions.assertNotNull(jwtClaimsSet.getStringClaim(Constants.TOKEN));
-        String innerToken = jwtClaimsSet.getStringClaim(Constants.TOKEN);
-        JWTClaimsSet innerTokenClaim = tokenService.verifyTokenAndGetClaims(innerToken);
-        Assertions.assertEquals(innerTokenClaim.getClaim(Constants.BPN).toString(), consumerBpn);
-        Assertions.assertEquals(innerTokenClaim.getClaim(CONSUMER_DID).toString(), consumerDid);
-        Assertions.assertEquals(innerTokenClaim.getClaim(PROVIDER_DID).toString(), providerDid);
-        Assertions.assertEquals(innerTokenClaim.getClaim(Constants.SCOPE).toString(), readScope);
-        Assertions.assertEquals(innerTokenClaim.getAudience().getFirst(), providerDid);
-        Assertions.assertEquals(innerTokenClaim.getSubject(), consumerDid);
-        Assertions.assertEquals(Constants.MEMBERSHIP_CREDENTIAL, innerTokenClaim.getStringListClaim(Constants.CREDENTIAL_TYPES).getFirst());
+    @SneakyThrows
+    private void queryPresentationAndValidate(String stsToken, String consumerBpn, String consumerDid, String providerDid, List<String> vcTypes) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER + stsToken);
+
+        QueryPresentationRequest request = getQueryPresentationRequest(vcTypes);
+        HttpEntity<QueryPresentationRequest> entity = new HttpEntity<>(request, headers);
+        ResponseEntity<QueryPresentationResponse> response = restTemplate.exchange("/api/presentations/query", HttpMethod.POST, entity, QueryPresentationResponse.class);
+
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+
+        QueryPresentationResponse responseBody = validateResponseFormat(response);
+        String vpToken = responseBody.getPresentation().getFirst();
+        JWTClaimsSet vpClaims = tokenService.verifyTokenAndGetClaims(vpToken);
+
+        Assertions.assertTrue(vpClaims.getAudience().contains(consumerDid));
+        Assertions.assertEquals(providerDid, vpClaims.getSubject());
+        Assertions.assertEquals(providerDid, vpClaims.getIssuer());
+        Assertions.assertNotNull(vpClaims.getJSONObjectClaim(Constants.VP));
     }
 
     private String createStsWithScope(String readScope, String consumerDid, String providerDid, String consumerBpn, String[] vcTypes) {
@@ -329,35 +358,31 @@ class EDCTest {
         HttpEntity<CreateCredentialWithScopeRequest> entity = new HttpEntity<>(withScopeRequest, headers);
         ResponseEntity<StsTokeResponse> response = restTemplate.exchange("/api/sts", HttpMethod.POST, entity, StsTokeResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 
         Assertions.assertNotNull(response.getBody());
         return response.getBody().getJwt();
     }
 
-    private String getToken(String consumerDid, String providerDid, String consumerBpn, String scope, List<String> vcTypes) {
+    private String getToken(String selfDid, String audDid, List<String> vcTypes) {
         JWTClaimsSet tokeJwtClaimsSet = new JWTClaimsSet.Builder()
-                .issuer(consumerDid)
-                .audience(consumerDid)
-                .subject(consumerDid)
+                .issuer(selfDid)
+                .audience(audDid)
+                .subject(selfDid)
                 .issueTime(Date.from(Instant.now()))
                 .claim(Constants.CREDENTIAL_TYPES, vcTypes)
-                .claim(Constants.SCOPE, scope)
-                .claim(CONSUMER_DID, consumerDid)
-                .claim(PROVIDER_DID, providerDid)
-                .claim(Constants.BPN, consumerBpn)
                 .build();
-        return CommonUtils.signedJWT(tokeJwtClaimsSet, keyService.getKeyPair(consumerBpn), didDocumentService.getOrCreateDidDocument(consumerBpn).getVerificationMethod().getFirst().getId()).serialize();
+        return CommonUtils.signedJWT(tokeJwtClaimsSet, keyService.getKeyPair(selfDid), didDocumentService.getOrCreateDidDocument(selfDid).getVerificationMethod().getFirst().getId()).serialize();
     }
 
 
-    private String createStsWithoutScope(String consumerDid, String providerDid, String consumerBpn, String token) {
+    private String createStsWithoutScope(String selfDid, String audDid, String consumerBpn, String token) {
 
         CreateCredentialWithoutScopeRequest request = CreateCredentialWithoutScopeRequest.builder()
                 .signToken(CreateCredentialWithoutScopeRequest.SignToken.builder()
-                        .audience(consumerDid)
-                        .subject(providerDid)
-                        .issuer(providerDid)
+                        .audience(audDid)
+                        .subject(selfDid)
+                        .issuer(selfDid)
                         .token(token)
                         .build())
                 .build();
@@ -367,7 +392,7 @@ class EDCTest {
         HttpEntity<CreateCredentialWithoutScopeRequest> entity = new HttpEntity<>(request, headers);
         ResponseEntity<StsTokeResponse> response = restTemplate.exchange("/api/sts", HttpMethod.POST, entity, StsTokeResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
 
         Assertions.assertNotNull(response.getBody());
         return response.getBody().getJwt();

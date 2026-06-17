@@ -24,5 +24,5 @@ package org.eclipse.tractusx.wallet.stub.credential.impl.internal.api;
 import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
 
 public interface InternalCredentialService {
-    CustomCredential getVerifiableCredentialByHolderBpnAndType(String holderBpn, String type);
+    CustomCredential getVerifiableCredentialByHolderDidAndType(String holderDid, String type);
 }

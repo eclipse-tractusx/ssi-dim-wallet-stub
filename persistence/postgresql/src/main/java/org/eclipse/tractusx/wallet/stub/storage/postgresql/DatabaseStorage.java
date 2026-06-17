@@ -70,8 +70,8 @@ public class DatabaseStorage implements Storage {
     private final HolderCredentialAsJWTRepository holderCredentialAsJWTRepository;
 
 
-    private static String getMapKey(String holderBpn, String type) {
-        return holderBpn + "###" + type;
+    private static String getMapKey(String holderDid, String type) {
+        return holderDid + "###" + type;
     }
 
     @Override
@@ -80,15 +80,15 @@ public class DatabaseStorage implements Storage {
         Map<String, DidDocument> allDidDocumentMap = new ConcurrentHashMap<>();
         for (DidDocumentEntity didDocumentEntity : didDocumentEntityList) {
             DidDocument didDocument = didDocumentEntity.getDidDocument();
-            allDidDocumentMap.put(didDocumentEntity.getBpn(), didDocument);
+            allDidDocumentMap.put(didDocumentEntity.getDid(), didDocument);
         }
         return allDidDocumentMap;
     }
 
     @Override
-    public void saveCredentialAsJwt(String vcId, String jwt, String holderBPn, String type) {
-        String key = getMapKey(holderBPn, type);
-        holderCredentialAsJWTRepository.save(new HolderCredentialAsJWTEntity(key,vcId, holderBPn, jwt));
+    public void saveCredentialAsJwt(String vcId, String jwt, String holderDid, String type) {
+        String key = getMapKey(holderDid, type);
+        holderCredentialAsJWTRepository.save(new HolderCredentialAsJWTEntity(key, vcId, holderDid, jwt));
         if (jwtCredentialRepository.findByVcId(vcId) == null) {
             jwtCredentialRepository.save(new JWTCredentialEntity(vcId, jwt));
         }
@@ -104,17 +104,17 @@ public class DatabaseStorage implements Storage {
     }
 
     @Override
-    public void saveCredentials(String vcId, CustomCredential credential, String holderBpn, String type) {
-        String key = getMapKey(holderBpn, type);
-        holderCredentialRepository.save(new HolderCredentialEntity(key,holderBpn, credential));
+    public void saveCredentials(String vcId, CustomCredential credential, String holderDid, String type) {
+        String key = getMapKey(holderDid, type);
+        holderCredentialRepository.save(new HolderCredentialEntity(key, holderDid, credential));
         if (customCredentialRepository.findByVcId(vcId) == null) {
             customCredentialRepository.save(new CustomCredentialEntity(vcId, credential));
         }
     }
 
     @Override
-    public Optional<CustomCredential> getCredentialsByHolderBpnAndType(String holderBpn, String type) {
-        HolderCredentialEntity holderCredentialEntity = holderCredentialRepository.findByKey(getMapKey(holderBpn, type));
+    public Optional<CustomCredential> getCredentialsByHolderDidAndType(String holderDid, String type) {
+        HolderCredentialEntity holderCredentialEntity = holderCredentialRepository.findByKey(getMapKey(holderDid, type));
         if (holderCredentialEntity == null) {
             return Optional.empty();
         }
@@ -122,8 +122,8 @@ public class DatabaseStorage implements Storage {
     }
 
     @Override
-    public Optional<Pair<String, String>> getCredentialsAsJwtByHolderBpnAndType(String holderBpn, String type) {
-        HolderCredentialAsJWTEntity holderCredentialAsJWTEntity = holderCredentialAsJWTRepository.findByKey(getMapKey(holderBpn, type));
+    public Optional<Pair<String, String>> getCredentialsAsJwtByHolderDidAndType(String holderDid, String type) {
+        HolderCredentialAsJWTEntity holderCredentialAsJWTEntity = holderCredentialAsJWTRepository.findByKey(getMapKey(holderDid, type));
         if (holderCredentialAsJWTEntity == null) {
             return Optional.empty();
         }
@@ -139,60 +139,50 @@ public class DatabaseStorage implements Storage {
         return Optional.ofNullable(customCredentialEntity.getCredential());
     }
 
-    @Override
-    public void saveKeyPair(String bpn, KeyPair keyPair) {
+    public void saveKeyPair(String did, String bpn, KeyPair keyPair) {
         try {
-            // Convert keys to Base64 strings (or byte arrays if preferred)
             String privateKeyBase64 = Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded());
             String publicKeyBase64 = Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
-
-            KeyPairEntity keyPairEntity = new KeyPairEntity(bpn, publicKeyBase64, privateKeyBase64);
+            KeyPairEntity keyPairEntity = new KeyPairEntity(did, bpn, publicKeyBase64, privateKeyBase64);
             keyPairRepository.save(keyPairEntity);
         } catch (Exception e) {
-            log.debug("Error saving KeyPair: {}", e.getMessage());
+            log.debug("Error saving KeyPair by did: {}", e.getMessage());
         }
     }
 
     @Override
-    public void saveDidDocument(String bpn, DidDocument didDocument) {
+    public void saveDidDocument(String did, DidDocument didDocument) {
         try {
-            didDocumentRepository.save(new DidDocumentEntity(bpn, didDocument));
+            didDocumentRepository.save(new DidDocumentEntity(did, didDocument));
         } catch (Exception e) {
             // Ignore duplicate key violations — another thread already saved the document
-            log.debug("DID document for bpn {} already exists, skipping save: {}", bpn, e.getMessage());
+            log.debug("DID document for did {} already exists, skipping save: {}", did, e.getMessage());
         }
     }
 
     @Override
-    public Optional<KeyPair> getKeyPair(String bpn) {
+    public Optional<KeyPair> getKeyPair(String did) {
         try {
-            // Retrieve the KeyPairEntity from the database
-            KeyPairEntity keyPairEntity = keyPairRepository.findByBpn(bpn);
-
+            KeyPairEntity keyPairEntity = keyPairRepository.findByDid(did);
             if (keyPairEntity != null) {
-                // Decode the Base64 strings into byte arrays
                 byte[] privateKeyBytes = Base64.getDecoder().decode(keyPairEntity.getPrivateKey());
                 byte[] publicKeyBytes = Base64.getDecoder().decode(keyPairEntity.getPublicKey());
-
-                // Recreate the private and public keys from the byte arrays
                 PrivateKey privateKey = KeyFactory.getInstance("EC").generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
                 PublicKey publicKey = KeyFactory.getInstance("EC").generatePublic(new X509EncodedKeySpec(publicKeyBytes));
-
                 return Optional.of(new KeyPair(publicKey, privateKey));
             } else {
-                log.debug("KeyPair not found");
+                log.debug("KeyPair not found for did: {}", did);
                 return Optional.empty();
             }
         } catch (Exception e) {
-            log.debug("Error retrieving KeyPair: {}", e.getMessage());
+            log.debug("Error retrieving KeyPair by did: {}", e.getMessage());
             return Optional.empty();
         }
-
     }
 
     @Override
-    public Optional<DidDocument> getDidDocument(String bpn) {
-        DidDocumentEntity didDocumentEntity = didDocumentRepository.findByBpn(bpn);
+    public Optional<DidDocument> getDidDocument(String did) {
+        DidDocumentEntity didDocumentEntity = didDocumentRepository.findByDid(did);
         if (didDocumentEntity == null) {
             return Optional.empty();
         }
@@ -200,7 +190,7 @@ public class DatabaseStorage implements Storage {
     }
 
     @Override
-    public List<CustomCredential> getVcIdAndTypesByHolderBpn(String holderBpn) {
-        return holderCredentialRepository.getCredentialByHolderBpn(holderBpn).stream().map(HolderCredentialEntity::getCredential).toList();
+    public List<CustomCredential> getVcIdAndTypesByHolderDid(String holderDid) {
+        return holderCredentialRepository.getCredentialByHolderDid(holderDid).stream().map(HolderCredentialEntity::getCredential).toList();
     }
 }

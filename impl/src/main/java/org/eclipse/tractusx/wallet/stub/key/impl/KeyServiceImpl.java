@@ -45,12 +45,12 @@ public class KeyServiceImpl implements KeyService {
     private final WalletStubSettings walletStubSettings;
 
     @Override
-    public KeyPair getKeyPair(String bpn) {
+    public KeyPair getKeyPair(String did) {
         try {
-            Optional<KeyPair> optionalKeyPair = storage.getKeyPair(bpn);
+            Optional<KeyPair> optionalKeyPair = storage.getKeyPair(did);
             return optionalKeyPair.orElseGet(() -> {
-                KeyPair keyPair = DeterministicECKeyPairGenerator.createKeyPair(bpn, walletStubSettings.env());
-                storage.saveKeyPair(bpn, keyPair);
+                KeyPair keyPair = DeterministicECKeyPairGenerator.createKeyPair(did, walletStubSettings.env());
+                storage.saveKeyPair(did, null, keyPair);
                 return keyPair;
             });
         } catch (Exception e) {
