@@ -1,7 +1,6 @@
 /*
  * *******************************************************************************
  *  Copyright (c) 2025 Contributors to the Eclipse Foundation
- *  Copyright (c) 2025 LKS Next
  *
  *  See the NOTICE file(s) distributed with this work for additional
  *  information regarding copyright ownership.
@@ -20,24 +19,8 @@
  * ******************************************************************************
  */
 
-package org.eclipse.tractusx.wallet.stub.dao.postgresql.repository;
+--liquibase formatted sql
 
-import feign.Param;
-
-import org.eclipse.tractusx.wallet.stub.dao.postgresql.entity.HolderCredentialEntity;
-import org.eclipse.tractusx.wallet.stub.utils.api.CustomCredential;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-@Repository
-public interface HolderCredentialRepository extends JpaRepository<HolderCredentialEntity, Long> {
-
-    @Query("SELECT h FROM HolderCredentialEntity h WHERE h.key = :key")
-    HolderCredentialEntity findByKey(@Param("key") String key);
-
-    @Query("SELECT h FROM HolderCredentialEntity h WHERE h.holderDid = :holderDid")
-    List<HolderCredentialEntity> getCredentialByHolderDid(@Param("holderDid") String holderDid);
-}
+--changeset arnoweiss:2
+ALTER TABLE did_document RENAME COLUMN bpn TO did;
+--rollback ALTER TABLE did_document RENAME COLUMN did TO bpn;

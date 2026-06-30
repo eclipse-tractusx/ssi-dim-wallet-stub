@@ -31,9 +31,9 @@ import java.util.Optional;
 
 public interface DidDocumentService {
 
-    DidDocument getOrCreateDidDocument(String issuerBpn);
+    DidDocument getOrCreateDidDocument(String did);
 
-    Optional<DidDocument> getDidDocument(String bpn);
+    Optional<DidDocument> getDidDocument(String did);
 
     /**
      * Add/Updates the service in the DID document.

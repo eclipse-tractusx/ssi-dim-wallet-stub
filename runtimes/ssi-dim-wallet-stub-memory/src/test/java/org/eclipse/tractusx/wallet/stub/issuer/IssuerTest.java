@@ -95,7 +95,7 @@ class IssuerTest {
 
         HttpEntity<IssueCredentialRequest> entity = new HttpEntity<>(issueCredentialRequest, headers);
         ResponseEntity<IssueCredentialResponse> responseEntity = restTemplate.exchange("/api/v2.0.0/credentials", HttpMethod.POST, entity, IssueCredentialResponse.class);
-        Assertions.assertEquals(responseEntity.getStatusCode().value(), HttpStatus.BAD_REQUEST.value());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), responseEntity.getStatusCode().value());
     }
 
 
@@ -109,12 +109,12 @@ class IssuerTest {
         String holderDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn);
         ResponseEntity<IssueCredentialResponse> response = createCredentialWithSignature(headers, holderBpn, holderDid);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.CREATED.value());
+        Assertions.assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
         IssueCredentialResponse responseBody = response.getBody();
         Assertions.assertNotNull(responseBody);
         Assertions.assertNotNull(responseBody.getId());
         Assertions.assertNotNull(responseBody.getJwt());
-        DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
+        DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
         URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + responseBody.getId());
         Assertions.assertTrue(storage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
         Assertions.assertTrue(storage.getVerifiableCredentials(vcIdUri.toString()).isPresent());
@@ -131,11 +131,11 @@ class IssuerTest {
         String holderDid = CommonUtils.getDidWeb(walletStubSettings.didHost(), holderBpn);
         ResponseEntity<IssueCredentialResponse> response = createCredential(headers, holderBpn, holderDid);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.CREATED.value());
+        Assertions.assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
         IssueCredentialResponse responseBody = response.getBody();
         Assertions.assertNotNull(responseBody);
         Assertions.assertNotNull(responseBody.getId());
-        DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(walletStubSettings.baseWalletBPN());
+        DidDocument issuerDidDocument = didDocumentService.getOrCreateDidDocument(CommonUtils.getDidWeb(walletStubSettings.didHost(), walletStubSettings.baseWalletBPN()));
         URI vcIdUri = URI.create(issuerDidDocument.getId() + Constants.HASH_SEPARATOR + responseBody.getId());
         Assertions.assertTrue(storage.getCredentialAsJwt(vcIdUri.toString()).isPresent());
         Assertions.assertTrue(storage.getVerifiableCredentials(vcIdUri.toString()).isPresent());
@@ -182,7 +182,7 @@ class IssuerTest {
         HttpEntity<IssueCredentialRequest> entity = new HttpEntity<>(issueCredentialRequest, headers);
         ResponseEntity<IssueCredentialResponse> response = restTemplate.exchange("/api/v2.0.0/credentials", HttpMethod.POST, entity, IssueCredentialResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.BAD_REQUEST.value());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
     }
 
     @SneakyThrows
@@ -259,7 +259,7 @@ class IssuerTest {
 
         ResponseEntity<SignCredentialResponse> response = restTemplate.exchange("/api/v2.0.0/credentials/" + Objects.requireNonNull(credential.getBody()).getId(), HttpMethod.PATCH, entity, SignCredentialResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         SignCredentialResponse responseBody = response.getBody();
         Assertions.assertNotNull(responseBody);
         Assertions.assertNotNull(responseBody.getJwt());
@@ -282,7 +282,7 @@ class IssuerTest {
 
         ResponseEntity<SignCredentialResponse> response = restTemplate.exchange("/api/v2.0.0/credentials/1", HttpMethod.PATCH, entity, SignCredentialResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.NOT_FOUND.value());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode().value());
 
     }
 
@@ -301,7 +301,7 @@ class IssuerTest {
         HttpEntity<Map> entity = new HttpEntity<>(headers);
         ResponseEntity<GetCredentialsResponse> response = restTemplate.exchange("/api/v2.0.0/credentials/" + Objects.requireNonNull(credential.getBody()).getId(), HttpMethod.GET, entity, GetCredentialsResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         GetCredentialsResponse responseBody = response.getBody();
         Assertions.assertNotNull(responseBody);
         Assertions.assertNotNull(responseBody.getVerifiableCredential());
@@ -322,7 +322,7 @@ class IssuerTest {
         HttpEntity<Map> entity = new HttpEntity<>(headers);
         ResponseEntity<GetCredentialsResponse> response = restTemplate.exchange("/api/v2.0.0/credentials/1", HttpMethod.GET, entity, GetCredentialsResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.NOT_FOUND.value());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode().value());
     }
 
     @SneakyThrows
@@ -343,7 +343,7 @@ class IssuerTest {
         HttpEntity<IssueCredentialRequest> entity = new HttpEntity<>(issueCredentialRequest, headers);
         ResponseEntity<IssueCredentialResponse> response = restTemplate.exchange("/api/v2.0.0/credentials", HttpMethod.POST, entity, IssueCredentialResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.CREATED.value());
+        Assertions.assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
         IssueCredentialResponse responseBody = response.getBody();
         Assertions.assertNotNull(responseBody);
         Assertions.assertNotNull(responseBody.getId());
@@ -368,7 +368,7 @@ class IssuerTest {
 
         ResponseEntity<SignCredentialResponse> response = restTemplate.exchange("/api/v2.0.0/credentials/" + Objects.requireNonNull(credential.getBody()).getId(), HttpMethod.PATCH, entity, SignCredentialResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         SignCredentialResponse responseBody = response.getBody();
         Assertions.assertNull(responseBody);
     }
@@ -388,7 +388,7 @@ class IssuerTest {
 
         ResponseEntity<SignCredentialResponse> response = restTemplate.exchange("/api/v2.0.0/credentials/1", HttpMethod.PATCH, entity, SignCredentialResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.NOT_FOUND.value());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode().value());
 
         SignCredentialRequest.Payload payload = SignCredentialRequest.Payload.builder().revoke(false).build();
         signCredentialRequest = SignCredentialRequest.builder()
@@ -398,7 +398,7 @@ class IssuerTest {
 
         response = restTemplate.exchange("/api/v2.0.0/credentials/1", HttpMethod.PATCH, entity, SignCredentialResponse.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.NOT_FOUND.value());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode().value());
 
     }
 }

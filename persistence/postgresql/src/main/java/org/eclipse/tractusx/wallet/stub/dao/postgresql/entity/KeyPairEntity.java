@@ -46,6 +46,9 @@ public class KeyPairEntity {
 
     @Id
     @Column(nullable = false)
+    private String did;
+
+    @Column(nullable = true)
     private String bpn;
 
     @JdbcTypeCode(Types.LONGNVARCHAR)

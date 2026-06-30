@@ -81,13 +81,13 @@ class BDRSTest {
 
         //do not pass Authorization header
         ResponseEntity<Map> response = restTemplate.exchange("/api/v1/directory/bpn-directory", HttpMethod.GET, entity, Map.class);
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.UNAUTHORIZED.value());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
 
         //pass invalid token
         headers.add(HttpHeaders.AUTHORIZATION, Constants.BEARER + "Some dummy token");
         entity = new HttpEntity<>(headers);
         response = restTemplate.exchange("/api/v1/directory/bpn-directory", HttpMethod.GET, entity, Map.class);
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.BAD_REQUEST.value());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
 
     }
 
@@ -108,17 +108,17 @@ class BDRSTest {
         headers.add(HttpHeaders.AUTHORIZATION, Constants.BEARER + vpToken);
         HttpEntity<QueryPresentationRequest> entity = new HttpEntity<>(headers);
         ResponseEntity<Map> response = restTemplate.exchange("/api/v1/directory/bpn-directory?bpn=" + StringUtils.join(List.of(consumerBpn, providerBpn), ", "), HttpMethod.GET, entity, Map.class);
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         Map body = response.getBody();
         Assertions.assertNotNull(body);
         Assertions.assertEquals(2, body.size()); //we requested  bpns only, so it should return only 2
         Assertions.assertTrue(body.containsKey(consumerBpn));
         Assertions.assertTrue(body.containsKey(providerBpn));
-        Assertions.assertEquals(body.get(consumerBpn).toString(), consumerDid);
+        Assertions.assertEquals(consumerDid, body.get(consumerBpn).toString());
 
         //request without request param
         response = restTemplate.exchange("/api/v1/directory/bpn-directory", HttpMethod.GET, entity, Map.class);
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.OK.value());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         body = response.getBody();
         Assertions.assertNotNull(body);
         Assertions.assertTrue(body.size() >= walletStubSettings.seedWalletsBPN().size() + 3);
