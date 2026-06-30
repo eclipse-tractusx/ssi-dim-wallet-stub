@@ -1,5 +1,12 @@
 ## Helm chart to deploy SSI DIM Wallet stub application
 
+> [!IMPORTANT]
+> **Upgrade notes (v0.2.0): a fresh PostgreSQL database is required.**
+> Starting with chart version `0.2.0` / appVersion `0.1.0`, wallet storage is keyed by DID instead of BPN.
+> Existing data written by earlier versions cannot be migrated. Perform a **full redeploy with a new
+> database** rather than an in-place upgrade. Reusing an existing database will cause the schema
+> migration to fail on startup.
+
 ### Source Code
 
 * <https://github.com/eclipse-tractusx/ssi-dim-wallet-stub>

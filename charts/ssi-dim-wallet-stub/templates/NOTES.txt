@@ -1,6 +1,5 @@
 ###############################################################
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
-# Copyright (c) 2025 Cofinity-X
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -18,18 +17,13 @@
 # SPDX-License-Identifier: Apache-2.0
 ###############################################################
 
-apiVersion: v2
-name: ssi-dim-wallet-stub-memory
-description: |
-  A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster
-type: application
-version: 0.2.0
-appVersion: "0.1.0"
-home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
-sources:
-  - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
-dependencies:
-  - name: centralidp
-    version: 3.0.0
-    repository: https://eclipse-tractusx.github.io/charts/dev
-    condition: keycloak.enabled
+ssi-dim-wallet-stub {{ .Chart.AppVersion }} (chart {{ .Chart.Version }}) has been deployed.
+
+IMPORTANT - FRESH DATABASE REQUIRED (v0.2.0+)
+=============================================
+As of chart version 0.2.0 / appVersion 0.1.0, wallet storage is keyed by DID
+instead of BPN. Data written by earlier versions CANNOT be migrated.
+
+If you upgraded an existing release in place against a pre-existing database,
+the schema migration will fail on startup. Perform a FULL REDEPLOY with a NEW,
+empty PostgreSQL database instead of an in-place upgrade.

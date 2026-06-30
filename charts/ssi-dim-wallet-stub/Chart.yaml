@@ -24,11 +24,15 @@ name: ssi-dim-wallet-stub
 description: |
   A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster
 type: application
-version: 0.1.18
-appVersion: "0.0.11"
+version: 0.2.0
+appVersion: "0.1.0"
 home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
 sources:
   - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+annotations:
+  artifacthub.io/changes: |
+    - kind: changed
+      description: "BREAKING: storage is now keyed by DID instead of BPN. This version requires a fresh PostgreSQL database - perform a full redeploy with a new database rather than an in-place upgrade, as existing data cannot be migrated."
 dependencies:
   - name: centralidp
     version: 3.0.0
