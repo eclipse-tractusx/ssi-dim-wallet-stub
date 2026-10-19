@@ -98,6 +98,25 @@ wallet:
     urlPrefix: /
     className: nginx
     annotations: { }
+  # -- Gateway API HTTPRoute configuration
+  # TLS is handled at the Gateway level, not here.
+  httpRoute:
+    enabled: false
+    annotations: { }
+    # -- Which Gateways this Route attaches to.
+    parentRefs: []
+    #   - name: gateway
+    #     namespace: gateway-system
+    #     sectionName: http
+    #   - name: gateway
+    #     namespace: gateway-system
+    #     sectionName: https
+    # -- Routing rules. If empty, a catch-all rule is generated automatically.
+    rules: []
+    #   - matches:
+    #     - path:
+    #         type: PathPrefix
+    #         value: /api
   swagger:
     ui:
       # -- enable swagger API doc UI
