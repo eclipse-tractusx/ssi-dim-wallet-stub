@@ -7,6 +7,33 @@ entries:
           description: "BREAKING: storage is now keyed by DID instead of BPN. This version requires a fresh PostgreSQL database - perform a full redeploy with a new database rather than an in-place upgrade, as existing data cannot be migrated."
     apiVersion: v2
     appVersion: 0.1.0
+    created: "2026-10-19T12:13:43.877024575Z"
+    dependencies:
+    - condition: keycloak.enabled
+      name: centralidp
+      repository: https://eclipse-tractusx.github.io/charts/dev
+      version: 3.0.0
+    - alias: postgresql
+      condition: postgresql.enabled
+      name: postgres
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.11.0
+    description: 'A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster '
+    digest: 23bab7895cbd90983094c718dea87b467e4e901bf9d3dad4d7ae1d2cd29ec3c9
+    home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+    name: ssi-dim-wallet-stub
+    sources:
+    - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/releases/download/ssi-dim-wallet-stub-0.2.1/ssi-dim-wallet-stub-0.2.1.tgz
+    version: 0.2.1
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
+          description: "BREAKING: storage is now keyed by DID instead of BPN. This version requires a fresh PostgreSQL database - perform a full redeploy with a new database rather than an in-place upgrade, as existing data cannot be migrated."
+    apiVersion: v2
+    appVersion: 0.1.0
     created: "2026-06-30T12:36:04.445881211Z"
     dependencies:
     - condition: keycloak.enabled
@@ -392,6 +419,24 @@ entries:
   ssi-dim-wallet-stub-memory:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2026-10-19T12:13:44.121513248Z"
+    dependencies:
+    - condition: keycloak.enabled
+      name: centralidp
+      repository: https://eclipse-tractusx.github.io/charts/dev
+      version: 3.0.0
+    description: 'A Helm chart to deploy SSI DIM wallet stub in kubernetes cluster '
+    digest: 4fbaf7b53e47493eecb76a1bb207e61433726e651431fb672e092b2a287f4c29
+    home: https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+    name: ssi-dim-wallet-stub-memory
+    sources:
+    - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/tree/main/charts/ssi-dim-wallet-stub
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/releases/download/ssi-dim-wallet-stub-memory-0.2.1/ssi-dim-wallet-stub-memory-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2026-06-30T12:36:04.64739006Z"
     dependencies:
     - condition: keycloak.enabled
@@ -534,4 +579,4 @@ entries:
     urls:
     - https://github.com/eclipse-tractusx/ssi-dim-wallet-stub/releases/download/ssi-dim-wallet-stub-memory-0.1.10/ssi-dim-wallet-stub-memory-0.1.10.tgz
     version: 0.1.10
-generated: "2026-06-30T12:36:04.647546592Z"
+generated: "2026-10-19T12:13:44.121733137Z"
